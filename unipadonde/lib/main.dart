@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/repository/supabase.dart';
-import 'repository/supabase.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
 const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
