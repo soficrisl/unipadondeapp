@@ -113,34 +113,9 @@ class _LandingState extends State<Landing> {
                           ),
                         ));
                   })),
-
-          //Cuadros de los descuentos OJO NO SE SI QUITARLO
-          // en este video manejaban un widget de carrusel aparte y lo llamaban arriba.
-          // ademas tenian una carpeta de lo que se pasaba a los cuadros y se llamaba
-          /*Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
-              child: GridView.builder(
-                physics:
-                    const NeverScrollableScrollPhysics(), //para evitar interferencias en el scrolling
-                shrinkWrap: true,
-                itemCount: 6, //(provicional) cuantos son
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: 210, //altura de cda fila
-                    mainAxisSpacing: 24, //separacion vertical
-                    crossAxisSpacing: 13, //separacion horizontal entre items
-                    crossAxisCount: 2),
-                itemBuilder: (context, index) {
-                  return Container(
-                      //OJOOO aqui deberia retornar un widget (de una carpeta aparte con la info de cada descuento fitted en el container)
-                      color:
-                          const Color(0xFFF1F1F1) //poner un color personalizado
-                      );
-                },
-              ),
-            )*/
         ],
       ),
-
+//list tile -- on tap para mostrar info del negocio
       //Bottom NavBar
       bottomNavigationBar: Container(
           height: 65,
