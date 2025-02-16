@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+class LoginProvView extends StatelessWidget {
+  const LoginProvView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class LoginView extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               colors: [
-                const Color(0xFF8CB1F1),
+                const Color(0xFFB4CBF7),
                 Colors.white,
                 ]
               )
@@ -32,7 +32,7 @@ class LoginView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                      Text("Login", style:TextStyle(color:Colors.white, fontSize: 45, fontWeight: FontWeight.w700, fontFamily: 'San Francisco', )),
-                     Text("Bienvenido Estudiante: ", style:TextStyle(color:Colors.white, fontSize: 17, fontWeight: FontWeight.w400, fontFamily: 'San Francisco',),)
+                     Text("Bienvenido Proveedor: ", style:TextStyle(color:Colors.white, fontSize: 17, fontWeight: FontWeight.w400, fontFamily: 'San Francisco',),)
                   ],
                 )
                 ),
@@ -75,7 +75,7 @@ class LoginView extends StatelessWidget {
                                   //EMAIL
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      hintText: "Email .unimet",
+                                      hintText: "Usuario",
                                       hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
                                       border: InputBorder.none
 
@@ -93,7 +93,7 @@ class LoginView extends StatelessWidget {
                                   //PASSWORD
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      hintText: "contraseña",
+                                      hintText: "Contraseña",
                                       hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
                                       border: InputBorder.none
 
@@ -116,7 +116,7 @@ class LoginView extends StatelessWidget {
                             margin: EdgeInsets.symmetric(horizontal: 50),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
-                              color: const Color(0xFF8CB1F1),
+                              color: const Color(0xFFB4CBF7),
                             ),
                             child: Center(
                               child: Text ("Login", style:TextStyle(color:Colors.white,fontSize: 16,fontFamily: 'San Francisco', fontWeight: FontWeight.bold)),
@@ -136,7 +136,7 @@ class LoginView extends StatelessWidget {
                             margin: EdgeInsets.symmetric(horizontal: 50),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
-                              color: Color(0xFFFAAF90),
+                              color: Color(0xFFFCC9B5),
                             ),
                             child: Center(
                               child: Text ("Registrate", style:TextStyle(color: Colors.white,fontSize: 16, fontFamily: 'San Francisco', fontWeight: FontWeight.bold)),
@@ -145,10 +145,10 @@ class LoginView extends StatelessWidget {
 
                           //Proveedor
                           SizedBox(height: 20,),
-                          Text("No eres estudiante? Ingresa como", style: TextStyle(color: Colors.grey,fontFamily: 'San Francisco',),),
-                          Text("PROVEEDOR", 
+                          Text("No eres Proveedor? Ingresa como", style: TextStyle(color: Colors.grey,fontFamily: 'San Francisco',),),
+                          Text("ESTUDIANTE", 
                           style: TextStyle(
-                            color: const Color(0xFF8CB1F1), 
+                            color: const Color(0xFFB4CBF7), 
                             fontWeight: FontWeight.bold,
                             fontFamily: 'San Francisco',),),
                           SizedBox(height: 20,),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
 const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(),
+      home: const StartView(),
     );
   }
 }
@@ -47,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Color(0xff3D405B),
         elevation: 10,
-        shadowColor: Colors.black,
+        shadowColor: Colors.black, 
         title: const Center(
           child: Text(
             'countries',
@@ -80,3 +81,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
