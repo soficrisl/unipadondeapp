@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/login/login_view.dart';
+import 'package:unipadonde/register/register_view.dart';
 import 'package:unipadonde/loginprov/loginprov_view.dart';
+import 'package:unipadonde/login/login_view.dart';
+import 'package:unipadonde/registerprov/registerprov_view.dart';
 
 class StartView extends StatelessWidget {
   const StartView({super.key});
@@ -34,7 +36,7 @@ class StartView extends StatelessWidget {
                     // Navega a la pantalla LoginView
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginView()),
+                      MaterialPageRoute(builder: (context) => RegisterView()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -56,7 +58,7 @@ class StartView extends StatelessWidget {
                     // Navega a la pantalla LoginProvView
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginProvView()),
+                      MaterialPageRoute(builder: (context) => RegisterProvView()), // ! AÚN NO SÉ SI CREAR UN REGISTRO DIFERENTE PARA LOS PROVEEDORES
                     );
                   },
                   style: ElevatedButton.styleFrom(
