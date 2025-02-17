@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:unipadonde/register/register_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -121,6 +121,7 @@ class _LoginState extends State<LoginView> {
                                         fontFamily: 'San Francisco',
                                       ),
                                       border: InputBorder.none),
+                                  controller: _emailController,
                                 ),
                               ),
                               Container(
@@ -141,6 +142,7 @@ class _LoginState extends State<LoginView> {
                                         fontFamily: 'San Francisco',
                                       ),
                                       border: InputBorder.none),
+                                  controller: _passwordController,
                                 ),
                               )
                             ],
@@ -236,22 +238,30 @@ class _LoginState extends State<LoginView> {
                       ),
 
                       // Boton Registrar
-                      Container(
-                        height: 50,
-                        margin: EdgeInsets.symmetric(horizontal: 50),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Color(0xFFFAAF90),
-                        ),
-                        child: Center(
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterView()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color(0xFFFAAF90), // Background color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            minimumSize: Size(
+                                double.infinity, 50), // Set height and width
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30), // Horizontal padding
+                          ),
                           child: Text("Registrate",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontFamily: 'San Francisco',
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
+                                  fontWeight: FontWeight.bold))),
 
                       //Proveedor
                       SizedBox(

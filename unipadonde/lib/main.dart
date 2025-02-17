@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/repository/supabase.dart';
 import 'package:unipadonde/startpage/start_view.dart';
 
 void main() async {
