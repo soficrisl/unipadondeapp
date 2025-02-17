@@ -107,7 +107,7 @@ class _LandingState extends State<Landing> {
                                 borderRadius: BorderRadius.circular(
                                     10), // Bordes redondeados del logo
                                 image: DecorationImage(
-                                  image: AssetImage(discount.buisness_logo),
+                                  image: AssetImage(discount.buisnessLogo),
                                   fit: BoxFit
                                       .cover, // Ajusta la imagen dentro del cuadrado
                                 ),
@@ -127,6 +127,9 @@ class _LandingState extends State<Landing> {
                                     fontStyle: FontStyle.italic)),
                             trailing: Icon(Icons.more_vert),
                             // Para un texto largo ->isThreeLine: true,
+                            onTap: () {
+                              openDialog(discount);
+                            },
                           ),
                         ));
                   })),
@@ -167,4 +170,49 @@ class _LandingState extends State<Landing> {
           ])),
     );
   }
+
+  // Método para mostrar el pop-up con información del descuento
+  Future openDialog(Discount discount) => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Bordes redondeados
+          ),
+          title: Text(
+            discount.name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.indigo),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                discount.description,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "Duración: ${discount.duration}",
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.redAccent),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                "Cerrar",
+                style: TextStyle(fontSize: 16, color: Colors.blue),
+              ),
+            ),
+          ],
+        ),
+      );
 }
