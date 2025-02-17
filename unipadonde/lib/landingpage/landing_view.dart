@@ -89,15 +89,30 @@ class _LandingState extends State<Landing> {
                         //tarjetas con la info del descuento
                         elevation: 8.0,
                         margin: const EdgeInsets.all(8.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ), // Bordes redondeados del Card
                         child: Container(
-                          decoration:
-                              const BoxDecoration(color: Colors.indigoAccent),
+                          decoration: BoxDecoration(
+                              color: Colors.indigoAccent,
+                              borderRadius: BorderRadius.circular(
+                                  15.0)), // Bordes redondeados del fondo),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
-                            leading: CircleAvatar(
-                                backgroundImage:
-                                    AssetImage(discount.buisness_logo)),
+                            leading: Container(
+                              width: 80, // Ajusta el tamaño del cuadrado
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Bordes redondeados del logo
+                                image: DecorationImage(
+                                  image: AssetImage(discount.buisness_logo),
+                                  fit: BoxFit
+                                      .cover, // Ajusta la imagen dentro del cuadrado
+                                ),
+                              ),
+                            ),
                             title: Text(
                                 discount
                                     .name, //nombre propio al descuento que nos trajimos
@@ -110,6 +125,8 @@ class _LandingState extends State<Landing> {
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontStyle: FontStyle.italic)),
+                            trailing: Icon(Icons.more_vert),
+                            // Para un texto largo ->isThreeLine: true,
                           ),
                         ));
                   })),
