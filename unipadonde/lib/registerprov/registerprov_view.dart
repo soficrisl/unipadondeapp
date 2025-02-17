@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-
-class RegisterView extends StatelessWidget {
-  const RegisterView({super.key});
+class RegisterProvView extends StatelessWidget {
+  const RegisterProvView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class RegisterView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                      Text("Registro", style:TextStyle(color:Colors.white, fontSize: 45, fontWeight: FontWeight.w700, fontFamily: 'San Francisco', )),
-                     Text("Bienvenido ESTUDIANTE: ", style:TextStyle(color:Colors.white, fontSize: 17, fontWeight: FontWeight.w400, fontFamily: 'San Francisco',),)
+                     Text("Bienvenido PROVEEDOR: ", style:TextStyle(color:Colors.white, fontSize: 17, fontWeight: FontWeight.w400, fontFamily: 'San Francisco',),)
                   ],
                 )
                 ),
@@ -79,7 +78,7 @@ class RegisterView extends StatelessWidget {
                                   //EMAIL
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      hintText: "Email UNIMET",
+                                      hintText: "Email",
                                       hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
                                       border: InputBorder.none
 
@@ -122,7 +121,7 @@ class RegisterView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                
+
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
@@ -138,6 +137,42 @@ class RegisterView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
+                              Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //RIF
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "RIF del negocio",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+
+                                    ),
+                                  ),
+                                ),
+                                
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //NOMBRE NEGOCIO
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Nombre del negocio",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+
+                                    ),
+                                  ),
+                                ),
+
+
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
@@ -168,46 +203,29 @@ class RegisterView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
                                   ),
 
-                                  
-                                  //NOMBRE UNIVERSIDAD
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      hintText: "Nombre de la Universidad",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-                                    ),
-                                  ),
-                                ),
-                                
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-                                  // CI
-                                  child: TextFormField(
+                                  //CI
+                                  child: TextField(
                                     decoration: InputDecoration(
                                       hintText: "Cédula",
                                       hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
                                       border: InputBorder.none
+
                                     ),
                                   ),
                                 ),
-
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
                                   ),
-                                  
-                                  //SEXO
+
+                                  //SEX
                                   child: DropdownMenu(
                                     hintText: "Sexo",
                                     
@@ -218,14 +236,9 @@ class RegisterView extends StatelessWidget {
                                   ),
                                 ),
 
-                                  
-
-
                               ],
                             )
                           ),
-                          
-                          
                           
                           SizedBox(height: 30,),
 
@@ -242,14 +255,14 @@ class RegisterView extends StatelessWidget {
                             ),
                           ),
 
-                          //Iniciar sesion
+                          //Registrar
                           SizedBox(height: 5,),
                           Text("-------------------------------------------------------------", style: TextStyle(color: Colors.grey),),
                           SizedBox(height: 5,),
-                          Text("¿Ya tienes  una cuenta?", style: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),),
+                          Text("¿Ya tienes una cuenta?", style: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),),
                           SizedBox(height: 10,),
 
-                          // Boton Login 
+                          // Boton Iniciar sesión 
                           Container(
                             height: 50,
                             margin: EdgeInsets.symmetric(horizontal: 50),
@@ -264,8 +277,8 @@ class RegisterView extends StatelessWidget {
 
                           //Proveedor
                           SizedBox(height: 20,),
-                          Text("¿No eres estudiante? Ingresa como", style: TextStyle(color: Colors.grey,fontFamily: 'San Francisco',),),
-                          Text("PROVEEDOR", 
+                          Text("¿No eres proveedor? Ingresa como", style: TextStyle(color: Colors.grey,fontFamily: 'San Francisco',),),
+                          Text("ESTUDIANTE", 
                           style: TextStyle(
                             color: const Color(0xFF8CB1F1), 
                             fontWeight: FontWeight.bold,
