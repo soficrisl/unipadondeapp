@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/login/login_view.dart';
+import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/loginprov/loginprov_view.dart';
 
 class StartView extends StatelessWidget {
@@ -34,7 +34,7 @@ class StartView extends StatelessWidget {
                     // Navega a la pantalla LoginView
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginView()),
+                      MaterialPageRoute(builder: (context) => loginVm()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -46,7 +46,12 @@ class StartView extends StatelessWidget {
                   ),
                   child: Text(
                     'Estudiante',
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'San Francisco',),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'San Francisco',
+                    ),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -68,7 +73,12 @@ class StartView extends StatelessWidget {
                   ),
                   child: Text(
                     'Proveedor',
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'San Francisco',),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'San Francisco',
+                    ),
                   ),
                 ),
               ],
