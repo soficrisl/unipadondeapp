@@ -11,11 +11,24 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  final List<String> categories = ['Food', 'Travel', 'Games'];
+  //lista de categorias
+  final List<String> categories = [
+    'Food',
+    'Travel',
+    'Games',
+    'Electronic',
+    'Fashion',
+    'Music',
+    'Drinks',
+    'Sports',
+    'Animals'
+  ];
+  //categorias seleccionadas
   List<String> selectedCategories = [];
 
   @override
   Widget build(BuildContext context) {
+    //filtrar los descuentos de acuerdo a la categoria seleccionada
     final filterDiscount = listOfDIscounts.where((discount) {
       return selectedCategories.isEmpty ||
           selectedCategories.contains(discount.category);
@@ -23,6 +36,7 @@ class _LandingState extends State<Landing> {
 
     return Scaffold(
       appBar: AppBar(
+        //appBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -61,7 +75,7 @@ class _LandingState extends State<Landing> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFFFAAF90),
+              const Color(0xFFFAAF90), //fondo principal
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
@@ -73,60 +87,64 @@ class _LandingState extends State<Landing> {
           children: [
             // Este container muestra los botones de categorías
             Container(
-              padding: const EdgeInsets.all(8.0),
-              margin: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: categories
-                      .map((category) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            child: FilterChip(
-                              selected: selectedCategories.contains(category),
-                              label: Text(
-                                category,
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'San Francisco',
-                                  color: selectedCategories.contains(category)
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                              onSelected: (selected) {
-                                setState(() {
-                                  if (selected) {
-                                    selectedCategories.add(category);
-                                  } else {
-                                    selectedCategories.remove(category);
-                                  }
-                                });
-                              },
-                              backgroundColor: selectedCategories.contains(category)
-                                  ? Color(0xFF8CB1F1)
-                                  : Color(0xFFB4CBF7),
-                              selectedColor: Color(0xFF8CB1F1),
-                              checkmarkColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              side: BorderSide(
-                                color: selectedCategories.contains(category)
-                                    ? Color(0xFF8CB1F1)
-                                    : Color(0xFF8CB1F1),
-                                width: 2.0,
-                              ),
-                              elevation: 5.0,
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            ),
-                          ))
-                      .toList(),
-                ),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+              height: 60, // Ajusta la altura del carrusel
+
+              child: ListView.builder(
+                scrollDirection:
+                    Axis.horizontal, // Hacemos que se desplace horizontalmente
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                        right: 8.0), // Espaciado entre categorías
+                    child: FilterChip(
+                      selected: selectedCategories.contains(category),
+                      label: Text(
+                        category,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'San Francisco',
+                          color: selectedCategories.contains(category)
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onSelected: (selected) {
+                        setState(() {
+                          if (selected) {
+                            selectedCategories.add(category);
+                          } else {
+                            selectedCategories.remove(category);
+                          }
+                        });
+                      },
+                      backgroundColor: selectedCategories.contains(category)
+                          ? Color(0xFF8CB1F1)
+                          : Color(0xFFB4CBF7),
+                      selectedColor: Color(0xFF8CB1F1),
+                      checkmarkColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      side: BorderSide(
+                        color: selectedCategories.contains(category)
+                            ? Color(0xFF8CB1F1)
+                            : Color(0xFF8CB1F1),
+                        width: 2.0,
+                      ),
+                      elevation: 5.0,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    ),
+                  );
+                },
               ),
             ),
 
-            // Este Expanded maneja la visualización de los descuentos filtrados
+            // Aqui se maneja la visualización de los descuentos filtrados
             Expanded(
               child: ListView.builder(
                 itemCount: filterDiscount.length,
@@ -143,7 +161,8 @@ class _LandingState extends State<Landing> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15.0)),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
                         leading: Container(
                           width: 80,
                           height: 80,
@@ -158,12 +177,16 @@ class _LandingState extends State<Landing> {
                         title: Text(
                           discount.name,
                           style: const TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'San Francisco'),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco'),
                         ),
                         subtitle: Text(
                           discount.description,
                           style: const TextStyle(
-                              color: Colors.black, fontStyle: FontStyle.italic, fontFamily: 'San Francisco'),
+                              color: Colors.black,
+                              fontStyle: FontStyle.italic,
+                              fontFamily: 'San Francisco'),
                         ),
                         // Eliminado el ícono de tres puntos (trailing)
                         onTap: () {
@@ -218,105 +241,114 @@ class _LandingState extends State<Landing> {
 
   // Método para mostrar un pop-up con información del descuento
   Future openDialog(Discount discount) => showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        width: MediaQuery.of(context).size.width * 0.85,
-        padding: const EdgeInsets.all(16),
-        child: Stack(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.6,
+            width: MediaQuery.of(context).size.width * 0.85,
+            padding: const EdgeInsets.all(16),
+            child: Stack(
               children: [
-                // Imagen y nombre del negocio
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage(discount.buisnessLogo),
-                          fit: BoxFit.cover,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.4),
-                            spreadRadius: 3,
-                            blurRadius: 6,
+                    // Imagen y nombre del negocio
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: AssetImage(discount.buisnessLogo),
+                              fit: BoxFit.cover,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(0, 0, 0, 0.4),
+                                spreadRadius: 3,
+                                blurRadius: 6,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Text(
+                            discount.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                                fontFamily: 'San Francisco'),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Text(
-                        discount.name,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            fontSize: 32, fontWeight: FontWeight.w900, color: Colors.black, fontFamily: 'San Francisco'),
+                    const SizedBox(height: 20),
+                    // Descripción del descuento
+                    Text(
+                      discount.description,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'San Francisco',
+                          color: Colors.black),
+                    ),
+                    const SizedBox(height: 10),
+                    // Duración del descuento
+                    Text(
+                      "Duración: ${discount.duration}",
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.redAccent,
+                          fontFamily: 'San Francisco'),
+                    ),
+                    const SizedBox(height: 20),
+                    // Botón "Ir al negocio"
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Color(0xFFfcc9b5), // Color de fondo del botón
+                        foregroundColor: Colors.black, //Color texto en el boton
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        textStyle: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'San Francisco'),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      child: Text("Visitar negocio"),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                // Descripción del descuento
-                Text(
-                  discount.description,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 20, fontFamily: 'San Francisco', color: Colors.black),
-                ),
-                const SizedBox(height: 10),
-                // Duración del descuento
-                Text(
-                  "Duración: ${discount.duration}",
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w900, color: Colors.redAccent, fontFamily: 'San Francisco'),
-                ),
-                const SizedBox(height: 20),
-                // Botón "Ir al negocio"
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Visitar negocio"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFfcc9b5), // Color de fondo del botón
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    textStyle: TextStyle(
-                      fontSize: 20, 
-                      color: Colors.white, // Cambié el color del texto a blanco
-                      fontWeight: FontWeight.w600, 
-                      fontFamily: 'San Francisco'
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                // Botón X para cerrar el diálogo
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
               ],
             ),
-            // Botón X para cerrar el diálogo
-            Positioned(
-              right: 0,
-              top: 0,
-              child: IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }
-
