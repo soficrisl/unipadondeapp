@@ -1,10 +1,18 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SupabaseRepository {
-  final SupabaseClient _supabaseClient = Supabase.instance.client;
+class AuthenticationService {
+  final SupabaseClient _supabase = Supabase.instance.client;
 
-  Future<List<Map<String, dynamic>>> fetchCountries() async {
-    final response = await _supabaseClient.from('table').select('name');
-    return response;
+  //Sing in
+  Future<AuthResponse> signIn(String email, String password) async {
+    return await _supabase.auth
+        .signInWithPassword(email: email, password: password);
+  }
+
+  //Get user email
+  String? getCurrentUserEmail() {
+    final session = _supabase.auth.currentSession;
+    final user = session?.user;
+    return user?.email;
   }
 }
