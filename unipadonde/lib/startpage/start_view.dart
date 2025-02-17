@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/register/register_view.dart';
-import 'package:unipadonde/loginprov/loginprov_view.dart';
-import 'package:unipadonde/login/login_view.dart';
+//import 'package:unipadonde/loginprov/loginprov_view.dart';
+//import 'package:unipadonde/login/login_view.dart';
 import 'package:unipadonde/registerprov/registerprov_view.dart';
 
 class StartView extends StatelessWidget {

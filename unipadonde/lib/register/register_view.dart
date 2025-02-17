@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
 
@@ -120,10 +121,111 @@ class RegisterView extends StatelessWidget {
 
                                     ),
                                   ),
-                                )
+                                ),
+                                
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //CONFIRMAR PASSWORD
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Confirmar contraseña",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //NAME
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Nombre",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //LAST NAME
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Apellido/s",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  
+                                  //NOMBRE UNIVERSIDAD
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      hintText: "Nombre de la Universidad",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  
+                                  //CI
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      hintText: "Cédula",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  
+                                  //SEX
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      hintText: "Sexo",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+
+
                               ],
                             )
                           ),
+                          
+                          
                           
                           SizedBox(height: 30,),
 

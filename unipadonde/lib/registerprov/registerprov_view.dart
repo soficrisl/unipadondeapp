@@ -122,6 +122,22 @@ class RegisterProvView extends StatelessWidget {
                                   ),
                                 ),
 
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //CONFIRMAR PASSWORD
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Confirmar contraseña",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+
                               Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
@@ -131,13 +147,93 @@ class RegisterProvView extends StatelessWidget {
                                   //RIF
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      hintText: "RIF",
+                                      hintText: "RIF del negocio",
                                       hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
                                       border: InputBorder.none
 
                                     ),
                                   ),
-                                )
+                                ),
+                                
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //NOMBRE NEGOCIO
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Nombre del negocio",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+
+                                    ),
+                                  ),
+                                ),
+
+
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //NAME
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Nombre",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //LAST NAME
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Apellido/s",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //CI
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Cédula",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                  ),
+
+                                  //SEX
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      hintText: "Sexo",
+                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
+                                      border: InputBorder.none
+                                    ),
+                                  ),
+                                ),
 
                               ],
                             )
