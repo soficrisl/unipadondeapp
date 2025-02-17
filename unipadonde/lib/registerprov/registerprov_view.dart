@@ -226,12 +226,13 @@ class RegisterProvView extends StatelessWidget {
                                   ),
 
                                   //SEX
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      hintText: "Sexo",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-                                    ),
+                                  child: DropdownMenu(
+                                    hintText: "Sexo",
+                                    
+                                    dropdownMenuEntries: <DropdownMenuEntry<String>> [
+                                      DropdownMenuEntry(value: 'Masculino', label: 'Masculino'),
+                                      DropdownMenuEntry(value: 'Femenino', label: 'Femenino'),
+                                    ],
                                   ),
                                 ),
 

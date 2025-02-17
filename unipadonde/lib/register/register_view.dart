@@ -191,9 +191,7 @@ class RegisterView extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
                                   ),
-
-                                  
-                                  //CI
+                                  // CI
                                   child: TextFormField(
                                     decoration: InputDecoration(
                                       hintText: "Cédula",
@@ -202,23 +200,25 @@ class RegisterView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                
+
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
                                   ),
-
                                   
-                                  //SEX
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      hintText: "Sexo",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-                                    ),
+                                  //SEXO
+                                  child: DropdownMenu(
+                                    hintText: "Sexo",
+                                    
+                                    dropdownMenuEntries: <DropdownMenuEntry<String>> [
+                                      DropdownMenuEntry(value: 'Masculino', label: 'Masculino'),
+                                      DropdownMenuEntry(value: 'Femenino', label: 'Femenino'),
+                                    ],
                                   ),
                                 ),
+
+                                  
 
 
                               ],
