@@ -69,7 +69,7 @@ class _LandingState extends State<Landing> {
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             // Este container muestra los botones de categorías
             Container(
@@ -165,7 +165,7 @@ class _LandingState extends State<Landing> {
                           style: const TextStyle(
                               color: Colors.black, fontStyle: FontStyle.italic, fontFamily: 'San Francisco'),
                         ),
-                        trailing: Icon(Icons.more_vert),
+                        // Eliminado el ícono de tres puntos (trailing)
                         onTap: () {
                           openDialog(discount);
                         },
@@ -175,38 +175,39 @@ class _LandingState extends State<Landing> {
                 },
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        height: 65,
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(69),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                FeatherIcons.home,
-                size: 30,
+            // Este es el bottom bar dentro del container con el degradado
+            Container(
+              height: 65,
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(69),
               ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                FeatherIcons.search,
-                size: 30,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                FeatherIcons.heart,
-                size: 30,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      FeatherIcons.home,
+                      size: 30,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      FeatherIcons.search,
+                      size: 30,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      FeatherIcons.heart,
+                      size: 30,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -318,3 +319,4 @@ class _LandingState extends State<Landing> {
     ),
   );
 }
+
