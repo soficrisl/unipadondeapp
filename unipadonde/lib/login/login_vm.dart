@@ -15,7 +15,7 @@ class loginVm extends StatelessWidget {
             return const Scaffold(
                 body: Center(
                     child: CircularProgressIndicator(
-              backgroundColor: const Color(0xFF8CB1F1),
+              backgroundColor: Color(0xFF8CB1F1),
               color: Colors.white,
             )));
           }
