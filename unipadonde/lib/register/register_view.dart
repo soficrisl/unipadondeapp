@@ -1,9 +1,67 @@
 import 'package:flutter/material.dart';
 
 final _formKey = GlobalKey<FormState>();
+final validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
 
 class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
+
+  // ! VALIDACION EMAIL
+  String? validateEmail(String? email) {
+    RegExp emailRegex = RegExp(r'[\w-\.]+@(correo\.unimet\.edu\.ve)$');
+    final isEmailValid = emailRegex.hasMatch(email ?? '');
+    if (!isEmailValid) {
+      return 'Ingrese un correo correcto';
+    }
+    return null;
+  }
+
+  // ! VALIDACION USERNAME
+  String? validUsername (String? username) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z0-9]+$');
+    final isUserValid = userRegex.hasMatch(username ?? '');
+    if (!isUserValid) {
+      return 'Ingrese un usuario correcto';
+    }
+    return null;
+  }
+  // ! VALIDACION NOMBRE Y APELLIDO
+  String? validName (String? name) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z]+$');
+    final isNameValid = userRegex.hasMatch(name ?? '');
+    if (!isNameValid) {
+      return 'Ingreso inválido';
+    }
+    return null;
+  }
+    // ! VALIDACION CI
+  String? validCI (String? ci) {
+    RegExp userRegex = RegExp(r'^[0-9]+$');
+    final isCIValid = userRegex.hasMatch(ci ?? '');
+    if (!isCIValid) {
+      return 'Ingrese solo los números';
+    }
+    return null;
+  }
+    // ! VALIDACION UNIVERSIDAD
+  String? validUni (String? ci) {
+    RegExp userRegex = RegExp(r'^[0-9]+$');
+    final isUniValid = userRegex.hasMatch(ci ?? '');
+    if (!isUniValid) {
+      return 'Ingreso inválido';
+    }
+    return null;
+  }
+      // ! VALIDACION CONTRASEÑA
+  String? validPassword (String? password) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
+    final isPasswordValid = userRegex.hasMatch(password ?? '');
+    if (!isPasswordValid) {
+      return 'Ingreso inválido';
+    }
+    return null;
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +159,7 @@ class RegisterView extends StatelessWidget {
                                                 ),
                                                 border: InputBorder.none),
                                                 keyboardType: TextInputType.emailAddress,
-                                                // ? validator: (email) => email!.length < 3 ? 'Email muy corto' : null,    
+                                                validator: validateEmail,
                                           ),
                                         ),
 
@@ -123,7 +181,8 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validUsername,
+                                                //validator: (username) => username!.length < 3 ? 'El usuario es muy corto': null,
                                           ),
                                           ),
                                     
@@ -145,7 +204,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validPassword,
                                           ),
                                         ),
                                     
@@ -167,7 +226,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validPassword,
                                           ),
                                         ),
                                     
@@ -189,7 +248,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validName,
                                           ),
                                         ),
                                     
@@ -211,7 +270,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validName,
                                           ),
                                         ),
                                         
@@ -233,7 +292,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validName,
                                           ),
                                         ),
                                     
@@ -255,7 +314,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
+                                                validator: validCI,
                                           ),
                                         ),
 
@@ -281,34 +340,27 @@ class RegisterView extends StatelessWidget {
                                             ],
                                           ),
                                         ),
+                                        
+                                        // ! BOTON REGISTRAR
+                                        const SizedBox(height: 30),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            _formKey.currentState!.validate();
+
+                                          },
+                                          child: const Text('REGÍSTRATE'),
+
+                                        )
                                       ],
                                     ),
-                                  )),
+                                  ),
+                                  ),
 
                               SizedBox(
                                 height: 30,
                               ),
 
-                              // ! BOTON Registrate
-                              Container(
-                                
-                                height: 50,
-                                margin: EdgeInsets.symmetric(horizontal: 50),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: const Color(0xFF8CB1F1),
-                                ),
-                                child: Center(
-                                  child: Text("Regístrate",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontFamily: 'San Francisco',
-                                          fontWeight: FontWeight.bold)),
-                                ),
-                              ),
-
-                              //Iniciar sesion
+                              // ! Iniciar sesion
                               SizedBox(
                                 height: 5,
                               ),
@@ -330,7 +382,7 @@ class RegisterView extends StatelessWidget {
                                 height: 10,
                               ),
 
-                              // Boton Login
+                              // ! Boton Login
                               Container(
                                 height: 50,
                                 margin: EdgeInsets.symmetric(horizontal: 50),
