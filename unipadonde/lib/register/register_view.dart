@@ -1,67 +1,118 @@
 import 'package:flutter/material.dart';
 
+import 'package:unipadonde/login/login_vm.dart';
+import 'package:unipadonde/register/register_vm.dart';
+
+import 'package:unipadonde/registerprov/registerprov_vm.dart';
+import 'package:unipadonde/repository/supabase.dart';
+
 final _formKey = GlobalKey<FormState>();
 final validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
 
-class RegisterView extends StatelessWidget {
+class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
+
+  @override
+  State<RegisterView> createState() => _RegisterViewState();
+}
+
+class _RegisterViewState extends State<RegisterView> {
+  final authService = AuthenticationService();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  //final _usernameController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _lastnameController = TextEditingController();
+  final _ciController = TextEditingController();
+  final _universidadController = TextEditingController();
+  String? selectedSex;
+  bool possible = true;
+
+  void signUp() async {
+    final authService = AuthenticationService();
+    final createuser = UserDataBase();
+
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    //final username = _usernameController;
+    final name = _nameController.text;
+    final lastname = _lastnameController.text;
+    final ci = int.parse(_ciController.text);
+    final universidad = _universidadController.text;
+    String sex = "F";
+    if (selectedSex == "Masculino") {
+      sex = "M";
+    } else {
+      sex = "F";
+    }
+    final usertype = "S";
+    try {
+      await authService.signUp(email, password);
+      await createuser.createUser(
+          email, password, ci, name, lastname, sex, usertype, universidad);
+      Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    }
+  }
 
   // ! VALIDACION EMAIL
   String? validateEmail(String? email) {
     RegExp emailRegex = RegExp(r'[\w-\.]+@(correo\.unimet\.edu\.ve)$');
     final isEmailValid = emailRegex.hasMatch(email ?? '');
     if (!isEmailValid) {
+      possible = false;
       return 'Ingrese un correo correcto';
     }
     return null;
   }
 
   // ! VALIDACION USERNAME
-  String? validUsername (String? username) {
+  String? validUsername(String? username) {
     RegExp userRegex = RegExp(r'^[a-zA-Z0-9]+$');
     final isUserValid = userRegex.hasMatch(username ?? '');
     if (!isUserValid) {
+      possible = false;
       return 'Ingrese un usuario correcto';
     }
     return null;
   }
+
   // ! VALIDACION NOMBRE Y APELLIDO
-  String? validName (String? name) {
+  String? validName(String? name) {
     RegExp userRegex = RegExp(r'^[a-zA-Z]+$');
     final isNameValid = userRegex.hasMatch(name ?? '');
     if (!isNameValid) {
+      possible = false;
       return 'Ingreso inválido';
     }
     return null;
   }
-    // ! VALIDACION CI
-  String? validCI (String? ci) {
+
+  // ! VALIDACION CI
+  String? validCI(String? ci) {
     RegExp userRegex = RegExp(r'^[0-9]+$');
     final isCIValid = userRegex.hasMatch(ci ?? '');
     if (!isCIValid) {
+      possible = false;
       return 'Ingrese solo los números';
     }
     return null;
   }
-    // ! VALIDACION UNIVERSIDAD
-  String? validUni (String? ci) {
-    RegExp userRegex = RegExp(r'^[0-9]+$');
-    final isUniValid = userRegex.hasMatch(ci ?? '');
-    if (!isUniValid) {
-      return 'Ingreso inválido';
-    }
-    return null;
-  }
-      // ! VALIDACION CONTRASEÑA
-  String? validPassword (String? password) {
+
+  // ! VALIDACION CONTRASEÑA
+  String? validPassword(String? password) {
     RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
     final isPasswordValid = userRegex.hasMatch(password ?? '');
     if (!isPasswordValid) {
+      possible = false;
       return 'Ingreso inválido';
     }
     return null;
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -119,207 +170,189 @@ class RegisterView extends StatelessWidget {
                           child: Column(
                             children: [
                               SizedBox(height: 60),
-                              
+
                               // * CAJA FORM
                               Container(
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Color.fromARGB(
-                                                58, 118, 110, 106),
-                                            blurRadius: 20,
-                                            offset: Offset(0, 10))
-                                      ]),
-                                  
-                                  
-                                  child: Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      children: [
-                                    
-                                        // !EMAIL
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Email",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                keyboardType: TextInputType.emailAddress,
-                                                validator: validateEmail,
-                                          ),
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color:
+                                              Color.fromARGB(58, 118, 110, 106),
+                                          blurRadius: 20,
+                                          offset: Offset(0, 10))
+                                    ]),
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    children: [
+                                      // !EMAIL
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
+                                        child: TextFormField(
+                                          controller: _emailController,
+                                          decoration: InputDecoration(
+                                              hintText: "Email",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          validator: validateEmail,
+                                        ),
+                                      ),
 
-                                      // ! USERNAME
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre de usuario",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validUsername,
-                                                //validator: (username) => username!.length < 3 ? 'El usuario es muy corto': null,
-                                          ),
-                                          ),
-                                    
-                                        // ! CONTRASEÑA 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Contraseña",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validPassword,
-                                          ),
+                                      // ! CONTRASEÑA
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-                                    
-                                        // ! CONFIRMAR CONTRASEÑA 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Confirmar contraseña",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validPassword,
-                                          ),
+                                        child: TextFormField(
+                                          controller: _passwordController,
+                                          decoration: InputDecoration(
+                                              hintText: "Contraseña",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validPassword,
                                         ),
-                                    
-                                        // ! NOMBRE 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                    
-                                        // ! APELLIDO 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Apellido",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                        
-                                        // ! NOMBRE UNIVERSIDAD
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre de la Universidad",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                    
-                                        // ! CI 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Cédula",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validCI,
-                                          ),
-                                        ),
+                                      ),
 
-                                        // ! SEXO
-                                        Container(
+                                      // ! CONFIRMAR CONTRASEÑA
+                                      /*Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          decoration: InputDecoration(
+                                              hintText: "Confirmar contraseña",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validPassword,
+                                        ),
+                                      ),
+*/
+                                      // ! NOMBRE
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _nameController,
+                                          decoration: InputDecoration(
+                                              hintText: "Nombre",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validName,
+                                        ),
+                                      ),
+
+                                      // ! APELLIDO
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _lastnameController,
+                                          decoration: InputDecoration(
+                                              hintText: "Apellido",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validName,
+                                        ),
+                                      ),
+
+                                      // ! NOMBRE UNIVERSIDAD
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _universidadController,
+                                          decoration: InputDecoration(
+                                              hintText:
+                                                  "Nombre de la Universidad",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validName,
+                                        ),
+                                      ),
+
+                                      // ! CI
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _ciController,
+                                          decoration: InputDecoration(
+                                              hintText: "Cédula",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validCI,
+                                        ),
+                                      ),
+
+                                      // ! SEXO
+                                      Container(
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                             border: Border(
@@ -327,37 +360,60 @@ class RegisterView extends StatelessWidget {
                                                     color: const Color.fromARGB(
                                                         200, 158, 158, 158))),
                                           ),
-                                          child: DropdownMenu(
-                                            hintText: "Sexo",
-                                            dropdownMenuEntries: <DropdownMenuEntry<
-                                                String>>[
-                                              DropdownMenuEntry(
-                                                  value: 'Masculino',
-                                                  label: 'Masculino'),
-                                              DropdownMenuEntry(
-                                                  value: 'Femenino',
-                                                  label: 'Femenino'),
-                                            ],
-                                          ),
-                                        ),
-                                        
-                                        // ! BOTON REGISTRAR
-                                        const SizedBox(height: 30),
-                                        ElevatedButton(
+                                          child: DropdownButton(
+                                              value: selectedSex,
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  selectedSex = newValue!;
+                                                });
+                                              },
+                                              style: TextStyle(
+                                                  color: const Color.fromARGB(
+                                                      200, 158, 158, 158)),
+                                              items: <String>[
+                                                'Masculino',
+                                                'Femenino'
+                                              ].map<DropdownMenuItem<String>>(
+                                                  (String value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(value),
+                                                );
+                                              }).toList())),
+
+                                      // ! BOTON REGISTRAR
+                                      const SizedBox(height: 30),
+                                      ElevatedButton(
                                           onPressed: () {
+                                            possible = true;
                                             _formKey.currentState!.validate();
-
+                                            if (possible) {
+                                              signUp();
+                                            }
                                           },
-                                          child: const Text('REGÍSTRATE'),
-
-                                        )
-                                      ],
-                                    ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                                0xFF8CB1F1), // Background color
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            minimumSize: Size(double.infinity,
+                                                50), // Set height and width
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    30), // Horizontal padding
+                                          ),
+                                          child: Text("REGISTRARSE",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontFamily: 'San Francisco',
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                    ],
                                   ),
-                                  ),
-
-                              SizedBox(
-                                height: 30,
+                                ),
                               ),
 
                               // ! Iniciar sesion
@@ -383,22 +439,30 @@ class RegisterView extends StatelessWidget {
                               ),
 
                               // ! Boton Login
-                              Container(
-                                height: 50,
-                                margin: EdgeInsets.symmetric(horizontal: 50),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Color(0xFFFAAF90),
-                                ),
-                                child: Center(
-                                  child: Text("Iniciar sesión",
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => loginVm()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(
+                                        0xFFFAAF90), // Background color
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    minimumSize: Size(double.infinity,
+                                        50), // Set height and width
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 30), // Horizontal padding
+                                  ),
+                                  child: Text("Inicia Sesión",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontFamily: 'San Francisco',
-                                          fontWeight: FontWeight.bold)),
-                                ),
-                              ),
+                                          fontWeight: FontWeight.bold))),
 
                               //Proveedor
                               SizedBox(
@@ -411,14 +475,20 @@ class RegisterView extends StatelessWidget {
                                   fontFamily: 'San Francisco',
                                 ),
                               ),
-                              Text(
-                                "PROVEEDOR",
-                                style: TextStyle(
-                                  color: const Color(0xFF8CB1F1),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
+                              GestureDetector(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegisterProvVM())),
+                                  child: Text(
+                                    "PROVEEDOR",
+                                    style: TextStyle(
+                                      color: const Color(0xFF8CB1F1),
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'San Francisco',
+                                    ),
+                                  )),
                               SizedBox(
                                 height: 20,
                               ),

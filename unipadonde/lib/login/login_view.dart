@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/loginprov/loginprov_mv.dart';
+import 'package:unipadonde/register/register_vm.dart';
 //import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
-import 'package:unipadonde/register/register_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -20,6 +22,7 @@ class _LoginState extends State<LoginView> {
 
   //Login function
   void login() async {
+    // Esto deberia estar en el view model
     final email = _emailController.text;
     final password = _passwordController.text;
 
@@ -37,10 +40,18 @@ class _LoginState extends State<LoginView> {
     //Attempt to login
     try {
       await authService.signIn(email, password);
-    } catch (e) {
-      if (mounted) {
+    } catch (error) {
+      if ((error as AuthException).code == "invalid_credentials") {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    "Verifique que el correo y la contraseña sean correctos. Si si lo están, por favor registrese, el correo no es reconocido.")),
+          );
+        }
+      } else if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+            .showSnackBar(SnackBar(content: Text("Error: $error")));
       }
     }
   }
@@ -133,7 +144,6 @@ class _LoginState extends State<LoginView> {
                                         fontFamily: 'San Francisco',
                                       ),
                                       border: InputBorder.none),
-                                  controller: _emailController,
                                 ),
                               ),
                               Container(
@@ -155,7 +165,6 @@ class _LoginState extends State<LoginView> {
                                         fontFamily: 'San Francisco',
                                       ),
                                       border: InputBorder.none),
-                                  controller: _passwordController,
                                 ),
                               )
                             ],
@@ -233,7 +242,7 @@ class _LoginState extends State<LoginView> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RegisterView()));
+                                    builder: (context) => RegisterVM()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -257,6 +266,7 @@ class _LoginState extends State<LoginView> {
                       SizedBox(
                         height: 20,
                       ),
+
                       Text(
                         "No eres estudiante? Ingresa como",
                         style: TextStyle(
@@ -264,14 +274,19 @@ class _LoginState extends State<LoginView> {
                           fontFamily: 'San Francisco',
                         ),
                       ),
-                      Text(
-                        "PROVEEDOR",
-                        style: TextStyle(
-                          color: const Color(0xFF8CB1F1),
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'San Francisco',
-                        ),
-                      ),
+                      GestureDetector(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const loginVmProv())),
+                          child: Text(
+                            "PROVEEDOR",
+                            style: TextStyle(
+                              color: const Color(0xFF8CB1F1),
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco',
+                            ),
+                          )),
                       SizedBox(
                         height: 20,
                       ),
