@@ -149,7 +149,7 @@ class _LoginState extends State<LoginView> {
                                 child: TextField(
                                   controller: _passwordController,
                                   decoration: const InputDecoration(
-                                      hintText: "contraseña",
+                                      hintText: "Contraseña",
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                         fontFamily: 'San Francisco',
@@ -166,14 +166,14 @@ class _LoginState extends State<LoginView> {
                         height: 30,
                       ),
                       Text(
-                        "Olvidaste tu contraseña?",
+                        "¿Olvidaste tu contraseña?",
                         style: TextStyle(
                           color: Colors.grey,
                           fontFamily: 'San Francisco',
                         ),
                       ),
                       Text(
-                        "RECUPERALA",
+                        "RECUPÉRALA",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 117, 117, 117),
                           fontWeight: FontWeight.bold,
@@ -217,7 +217,7 @@ class _LoginState extends State<LoginView> {
                         height: 5,
                       ),
                       Text(
-                        "No tienes cuenta?",
+                        "¿No tienes cuenta?",
                         style: TextStyle(
                           color: Colors.grey,
                           fontFamily: 'San Francisco',
