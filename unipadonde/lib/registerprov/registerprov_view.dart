@@ -68,250 +68,226 @@ class RegisterProvView extends StatelessWidget {
                               ]
                             ),
 
-                            child: Column(
-                              children: [
-                                
-                                // !EMAIL
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  
+                                  // !EMAIL
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Email",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                          // ? validator: (email) => email!.length < 3 ? 'Email muy corto' : null,    
+                                    ),
                                   ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Email",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                        // ? validator: (email) => email!.length < 3 ? 'Email muy corto' : null,    
+                              
+                                  // ! USERNAME
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Nombre de usuario",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
+                              
+                                  // ! CONTRASEÑA 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Contraseña",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
-                                ),
-
-                                // ! USERNAME
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
+                              
+                                  // ! CONFIRMAR CONTRASEÑA 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Confirmar contraseña",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Nombre de usuario",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
+                              
+                                  // ! RIF 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "RIF",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
+                                  
+                                  // ! NOMBRE NEGOCIO 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Nombre del negocio",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
-                                ),
-
-                                // ! CONTRASEÑA 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
+                              
+                                  // ! NOMBRE 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Nombre",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Contraseña",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
+                              
+                                  // ! APELLIDO 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Apellido",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
+                              
+                                  // ! CI 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Cédula",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                    ),
                                   ),
-                                ),
-
-                                // ! CONFIRMAR CONTRASEÑA 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
+                              
+                                  // ! SEXO
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                    ),
+                                    child: DropdownMenu(
+                                      hintText: "Sexo",                                    
+                                      dropdownMenuEntries: <DropdownMenuEntry<String>> [
+                                        DropdownMenuEntry(value: 'Masculino', label: 'Masculino'),
+                                        DropdownMenuEntry(value: 'Femenino', label: 'Femenino'),
+                                      ],
+                                    ),
                                   ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Confirmar contraseña",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  ),
-                                ),
-
-                                // ! RIF 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
-                                  ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "RIF",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  ),
-                                ),
-                                
-                                // ! NOMBRE NEGOCIO 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
-                                  ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Nombre del negocio",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  ),
-                                ),
-
-                                // ! NOMBRE 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
-                                  ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Nombre",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  ),
-                                ),
-
-                                // ! APELLIDO 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
-                                  ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Apellido",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  ),
-                                ),
-
-                                // ! CI 
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                      color: const Color.fromARGB(
-                                          200, 158, 158, 158),
-                                    )),
-                                  ),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                    decoration: InputDecoration(
-                                        hintText: "Cédula",
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'San Francisco',
-                                        ),
-                                        border: InputBorder.none),
-                                        keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  ),
-                                ),
-
-                                // ! SEXO
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-                                  child: DropdownMenu(
-                                    hintText: "Sexo",                                    
-                                    dropdownMenuEntries: <DropdownMenuEntry<String>> [
-                                      DropdownMenuEntry(value: 'Masculino', label: 'Masculino'),
-                                      DropdownMenuEntry(value: 'Femenino', label: 'Femenino'),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             )
                           ),
                           
