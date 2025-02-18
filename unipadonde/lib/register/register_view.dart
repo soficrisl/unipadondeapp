@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+final _formKey = GlobalKey<FormState>();
+
 class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
 
@@ -59,7 +61,8 @@ class RegisterView extends StatelessWidget {
                           child: Column(
                             children: [
                               SizedBox(height: 60),
-                              // ! cajita form
+                              
+                              // * CAJA FORM
                               Container(
                                   padding: EdgeInsets.all(20),
                                   decoration: BoxDecoration(
@@ -72,8 +75,11 @@ class RegisterView extends StatelessWidget {
                                             blurRadius: 20,
                                             offset: Offset(0, 10))
                                       ]),
+                                  
                                   child: Column(
                                     children: [
+
+                                      // !EMAIL
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
@@ -83,29 +89,35 @@ class RegisterView extends StatelessWidget {
                                                 200, 158, 158, 158),
                                           )),
                                         ),
-
-                                        //EMAIL
-                                        child: TextField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
-                                              hintText: "Email ",
+                                              hintText: "Email",
                                               hintStyle: TextStyle(
                                                 color: Colors.grey,
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                              // ? validator: (email) => email!.length < 3 ? 'Email muy corto' : null,    
+                                        ),
                                         ),
                                       ),
+                                      
+                                    // ! USERNAME
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        //USUARIO
-                                        child: TextField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: "Nombre de usuario",
                                               hintStyle: TextStyle(
@@ -113,19 +125,24 @@ class RegisterView extends StatelessWidget {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+
+                                      // ! CONTRASEÑA 
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        //PASSWORD
-                                        child: TextField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: "Contraseña",
                                               hintStyle: TextStyle(
@@ -133,19 +150,24 @@ class RegisterView extends StatelessWidget {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+
+                                      // ! CONFIRMAR CONTRASEÑA 
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        //CONFIRMAR PASSWORD
-                                        child: TextField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: "Confirmar contraseña",
                                               hintStyle: TextStyle(
@@ -153,19 +175,24 @@ class RegisterView extends StatelessWidget {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+
+                                      // ! NOMBRE 
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        //NAME
-                                        child: TextField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: "Nombre",
                                               hintStyle: TextStyle(
@@ -173,59 +200,74 @@ class RegisterView extends StatelessWidget {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+
+                                      // ! APELLIDO 
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        //LAST NAME
-                                        child: TextField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
-                                              hintText: "Apellido/s",
+                                              hintText: "Apellido",
                                               hintStyle: TextStyle(
                                                 color: Colors.grey,
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+                                      
+                                      // ! NOMBRE UNIVERSIDAD
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        //NOMBRE UNIVERSIDAD
-                                        child: TextFormField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
-                                              hintText:
-                                                  "Nombre de la Universidad",
+                                              hintText: "Nombre de la Universidad",
                                               hintStyle: TextStyle(
                                                 color: Colors.grey,
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+
+                                      // ! CI 
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158))),
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-                                        // CI
-                                        child: TextFormField(
+                                        child: Form(
+                                          key: _formKey,
+                                          child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: "Cédula",
                                               hintStyle: TextStyle(
@@ -233,8 +275,12 @@ class RegisterView extends StatelessWidget {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+                                              keyboardType: TextInputType.emailAddress,
+                                        ),
                                         ),
                                       ),
+
+                                      // ! SEXO
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
@@ -243,8 +289,6 @@ class RegisterView extends StatelessWidget {
                                                   color: const Color.fromARGB(
                                                       200, 158, 158, 158))),
                                         ),
-
-                                        //SEXO
                                         child: DropdownMenu(
                                           hintText: "Sexo",
                                           dropdownMenuEntries: <DropdownMenuEntry<
@@ -265,8 +309,9 @@ class RegisterView extends StatelessWidget {
                                 height: 30,
                               ),
 
-                              //boton Registrate
+                              // ! BOTON Registrate
                               Container(
+                                
                                 height: 50,
                                 margin: EdgeInsets.symmetric(horizontal: 50),
                                 decoration: BoxDecoration(

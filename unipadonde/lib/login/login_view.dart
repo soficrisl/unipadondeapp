@@ -136,7 +136,7 @@ class _LoginState extends State<LoginView> {
                                 //PASSWORD
                                 child: TextField(
                                   decoration: const InputDecoration(
-                                      hintText: "contraseña",
+                                      hintText: "Contraseña",
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                         fontFamily: 'San Francisco',
@@ -153,14 +153,14 @@ class _LoginState extends State<LoginView> {
                         height: 30,
                       ),
                       Text(
-                        "Olvidaste tu contraseña?",
+                        "¿Olvidaste tu contraseña?",
                         style: TextStyle(
                           color: Colors.grey,
                           fontFamily: 'San Francisco',
                         ),
                       ),
                       Text(
-                        "RECUPERALA",
+                        "RECUPÉRALA",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 117, 117, 117),
                           fontWeight: FontWeight.bold,
@@ -190,7 +190,7 @@ class _LoginState extends State<LoginView> {
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontFamily: 'San Francisco',
-                                  fontWeight: FontWeight.bold)))
+                                  fontWeight: FontWeight.bold))),
 
 /*
                       Container(
@@ -215,7 +215,6 @@ class _LoginState extends State<LoginView> {
                       ),
 */
                       //Registrar
-                      ,
                       SizedBox(
                         height: 5,
                       ),
@@ -227,7 +226,7 @@ class _LoginState extends State<LoginView> {
                         height: 5,
                       ),
                       Text(
-                        "No tienes cuenta?",
+                        "¿No tienes cuenta?",
                         style: TextStyle(
                           color: Colors.grey,
                           fontFamily: 'San Francisco',
