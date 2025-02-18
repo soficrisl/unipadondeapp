@@ -85,14 +85,10 @@ class _LandingState extends State<Landing> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          Container(
-              margin: const EdgeInsets.only(right: 12),
-              width: 40,
-              height: 40,
-              decoration:
-                  BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-              child: Image.asset("assets/images/profile.png",
-                  fit: BoxFit.contain)),
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () {},
+          ),
           IconButton(
               onPressed: logout,
               icon: const Icon(Icons.logout, color: Colors.black)),
@@ -270,6 +266,7 @@ class _LandingState extends State<Landing> {
   }
 
   // Método para mostrar un pop-up con información del descuento
+
   Future openDialog(Discount discount) => showDialog(
         context: context,
         builder: (context) => Dialog(
@@ -278,117 +275,89 @@ class _LandingState extends State<Landing> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Stack(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize:
-                      MainAxisSize.min, //ajusra la altura al contenido
-                  children: [
-                    // Botón X para cerrar el diálogo
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: IconButton(
-                        icon: Icon(Icons.close, color: Colors.black),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                    // Imagen y nombre del negocio
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //LOGO
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              discount.businessLogo,
-                              fit: BoxFit
-                                  .contain, // Ajusta la imagen dentro del círculo
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        //NOMBRE
-                        Expanded(
-                          child: Text(
-                            discount.name,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 25, //32
-                                fontWeight: FontWeight.w900,
-                                color: Colors.black,
-                                fontFamily: 'San Francisco'),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 30), //20
-
-                    // Descripción del descuento
-                    Text(
-                      discount.description,
-                      textAlign: TextAlign.justify,
-                      style: const TextStyle(
-                          fontSize: 16, //20
-                          fontFamily: 'San Francisco',
-                          color: Colors.black),
-                    ),
-
-                    const SizedBox(height: 10), //10
-
-                    // Duración del descuento
-                    Text(
-                      "Duración: ${discount.duration}",
-                      //textAlign: TextAlign.right,
-                      style: const TextStyle(
-                          fontSize: 16, //20
-                          fontWeight: FontWeight.bold, //w900
-                          color: Colors.redAccent,
-                          fontFamily: 'San Francisco'),
-                    ),
-
-                    //espaciado antes del boton
-                    const SizedBox(height: 30), //20
-
-                    // Botón "Ir al negocio"
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Color(0xFFfcc9b5), // Color de fondo del botón
-                        foregroundColor: Colors.black, //Color texto en el boton
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 12), //30, 15
-                        textStyle: TextStyle(
-                            fontSize: 16, //20
-                            fontWeight: FontWeight.bold, //w600
-                            fontFamily: 'San Francisco'),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text("Visitar negocio"),
-                    ),
-                  ],
-                ),
                 // Botón X para cerrar el diálogo
-                /*Positioned(
-              right: 0,
-              top: 0,
-              child: IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),*/
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.grey),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                // Imagen  del negocio
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      discount.businessLogo,
+                      fit:
+                          BoxFit.contain, // Ajusta la imagen dentro del círculo
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                //Titulo / Nombre de descuento
+                Text(
+                  discount.name,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 20),
+                //Descripcion del descuento
+                Text(
+                  discount.description,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+
+                const SizedBox(height: 10),
+                //duracion descuento
+                Text(
+                  "Duración: ${discount.duration}",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+                //boton negocio
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Color(0xFFfcc9b5), // Color de fondo del botón
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text("Visitar negocio"),
+                ),
               ],
             ),
           ),
