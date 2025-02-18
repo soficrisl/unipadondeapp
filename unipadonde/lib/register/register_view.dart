@@ -44,9 +44,9 @@ class RegisterView extends StatelessWidget {
     return null;
   }
     // ! VALIDACION UNIVERSIDAD
-  String? validUni (String? ci) {
-    RegExp userRegex = RegExp(r'^[0-9]+$');
-    final isUniValid = userRegex.hasMatch(ci ?? '');
+  String? validUni (String? uni) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z ]+$');
+    final isUniValid = userRegex.hasMatch(uni ?? '');
     if (!isUniValid) {
       return 'Ingreso inválido';
     }
@@ -292,7 +292,7 @@ class RegisterView extends StatelessWidget {
                                                   fontFamily: 'San Francisco',
                                                 ),
                                                 border: InputBorder.none),
-                                                validator: validName,
+                                                validator: validUni,
                                           ),
                                         ),
                                     

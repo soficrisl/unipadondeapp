@@ -7,7 +7,7 @@ class RegisterProvView extends StatelessWidget {
 
   // ! VALIDACION EMAIL
   String? validEmail(String? email) {
-    RegExp emailRegex = RegExp(r'[\w-\.]+@(correo\.unimet\.edu\.ve)$');
+    RegExp emailRegex = RegExp(r'[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     final isEmailValid = emailRegex.hasMatch(email ?? '');
     if (!isEmailValid) {
       return 'Ingrese un correo correcto';
@@ -44,7 +44,7 @@ class RegisterProvView extends StatelessWidget {
   }
     // ! VALIDACION NEGOCIO
   String? validBusiness (String? business) {
-    RegExp userRegex = RegExp(r'^[0-9]+$');
+    RegExp userRegex = RegExp(r'^[a-zA-Z0-9 ]+$');
     final isUniValid = userRegex.hasMatch(business ?? '');
     if (!isUniValid) {
       return 'Ingreso inválido';
