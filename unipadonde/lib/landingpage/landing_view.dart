@@ -43,6 +43,14 @@ class _LandingState extends State<Landing> {
   //categorias seleccionadas
   List<int> selectedCategories = [];
 
+  // Función de logout
+  void logout() async {
+    await Supabase.instance.client.auth.signOut();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/login'); // Redirige a login
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //filtrar los descuentos de acuerdo a la categoria seleccionada
@@ -82,9 +90,12 @@ class _LandingState extends State<Landing> {
               width: 40,
               height: 40,
               decoration:
-                  BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
-              child:
-                  Image.asset("assets/images/profile.png", fit: BoxFit.contain))
+                  BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+              child: Image.asset("assets/images/profile.png",
+                  fit: BoxFit.contain)),
+          IconButton(
+              onPressed: logout,
+              icon: const Icon(Icons.logout, color: Colors.black)),
         ],
       ),
       body: Container(
@@ -139,17 +150,17 @@ class _LandingState extends State<Landing> {
                         });
                       },
                       backgroundColor: selectedCategories.contains(idcategory)
-                          ? Color(0xFF8CB1F1)
-                          : Color(0xFFB4CBF7),
-                      selectedColor: Color(0xFF8CB1F1),
+                          ? Color(0xFFFAAF90)
+                          : Color(0xFFFFFFFF),
+                      selectedColor: Color(0xFFFAAF90),
                       checkmarkColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       side: BorderSide(
                         color: selectedCategories.contains(idcategory)
-                            ? Color(0xFF8CB1F1)
-                            : Color(0xFF8CB1F1),
+                            ? Color(0xFFFAAF90)
+                            : Color(0xFFFAAF90),
                         width: 2.0,
                       ),
                       elevation: 5.0,
