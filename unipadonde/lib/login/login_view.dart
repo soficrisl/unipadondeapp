@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
 
 class LoginView extends StatefulWidget {

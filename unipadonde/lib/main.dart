@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/repository/supabase.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
-import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
 const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
@@ -83,9 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
-      /*
-      home: const StartView(),
-        */
     );
   }
 }*/

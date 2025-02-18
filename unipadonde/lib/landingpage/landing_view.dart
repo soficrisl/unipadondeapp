@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:unipadonde/landingpage/landing_model.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:unipadonde/landingpage/landin_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Landing extends StatefulWidget {
   const Landing({super.key});
@@ -12,26 +12,43 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   //lista de categorias
-  final List<String> categories = [
-    'Food',
-    'Travel',
-    'Games',
-    'Electronic',
-    'Fashion',
-    'Music',
-    'Drinks',
-    'Sports',
-    'Animals'
-  ];
+  List<List<dynamic>> categories = [];
+  List<Discount> listofdiscounts = [];
+
+  void getcat() async {
+    /// Esto deberia estar en el VM
+    final dataService = DataService(Supabase.instance.client);
+    await dataService.fetchCategorias();
+    setState(() {
+      categories = dataService.getCategorias() ?? [];
+    });
+  }
+
+  void getdis() async {
+    // Esto deberia estar en el VM
+    final dataService = DataService(Supabase.instance.client);
+    await dataService.fetchDiscounts();
+    setState(() {
+      listofdiscounts = dataService.getDescuentos() ?? [];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getcat();
+    getdis();
+  }
+
   //categorias seleccionadas
-  List<String> selectedCategories = [];
+  List<int> selectedCategories = [];
 
   @override
   Widget build(BuildContext context) {
     //filtrar los descuentos de acuerdo a la categoria seleccionada
-    final filterDiscount = listOfDIscounts.where((discount) {
+    final filterDiscount = listofdiscounts.where((discount) {
       return selectedCategories.isEmpty ||
-          selectedCategories.contains(discount.category);
+          selectedCategories.contains(discount.idcategory);
     }).toList();
 
     return Scaffold(
@@ -89,25 +106,25 @@ class _LandingState extends State<Landing> {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               height: 60, // Ajusta la altura del carrusel
-
               child: ListView.builder(
                 scrollDirection:
                     Axis.horizontal, // Hacemos que se desplace horizontalmente
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
-                  final category = categories[index];
+                  final category = categories[index][1];
+                  final idcategory = categories[index][0];
                   return Padding(
                     padding: const EdgeInsets.only(
                         right: 8.0), // Espaciado entre categorías
                     child: FilterChip(
-                      selected: selectedCategories.contains(category),
+                      selected: selectedCategories.contains(idcategory),
                       label: Text(
                         category,
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'San Francisco',
-                          color: selectedCategories.contains(category)
+                          color: selectedCategories.contains(idcategory)
                               ? Colors.white
                               : Colors.black,
                         ),
@@ -115,13 +132,13 @@ class _LandingState extends State<Landing> {
                       onSelected: (selected) {
                         setState(() {
                           if (selected) {
-                            selectedCategories.add(category);
+                            selectedCategories.add(idcategory);
                           } else {
-                            selectedCategories.remove(category);
+                            selectedCategories.remove(idcategory);
                           }
                         });
                       },
-                      backgroundColor: selectedCategories.contains(category)
+                      backgroundColor: selectedCategories.contains(idcategory)
                           ? Color(0xFF8CB1F1)
                           : Color(0xFFB4CBF7),
                       selectedColor: Color(0xFF8CB1F1),
@@ -130,7 +147,7 @@ class _LandingState extends State<Landing> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       side: BorderSide(
-                        color: selectedCategories.contains(category)
+                        color: selectedCategories.contains(idcategory)
                             ? Color(0xFF8CB1F1)
                             : Color(0xFF8CB1F1),
                         width: 2.0,
@@ -169,7 +186,7 @@ class _LandingState extends State<Landing> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             image: DecorationImage(
-                              image: AssetImage(discount.buisnessLogo),
+                              image: AssetImage(discount.businessLogo),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -198,6 +215,7 @@ class _LandingState extends State<Landing> {
                 },
               ),
             ),
+
             // Este es el bottom bar dentro del container con el degradado
             Container(
               height: 65,
@@ -266,7 +284,7 @@ class _LandingState extends State<Landing> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage(discount.buisnessLogo),
+                              image: AssetImage(discount.businessLogo),
                               fit: BoxFit.cover,
                             ),
                             boxShadow: [
