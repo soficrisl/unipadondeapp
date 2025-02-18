@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/login/login_vm.dart';
+//import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
 
 class LoginView extends StatefulWidget {
@@ -22,24 +22,31 @@ class _LoginState extends State<LoginView> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    //Attemp to login
+    // Validación: Asegúrate de que los campos no estén vacíos
+    if (email.isEmpty || password.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Por favor, ingresa tu correo y contraseña.")),
+        );
+      }
+      return;
+    }
+
+    //Attempt to login
     try {
       await authService.signIn(email, password);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      //Background
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Container(
+    return Scaffold( // Asegúrate de que solo tienes un Scaffold en tu widget
+      body: SingleChildScrollView(  // Permite el desplazamiento cuando el teclado aparece
+        child: Container(
           padding: EdgeInsets.symmetric(vertical: 30),
           width: double.infinity,
           decoration: BoxDecoration(
@@ -75,8 +82,7 @@ class _LoginState extends State<LoginView> {
                     ],
                   )),
               SizedBox(height: 20),
-              Expanded(
-                  child: Container(
+              Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -114,6 +120,7 @@ class _LoginState extends State<LoginView> {
 
                                 //EMAIL
                                 child: TextField(
+                                  controller: _emailController,
                                   decoration: const InputDecoration(
                                       hintText: "Email .unimet",
                                       hintStyle: TextStyle(
@@ -134,6 +141,7 @@ class _LoginState extends State<LoginView> {
 
                                 //PASSWORD
                                 child: TextField(
+                                  controller: _passwordController,
                                   decoration: const InputDecoration(
                                       hintText: "contraseña",
                                       hintStyle: TextStyle(
@@ -188,32 +196,9 @@ class _LoginState extends State<LoginView> {
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontFamily: 'San Francisco',
-                                  fontWeight: FontWeight.bold)))
+                                  fontWeight: FontWeight.bold))),
 
-/*
-                      Container(
-                        height: 50,
-                        margin: EdgeInsets.symmetric(horizontal: 50),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: const Color(0xFF8CB1F1),
-                        ),
-                        child: Center(
-                          child: ElevatedButton(
-                              onPressed: login,
-                              style: ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll<Color> (Color(0xFF8CB1F1)),
-                              child: Text("Login",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontFamily: 'San Francisco',
-                                      fontWeight: FontWeight.bold))),
-                        ),
-                      ),
-*/
-                      //Registrar
-                      ,
+                      // Registrar
                       SizedBox(
                         height: 5,
                       ),
@@ -253,7 +238,7 @@ class _LoginState extends State<LoginView> {
                         ),
                       ),
 
-                      //Proveedor
+                      // Proveedor
                       SizedBox(
                         height: 20,
                       ),
@@ -278,7 +263,7 @@ class _LoginState extends State<LoginView> {
                     ],
                   ),
                 ),
-              ))
+              ),
             ],
           ),
         ),
@@ -286,4 +271,3 @@ class _LoginState extends State<LoginView> {
     );
   }
 }
-// FADEANIMATION¿?
