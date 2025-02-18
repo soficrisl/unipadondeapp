@@ -179,8 +179,9 @@ class _LandingState extends State<Landing> {
                 itemBuilder: (context, index) {
                   final discount = filterDiscount[index];
                   return Card(
-                    elevation: 8.0,
-                    margin: const EdgeInsets.all(8.0),
+                    elevation: 4.0,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
@@ -190,7 +191,7 @@ class _LandingState extends State<Landing> {
                           borderRadius: BorderRadius.circular(15.0)),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
+                            horizontal: 10, vertical: 5),
                         leading: Container(
                           width: 80,
                           height: 80,
@@ -198,7 +199,7 @@ class _LandingState extends State<Landing> {
                             borderRadius: BorderRadius.circular(50),
                             image: DecorationImage(
                               image: AssetImage(discount.businessLogo),
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
@@ -275,45 +276,51 @@ class _LandingState extends State<Landing> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.6,
-            width: MediaQuery.of(context).size.width * 0.85,
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: Stack(
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize:
+                      MainAxisSize.min, //ajusra la altura al contenido
                   children: [
+                    // Botón X para cerrar el diálogo
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        icon: Icon(Icons.close, color: Colors.black),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
                     // Imagen y nombre del negocio
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        //LOGO
                         Container(
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage(discount.businessLogo),
-                              fit: BoxFit.cover,
+                            color: Colors.white,
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              discount.businessLogo,
+                              fit: BoxFit
+                                  .contain, // Ajusta la imagen dentro del círculo
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.fromRGBO(0, 0, 0, 0.4),
-                                spreadRadius: 3,
-                                blurRadius: 6,
-                              ),
-                            ],
                           ),
                         ),
-                        const SizedBox(width: 15),
+                        const SizedBox(width: 10),
+                        //NOMBRE
                         Expanded(
                           child: Text(
                             discount.name,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                                fontSize: 32,
+                                fontSize: 25, //32
                                 fontWeight: FontWeight.w900,
                                 color: Colors.black,
                                 fontFamily: 'San Francisco'),
@@ -321,28 +328,35 @@ class _LandingState extends State<Landing> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+
+                    const SizedBox(height: 30), //20
+
                     // Descripción del descuento
                     Text(
                       discount.description,
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.justify,
                       style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 16, //20
                           fontFamily: 'San Francisco',
                           color: Colors.black),
                     ),
-                    const SizedBox(height: 10),
+
+                    const SizedBox(height: 10), //10
+
                     // Duración del descuento
                     Text(
                       "Duración: ${discount.duration}",
-                      textAlign: TextAlign.right,
+                      //textAlign: TextAlign.right,
                       style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
+                          fontSize: 16, //20
+                          fontWeight: FontWeight.bold, //w900
                           color: Colors.redAccent,
                           fontFamily: 'San Francisco'),
                     ),
-                    const SizedBox(height: 20),
+
+                    //espaciado antes del boton
+                    const SizedBox(height: 30), //20
+
                     // Botón "Ir al negocio"
                     ElevatedButton(
                       onPressed: () {
@@ -352,11 +366,11 @@ class _LandingState extends State<Landing> {
                         backgroundColor:
                             Color(0xFFfcc9b5), // Color de fondo del botón
                         foregroundColor: Colors.black, //Color texto en el boton
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 12), //30, 15
                         textStyle: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 16, //20
+                            fontWeight: FontWeight.bold, //w600
                             fontFamily: 'San Francisco'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -367,14 +381,14 @@ class _LandingState extends State<Landing> {
                   ],
                 ),
                 // Botón X para cerrar el diálogo
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ),
+                /*Positioned(
+              right: 0,
+              top: 0,
+              child: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),*/
               ],
             ),
           ),
