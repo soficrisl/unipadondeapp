@@ -10,7 +10,6 @@ final _formKey = GlobalKey<FormState>();
 final validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
 
 class RegisterView extends StatefulWidget {
-
   const RegisterView({super.key});
 
   @override
@@ -104,8 +103,8 @@ class _RegisterViewState extends State<RegisterView> {
     return null;
   }
 
-    // ! VALIDACION UNIVERSIDAD
-  String? validUni (String? uni) {
+  // ! VALIDACION UNIVERSIDAD
+  String? validUni(String? uni) {
     RegExp userRegex = RegExp(r'^[a-zA-Z ]+$');
     final isUniValid = userRegex.hasMatch(uni ?? '');
     if (!isUniValid) {
@@ -113,9 +112,6 @@ class _RegisterViewState extends State<RegisterView> {
     }
     return null;
   }
-      // ! VALIDACION CONTRASEÑA
-  String? validPassword (String? password) {
-
 
   // ! VALIDACION CONTRASEÑA
   String? validPassword(String? password) {
@@ -185,7 +181,6 @@ class _RegisterViewState extends State<RegisterView> {
                             children: [
                               SizedBox(height: 60),
 
-
                               // * CAJA FORM
                               Container(
                                 padding: EdgeInsets.all(20),
@@ -217,44 +212,11 @@ class _RegisterViewState extends State<RegisterView> {
                                           controller: _emailController,
                                           decoration: InputDecoration(
                                               hintText: "Email",
-
-
-                              // ! cajita form
-                              Container(
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Color.fromARGB(
-                                                58, 118, 110, 106),
-                                            blurRadius: 20,
-                                            offset: Offset(0, 10))
-                                      ]),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                            color: const Color.fromARGB(
-                                                200, 158, 158, 158),
-                                          )),
-                                        ),
-
-                                        //EMAIL
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                              hintText: "Email UNIMET",
-
                                               hintStyle: TextStyle(
                                                 color: Colors.grey,
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-
                                           keyboardType:
                                               TextInputType.emailAddress,
                                           validator: validateEmail,
@@ -271,148 +233,41 @@ class _RegisterViewState extends State<RegisterView> {
                                                 200, 158, 158, 158),
                                           )),
                                         ),
-
-                                    
-                                        // ! CONFIRMAR CONTRASEÑA 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Confirmar contraseña",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validPassword,
-                                          ),
-                                        ),
-                                    
-                                        // ! NOMBRE 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                    
-                                        // ! APELLIDO 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Apellido",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                        
-                                        // ! NOMBRE UNIVERSIDAD
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre de la Universidad",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validUni,
-                                          ),
-                                        ),
-                                    
-                                        // ! CI 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Cédula",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validCI,
-                                          ),
-
-                                        child: TextFormField(
-                                          controller: _passwordController,
-                                          decoration: InputDecoration(
-                                              hintText: "Contraseña",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey,
-                                                fontFamily: 'San Francisco',
-                                              ),
-                                              border: InputBorder.none),
-
-                                          validator: validPassword,
-
-                                        ),
                                       ),
 
-
-
-                                      // ! NOMBRE
-
+                                      // ! CONFIRMAR CONTRASEÑA
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-
                                             color: const Color.fromARGB(
                                                 200, 158, 158, 158),
                                           )),
                                         ),
                                         child: TextFormField(
-                                          controller: _nameController,
+                                          decoration: InputDecoration(
+                                              hintText: "Confirmar contraseña",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validPassword,
+                                        ),
+                                      ),
+
+                                      // ! NOMBRE
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
                                           decoration: InputDecoration(
                                               hintText: "Nombre",
                                               hintStyle: TextStyle(
@@ -435,7 +290,6 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
-                                          controller: _lastnameController,
                                           decoration: InputDecoration(
                                               hintText: "Apellido",
                                               hintStyle: TextStyle(
@@ -458,7 +312,6 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
-                                          controller: _universidadController,
                                           decoration: InputDecoration(
                                               hintText:
                                                   "Nombre de la Universidad",
@@ -467,8 +320,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-
-                                          validator: validName,
+                                          validator: validUni,
                                         ),
                                       ),
 
@@ -483,7 +335,6 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
-                                          controller: _ciController,
                                           decoration: InputDecoration(
                                               hintText: "Cédula",
                                               hintStyle: TextStyle(
@@ -491,7 +342,6 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-
                                           validator: validCI,
                                         ),
                                       ),
@@ -607,7 +457,6 @@ class _RegisterViewState extends State<RegisterView> {
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontFamily: 'San Francisco',
-
                                           fontWeight: FontWeight.bold))),
 
                               //Proveedor
@@ -616,8 +465,6 @@ class _RegisterViewState extends State<RegisterView> {
                               ),
                               Text(
                                 "¿No eres estudiante? Ingresa como",
-
- 
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontFamily: 'San Francisco',
