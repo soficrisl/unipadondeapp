@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
+
 import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';

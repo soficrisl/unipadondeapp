@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/repository/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/loginprov/loginprov_mv.dart';
+import 'package:unipadonde/register/register_vm.dart';
+//import 'package:unipadonde/login/login_vm.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -18,27 +21,47 @@ class _LoginState extends State<LoginView> {
 
   //Login function
   void login() async {
+    // Esto deberia estar en el view model
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    //Attemp to login
+    // Validación: Asegúrate de que los campos no estén vacíos
+    if (email.isEmpty || password.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Por favor, ingresa tu correo y contraseña.")),
+        );
+      }
+      return;
+    }
+
+    //Attempt to login
     try {
       await authService.signIn(email, password);
-    } catch (e) {
-      if (mounted) {
+    } catch (error) {
+      if ((error as AuthException).code == "invalid_credentials") {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    "Verifique que el correo y la contraseña sean correctos. Si si lo están, por favor registrese, el correo no es reconocido.")),
+          );
+        }
+      } else if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+            .showSnackBar(SnackBar(content: Text("Error: $error")));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      //Background
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Container(
+    return Scaffold(
+      // Asegúrate de que solo tienes un Scaffold en tu widget
+      body: SingleChildScrollView(
+        // Permite el desplazamiento cuando el teclado aparece
+        child: Container(
           padding: EdgeInsets.symmetric(vertical: 30),
           width: double.infinity,
           decoration: BoxDecoration(
@@ -74,8 +97,7 @@ class _LoginState extends State<LoginView> {
                     ],
                   )),
               SizedBox(height: 20),
-              Expanded(
-                  child: Container(
+              Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -113,6 +135,7 @@ class _LoginState extends State<LoginView> {
 
                                 //EMAIL
                                 child: TextField(
+                                  controller: _emailController,
                                   decoration: const InputDecoration(
                                       hintText: "Email .unimet",
                                       hintStyle: TextStyle(
@@ -133,8 +156,9 @@ class _LoginState extends State<LoginView> {
 
                                 //PASSWORD
                                 child: TextField(
+                                  controller: _passwordController,
                                   decoration: const InputDecoration(
-                                      hintText: "contraseña",
+                                      hintText: "Contraseña",
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                         fontFamily: 'San Francisco',
@@ -150,14 +174,14 @@ class _LoginState extends State<LoginView> {
                         height: 30,
                       ),
                       Text(
-                        "Olvidaste tu contraseña?",
+                        "¿Olvidaste tu contraseña?",
                         style: TextStyle(
                           color: Colors.grey,
                           fontFamily: 'San Francisco',
                         ),
                       ),
                       Text(
-                        "RECUPERALA",
+                        "RECUPÉRALA",
                         style: TextStyle(
                           color: const Color.fromARGB(255, 117, 117, 117),
                           fontWeight: FontWeight.bold,
@@ -187,32 +211,9 @@ class _LoginState extends State<LoginView> {
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontFamily: 'San Francisco',
-                                  fontWeight: FontWeight.bold)))
+                                  fontWeight: FontWeight.bold))),
 
-/*
-                      Container(
-                        height: 50,
-                        margin: EdgeInsets.symmetric(horizontal: 50),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: const Color(0xFF8CB1F1),
-                        ),
-                        child: Center(
-                          child: ElevatedButton(
-                              onPressed: login,
-                              style: ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll<Color> (Color(0xFF8CB1F1)),
-                              child: Text("Login",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontFamily: 'San Francisco',
-                                      fontWeight: FontWeight.bold))),
-                        ),
-                      ),
-*/
-                      //Registrar
-                      ,
+                      // Registrar
                       SizedBox(
                         height: 5,
                       ),
@@ -224,7 +225,7 @@ class _LoginState extends State<LoginView> {
                         height: 5,
                       ),
                       Text(
-                        "No tienes cuenta?",
+                        "¿No tienes cuenta?",
                         style: TextStyle(
                           color: Colors.grey,
                           fontFamily: 'San Francisco',
@@ -235,27 +236,36 @@ class _LoginState extends State<LoginView> {
                       ),
 
                       // Boton Registrar
-                      Container(
-                        height: 50,
-                        margin: EdgeInsets.symmetric(horizontal: 50),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Color(0xFFFAAF90),
-                        ),
-                        child: Center(
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterVM()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color(0xFFFAAF90), // Background color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            minimumSize: Size(
+                                double.infinity, 50), // Set height and width
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30), // Horizontal padding
+                          ),
                           child: Text("Registrate",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontFamily: 'San Francisco',
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
+                                  fontWeight: FontWeight.bold))),
 
-                      //Proveedor
+                      // Proveedor
                       SizedBox(
                         height: 20,
                       ),
+
                       Text(
                         "No eres estudiante? Ingresa como",
                         style: TextStyle(
@@ -263,21 +273,26 @@ class _LoginState extends State<LoginView> {
                           fontFamily: 'San Francisco',
                         ),
                       ),
-                      Text(
-                        "PROVEEDOR",
-                        style: TextStyle(
-                          color: const Color(0xFF8CB1F1),
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'San Francisco',
-                        ),
-                      ),
+                      GestureDetector(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const loginVmProv())),
+                          child: Text(
+                            "PROVEEDOR",
+                            style: TextStyle(
+                              color: const Color(0xFF8CB1F1),
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco',
+                            ),
+                          )),
                       SizedBox(
                         height: 20,
                       ),
                     ],
                   ),
                 ),
-              ))
+              ),
             ],
           ),
         ),
@@ -285,4 +300,3 @@ class _LoginState extends State<LoginView> {
     );
   }
 }
-// FADEANIMATION¿?

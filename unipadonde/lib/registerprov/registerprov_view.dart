@@ -1,7 +1,65 @@
 import 'package:flutter/material.dart';
 
+final _formKey = GlobalKey<FormState>();
+
 class RegisterProvView extends StatelessWidget {
   const RegisterProvView({super.key});
+
+  // ! VALIDACION EMAIL
+  String? validEmail(String? email) {
+    RegExp emailRegex = RegExp(r'[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final isEmailValid = emailRegex.hasMatch(email ?? '');
+    if (!isEmailValid) {
+      return 'Ingrese un correo correcto';
+    }
+    return null;
+  }
+
+  // ! VALIDACION USERNAME
+  String? validUsername (String? username) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z0-9]+$');
+    final isUserValid = userRegex.hasMatch(username ?? '');
+    if (!isUserValid) {
+      return 'Ingrese un usuario correcto';
+    }
+    return null;
+  }
+  // ! VALIDACION NOMBRE Y APELLIDO
+  String? validName (String? name) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z]+$');
+    final isNameValid = userRegex.hasMatch(name ?? '');
+    if (!isNameValid) {
+      return 'Ingreso inválido';
+    }
+    return null;
+  }
+    // ! VALIDACION RIF
+  String? validRIF (String? rif) {
+    RegExp userRegex = RegExp(r'^[0-9]+$');
+    final isRIFValid = userRegex.hasMatch(rif ?? '');
+    if (!isRIFValid) {
+      return 'Ingrese solo los números';
+    }
+    return null;
+  }
+    // ! VALIDACION NEGOCIO
+  String? validBusiness (String? business) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z0-9 ]+$');
+    final isUniValid = userRegex.hasMatch(business ?? '');
+    if (!isUniValid) {
+      return 'Ingreso inválido';
+    }
+    return null;
+  }
+      // ! VALIDACION CONTRASEÑA
+  String? validPassword (String? password) {
+    RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
+    final isPasswordValid = userRegex.hasMatch(password ?? '');
+    if (!isPasswordValid) {
+      return 'Ingreso inválido';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +109,7 @@ class RegisterProvView extends StatelessWidget {
                         children: [
                           SizedBox(height: 60),
 
-                          // ! cajita form
+                          // * CAJA FORM
                           Container(
                             padding: EdgeInsets.all(20),
                             decoration: BoxDecoration(
@@ -66,177 +124,237 @@ class RegisterProvView extends StatelessWidget {
                               ]
                             ),
 
-                            child: Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158),)),
-                                  ),
-
-
-                                  //EMAIL
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Email",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  
+                                  // !EMAIL
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Email",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          keyboardType: TextInputType.emailAddress,
+                                          validator: validEmail,
                                     ),
                                   ),
-                                ),
-                                
-
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //USUARIO
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Nombre de usuario",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-
+                              
+                                  // ! USERNAME
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Nombre de usuario",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validUsername,
                                     ),
                                   ),
-                                ),
-                                
-
-                                 Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //PASSWORD
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Contraseña",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-
+                              
+                                  // ! CONTRASEÑA 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Contraseña",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validPassword,
                                     ),
                                   ),
-                                ),
-
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //CONFIRMAR PASSWORD
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Confirmar contraseña",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
+                              
+                                  // ! CONFIRMAR CONTRASEÑA 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Confirmar contraseña",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validPassword,
                                     ),
                                   ),
-                                ),
-
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //RIF
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "RIF del negocio",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-
+                              
+                                  // ! RIF 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "RIF",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validRIF,
                                     ),
                                   ),
-                                ),
-                                
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //NOMBRE NEGOCIO
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Nombre del negocio",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-
+                                  
+                                  // ! NOMBRE NEGOCIO 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Nombre del negocio",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validBusiness,
                                     ),
                                   ),
-                                ),
-
-
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //NAME
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Nombre",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
+                              
+                                  // ! NOMBRE 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Nombre",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validName,
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //LAST NAME
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Apellido/s",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
+                              
+                                  // ! APELLIDO 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Apellido",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validName,
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
-                                  ),
-
-                                  //CI
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Cédula",
-                                      hintStyle: TextStyle(color: Colors.grey, fontFamily: 'San Francisco',),
-                                      border: InputBorder.none
-
+                              
+                                  // ! CI 
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            200, 158, 158, 158),
+                                      )),
+                                    ),
+                                      child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Cédula",
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'San Francisco',
+                                          ),
+                                          border: InputBorder.none),
+                                          validator: validRIF,
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                              
+                                  // ! SEXO
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(bottom: BorderSide(color: const Color.fromARGB(200, 158, 158, 158))),
+                                    ),
+                                    child: DropdownMenu(
+                                      hintText: "Sexo",                                    
+                                      dropdownMenuEntries: <DropdownMenuEntry<String>> [
+                                        DropdownMenuEntry(value: 'Masculino', label: 'Masculino'),
+                                        DropdownMenuEntry(value: 'Femenino', label: 'Femenino'),
+                                      ],
+                                    ),
                                   ),
+                                  
+                                  // ! BOTON REGISTRAR
+                                  const SizedBox(height: 30),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _formKey.currentState!.validate();
 
-                                  //SEX
-                                  child: DropdownMenu(
-                                    hintText: "Sexo",
-                                    
-                                    dropdownMenuEntries: <DropdownMenuEntry<String>> [
-                                      DropdownMenuEntry(value: 'Masculino', label: 'Masculino'),
-                                      DropdownMenuEntry(value: 'Femenino', label: 'Femenino'),
-                                    ],
-                                  ),
-                                ),
+                                    },
+                                    child: const Text('REGÍSTRATE'),
 
-                              ],
+                                  )
+                                ],
+                              ),
                             )
                           ),
                           
