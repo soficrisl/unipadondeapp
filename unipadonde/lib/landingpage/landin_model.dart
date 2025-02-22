@@ -2,33 +2,27 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataService {
   final SupabaseClient client;
-  List<List<dynamic>>? categoriasSuscritas;
+  List<List<dynamic>>? categorias;
   List<Discount> listofdiscounts = [];
 
   DataService(this.client);
 
-  Future<void> fetchCategoriasSuscritas(String userId) async {
+  Future<void> fetchCategorias() async {
     try {
-      final data =
-          await client.from('suscribe').select().eq('id_usuario', userId);
+      final data = await client.from('categoria').select();
       final List<dynamic> initiallist = data;
 
-      List<List<dynamic>> tempCategories = [];
-      for (var item in initiallist) {
-        final idCategoria = item['id_categoria'];
-        final categoryData =
-            await client.from('categoria').select().eq('id', idCategoria);
-        final categoria = Categoria.fromMap(categoryData[0]);
-        tempCategories.add([categoria.id, categoria.name]);
-      }
-      categoriasSuscritas = tempCategories;
+      categorias = initiallist.map((item) {
+        final categoria = Categoria.fromMap((item));
+        return [categoria.id, categoria.name];
+      }).toList();
     } catch (e) {
       throw Exception('Error fetching categories');
     }
   }
 
-  List<List<dynamic>>? getCategoriasSuscritas() {
-    return categoriasSuscritas;
+  List<List<dynamic>>? getCategorias() {
+    return categorias;
   }
 
   Future<void> fetchDiscounts() async {
@@ -148,3 +142,36 @@ class Negocio {
     required this.mail,
   });
 }
+
+//Listamos los descuentos
+final List<Discount> listOfDIscounts = [
+  /*
+  Discount(
+    name: "Food Kart",
+    category: "Games",
+    description: "Ven a jugar GoKarts en 2x1",
+    buisnessLogo: "assets/images/fk.png",
+    duration: "2 dias",
+  ),
+  Discount(
+    name: "Laser",
+    category: "Travel",
+    description: "20% descuento en pasajes Ccs-Miami",
+    buisnessLogo: "assets/images/laser.png",
+    duration: "1 dias",
+  ),
+  Discount(
+    name: "Mykonos",
+    category: "Food",
+    description: "Por la compra de 3 helados uno gratis",
+    buisnessLogo: "assets/images/mykonis.jpg",
+    duration: "2 dias",
+  ),
+  Discount(
+    name: "Plan B",
+    category: "Food",
+    description: "Cheeseburger clasica por tan solo 2 dolares",
+    buisnessLogo: "assets/images/planb.png",
+    duration: "2 dias",
+  ) */
+];

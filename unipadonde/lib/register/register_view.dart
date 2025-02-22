@@ -10,6 +10,7 @@ final _formKey = GlobalKey<FormState>();
 final validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
 
 class RegisterView extends StatefulWidget {
+
   const RegisterView({super.key});
 
   @override
@@ -102,7 +103,7 @@ class _RegisterViewState extends State<RegisterView> {
     }
     return null;
   }
-<<<<<<< HEAD
+
     // ! VALIDACION UNIVERSIDAD
   String? validUni (String? uni) {
     RegExp userRegex = RegExp(r'^[a-zA-Z ]+$');
@@ -114,11 +115,10 @@ class _RegisterViewState extends State<RegisterView> {
   }
       // ! VALIDACION CONTRASEÑA
   String? validPassword (String? password) {
-=======
+
 
   // ! VALIDACION CONTRASEÑA
   String? validPassword(String? password) {
->>>>>>> 27fe45c8b011170bccbca0447d263af0b91ff3c8
     RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
     final isPasswordValid = userRegex.hasMatch(password ?? '');
     if (!isPasswordValid) {
@@ -185,6 +185,7 @@ class _RegisterViewState extends State<RegisterView> {
                             children: [
                               SizedBox(height: 60),
 
+
                               // * CAJA FORM
                               Container(
                                 padding: EdgeInsets.all(20),
@@ -216,11 +217,44 @@ class _RegisterViewState extends State<RegisterView> {
                                           controller: _emailController,
                                           decoration: InputDecoration(
                                               hintText: "Email",
+
+
+                              // ! cajita form
+                              Container(
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Color.fromARGB(
+                                                58, 118, 110, 106),
+                                            blurRadius: 20,
+                                            offset: Offset(0, 10))
+                                      ]),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+
+                                        //EMAIL
+                                        child: TextField(
+                                          decoration: InputDecoration(
+                                              hintText: "Email UNIMET",
+
                                               hintStyle: TextStyle(
                                                 color: Colors.grey,
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+
                                           keyboardType:
                                               TextInputType.emailAddress,
                                           validator: validateEmail,
@@ -237,7 +271,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 200, 158, 158, 158),
                                           )),
                                         ),
-<<<<<<< HEAD
+
                                     
                                         // ! CONFIRMAR CONTRASEÑA 
                                         Container(
@@ -347,7 +381,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 border: InputBorder.none),
                                                 validator: validCI,
                                           ),
-=======
+
                                         child: TextFormField(
                                           controller: _passwordController,
                                           decoration: InputDecoration(
@@ -357,39 +391,22 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+
                                           validator: validPassword,
->>>>>>> 27fe45c8b011170bccbca0447d263af0b91ff3c8
+
                                         ),
                                       ),
 
-                                      // ! CONFIRMAR CONTRASEÑA
-                                      /*Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                            color: const Color.fromARGB(
-                                                200, 158, 158, 158),
-                                          )),
-                                        ),
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                              hintText: "Confirmar contraseña",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey,
-                                                fontFamily: 'San Francisco',
-                                              ),
-                                              border: InputBorder.none),
-                                          validator: validPassword,
-                                        ),
-                                      ),
-*/
+
+
                                       // ! NOMBRE
+
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
+
                                             color: const Color.fromARGB(
                                                 200, 158, 158, 158),
                                           )),
@@ -450,6 +467,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+
                                           validator: validName,
                                         ),
                                       ),
@@ -473,6 +491,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
+
                                           validator: validCI,
                                         ),
                                       ),
@@ -588,6 +607,7 @@ class _RegisterViewState extends State<RegisterView> {
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontFamily: 'San Francisco',
+
                                           fontWeight: FontWeight.bold))),
 
                               //Proveedor
@@ -596,11 +616,14 @@ class _RegisterViewState extends State<RegisterView> {
                               ),
                               Text(
                                 "¿No eres estudiante? Ingresa como",
+
+ 
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontFamily: 'San Francisco',
                                 ),
                               ),
+
                               GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,

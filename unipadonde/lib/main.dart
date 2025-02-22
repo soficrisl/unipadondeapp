@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/favoritespage/favspage_view.dart';
+import 'package:unipadonde/landingpage/landing_view.dart';
+
 import 'package:unipadonde/startpage/start_view.dart';
+
+const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
+const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +24,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Discount App',
       debugShowCheckedModeBanner: false,
+      initialRoute: '/start', // Ruta inicial
+      routes: {
+        '/landing': (context) => Landing(),
+        '/start': (context) => StartView()
+
+        //'/login': (context) => LoginProvView(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/favorites') {
+          final userId = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => Favspage(userId: userId),
+          );
+        }
+        return null; // Default case
+      },
       home: const StartView(),
     );
   }
