@@ -236,7 +236,9 @@ class _LandingState extends State<Landing> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/landing');
+                    },
                     icon: const Icon(
                       FeatherIcons.home,
                       size: 30,
@@ -250,7 +252,12 @@ class _LandingState extends State<Landing> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/favorites',
+                      ); //arguments: userID
+                    },
                     icon: const Icon(
                       FeatherIcons.heart,
                       size: 30,
@@ -323,7 +330,7 @@ class _LandingState extends State<Landing> {
                     fontSize: 16,
                     color: Colors.black54,
                   ),
-                  textAlign: TextAlign.justify,
+                  textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 10),

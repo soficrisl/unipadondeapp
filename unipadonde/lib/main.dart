@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
 const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
@@ -23,64 +25,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
-      home: const Landing(),
-    );
-  }
-}
-/*
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+      initialRoute: '/start', // Ruta inicial
+      routes: {
+        '/landing': (context) => Landing(),
+        '/start': (context) => StartView()
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final SupabaseRepository _repository = SupabaseRepository();
-  late Future<List<Map<String, dynamic>>> _countriesfuture;
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the _countriesfuture variable here
-    _countriesfuture = _repository.fetchCountries();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff3D405B),
-        elevation: 10,
-        shadowColor: Colors.black,
-        title: const Center(
-          child: Text(
-            'countries',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-      body: FutureBuilder(
-        future: _countriesfuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.data!.isEmpty) {
-            return const Center(child: Text('no data'));
-          }
-          final countries = snapshot.data!;
-          return ListView.builder(
-            itemCount: countries.length,
-            itemBuilder: (context, index) {
-              final country = countries[index];
-              return Text(country['country']);
-            },
+        //'/login': (context) => LoginProvView(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/favorites') {
+          final userId = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => Favspage(userId: userId),
           );
-        },
-      ),
+        }
+        return null; // Default case
+      },
+      home: const StartView(),
     );
   }
-}*/
+}
