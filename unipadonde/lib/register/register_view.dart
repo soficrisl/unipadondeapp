@@ -157,6 +157,29 @@ class _RegisterViewState extends State<RegisterView> {
                   )),
               SizedBox(height: 20),
               Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Registro",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 45,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'San Francisco',
+                      )),
+                  Text(
+                    "Bienvenido ESTUDIANTE: ",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'San Francisco',
+                    ),
+                  )
+                ],
+              )),
+              SizedBox(height: 20),
+              Expanded(
                   child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -170,7 +193,6 @@ class _RegisterViewState extends State<RegisterView> {
                           child: Column(
                             children: [
                               SizedBox(height: 60),
-
                               // * CAJA FORM
                               Container(
                                 padding: EdgeInsets.all(20),

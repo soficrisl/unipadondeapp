@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/loginprov/loginprov_view.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
 
@@ -21,7 +22,7 @@ class loginVmProv extends StatelessWidget {
           }
           final session = snapshot.hasData ? snapshot.data!.session : null;
           if (session != null) {
-            return const ProfilePage();
+            return const Landing();
           } else {
             return const LoginProvView();
           }
