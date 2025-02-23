@@ -102,23 +102,9 @@ class _RegisterViewState extends State<RegisterView> {
     }
     return null;
   }
-<<<<<<< HEAD
-    // ! VALIDACION UNIVERSIDAD
-  String? validUni (String? uni) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z ]+$');
-    final isUniValid = userRegex.hasMatch(uni ?? '');
-    if (!isUniValid) {
-      return 'Ingreso inválido';
-    }
-    return null;
-  }
-      // ! VALIDACION CONTRASEÑA
-  String? validPassword (String? password) {
-=======
 
   // ! VALIDACION CONTRASEÑA
   String? validPassword(String? password) {
->>>>>>> 27fe45c8b011170bccbca0447d263af0b91ff3c8
     RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
     final isPasswordValid = userRegex.hasMatch(password ?? '');
     if (!isPasswordValid) {
@@ -237,117 +223,6 @@ class _RegisterViewState extends State<RegisterView> {
                                                 200, 158, 158, 158),
                                           )),
                                         ),
-<<<<<<< HEAD
-                                    
-                                        // ! CONFIRMAR CONTRASEÑA 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Confirmar contraseña",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validPassword,
-                                          ),
-                                        ),
-                                    
-                                        // ! NOMBRE 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                    
-                                        // ! APELLIDO 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Apellido",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validName,
-                                          ),
-                                        ),
-                                        
-                                        // ! NOMBRE UNIVERSIDAD
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre de la Universidad",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validUni,
-                                          ),
-                                        ),
-                                    
-                                        // ! CI 
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                            child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Cédula",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                                validator: validCI,
-                                          ),
-=======
                                         child: TextFormField(
                                           controller: _passwordController,
                                           decoration: InputDecoration(
@@ -358,7 +233,6 @@ class _RegisterViewState extends State<RegisterView> {
                                               ),
                                               border: InputBorder.none),
                                           validator: validPassword,
->>>>>>> 27fe45c8b011170bccbca0447d263af0b91ff3c8
                                         ),
                                       ),
 
