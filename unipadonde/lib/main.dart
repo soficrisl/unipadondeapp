@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/favoritespage/favspage_view.dart';
+import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/login/login_vm.dart';
+import 'package:unipadonde/profilepage/profile_view.dart';
+import 'package:unipadonde/searchbar/search_view.dart';
+
 import 'package:unipadonde/startpage/start_view.dart';
+
+const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
+const supabaseKey = String.fromEnvironment('SUPABASE_KEY');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,64 +29,42 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
+      initialRoute: '/start', // Ruta inicial
+      //rutas pasando el userId a las vistas
+      onGenerateRoute: (settings) {
+        final userId = settings.arguments as int?;
+        if (userId == null) {
+          return MaterialPageRoute(
+            builder: (context) => const loginVm(),
+          );
+        }
+
+        switch (settings.name) {
+          case '/landing':
+            return MaterialPageRoute(
+              builder: (context) => Landing(userId: userId),
+            );
+
+          case '/search':
+            return MaterialPageRoute(
+              builder: (context) => Search(userId: userId),
+            );
+
+          case '/favorites':
+            return MaterialPageRoute(
+              builder: (context) => Favspage(userId: userId),
+            );
+          case '/profile':
+            return MaterialPageRoute(
+              builder: (context) => ProfilePage(userId: userId),
+            );
+          default:
+            return MaterialPageRoute(
+              builder: (context) => StartView(),
+            );
+        }
+      },
       home: const StartView(),
     );
   }
 }
-/*
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final SupabaseRepository _repository = SupabaseRepository();
-  late Future<List<Map<String, dynamic>>> _countriesfuture;
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the _countriesfuture variable here
-    _countriesfuture = _repository.fetchCountries();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff3D405B),
-        elevation: 10,
-        shadowColor: Colors.black,
-        title: const Center(
-          child: Text(
-            'countries',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-      body: FutureBuilder(
-        future: _countriesfuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.data!.isEmpty) {
-            return const Center(child: Text('no data'));
-          }
-          final countries = snapshot.data!;
-          return ListView.builder(
-            itemCount: countries.length,
-            itemBuilder: (context, index) {
-              final country = countries[index];
-              return Text(country['country']);
-            },
-          );
-        },
-      ),
-    );
-  }
-}*/

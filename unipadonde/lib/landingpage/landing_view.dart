@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:unipadonde/landingpage/landin_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/widgets/bottom_bar.dart';
 
 class Landing extends StatefulWidget {
-  const Landing({super.key});
+  final int userId;
+  const Landing({
+    super.key,
+    required this.userId,
+  });
 
   @override
   State<Landing> createState() => _LandingState();
@@ -42,6 +46,33 @@ class _LandingState extends State<Landing> {
 
   //categorias seleccionadas
   List<int> selectedCategories = [];
+
+  int _selectedIndex = 0;
+
+  void _navigateToPage(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/landing',
+            arguments: widget.userId);
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/favorites',
+            arguments: widget.userId);
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/profile',
+            arguments: widget.userId);
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, '/search',
+            arguments: widget.userId);
+        break;
+    }
+  }
 
   // Función de logout
   void logout() async {
@@ -86,8 +117,13 @@ class _LandingState extends State<Landing> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {},
+            icon: Icon(Icons.search_rounded),
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 3;
+              });
+              _navigateToPage(3);
+            },
           ),
           IconButton(
               onPressed: logout,
@@ -223,44 +259,18 @@ class _LandingState extends State<Landing> {
                 },
               ),
             ),
-
-            // Este es el bottom bar dentro del container con el degradado
-            Container(
-              height: 65,
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(69),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      FeatherIcons.home,
-                      size: 30,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      FeatherIcons.search,
-                      size: 30,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      FeatherIcons.heart,
-                      size: 30,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
+      ),
+      // Este es el bottom bar dentro del container con el degradado
+      bottomNavigationBar: CustomBottomBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          _navigateToPage(index);
+        },
       ),
     );
   }
@@ -323,7 +333,7 @@ class _LandingState extends State<Landing> {
                     fontSize: 16,
                     color: Colors.black54,
                   ),
-                  textAlign: TextAlign.justify,
+                  textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 10),
