@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/loginprov/loginprov_mv.dart';
+import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/register/register_vm.dart';
 //import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
@@ -15,19 +18,20 @@ class LoginView extends StatefulWidget {
 class _LoginState extends State<LoginView> {
   //Servicio de autentificacion
   final authService = AuthenticationService();
-
   //Text Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final loginVm _viewModel = loginVm(); // Instanciamos el view model
+
   //Login function
   void login() async {
-    // Esto deberia estar en el view model
-    final email = _emailController.text;
+    // Esto deberia estar en el view model. Esta modificada para obtener el userID
+    final mail = _emailController.text;
     final password = _passwordController.text;
 
     // Validación: Asegúrate de que los campos no estén vacíos
-    if (email.isEmpty || password.isEmpty) {
+    if (mail.isEmpty || password.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -39,19 +43,53 @@ class _LoginState extends State<LoginView> {
 
     //Attempt to login
     try {
-      await authService.signIn(email, password);
-    } catch (error) {
-      if ((error as AuthException).code == "invalid_credentials") {
+      final session = await authService.signIn(mail, password);
+      final authUserId = session.user?.id;
+
+      if (authUserId != null) {
+        final userId = await _viewModel.fetchUserId(mail); //view model
         if (mounted) {
+          if (userId != null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Landing(userId: userId)),
+            );
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text("Error al obtener el ID del usuario.")),
+              );
+            }
+          }
+        }
+      }
+    } on AuthException catch (error) {
+      if (mounted) {
+        if (error.code == "invalid_credentials") {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
                 content: Text(
-                    "Verifique que el correo y la contraseña sean correctos. Si si lo están, por favor registrese, el correo no es reconocido.")),
+                    "Verifique que el correo y la contraseña sean correctos.")),
           );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Error de autenticación: $error")));
         }
-      } else if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $error")));
+      }
+    } on PostgrestException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error de base de datos: ${error.message}")),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  "Verifique que el correo y la contraseña sean correctos.")),
+        );
       }
     }
   }
@@ -59,7 +97,6 @@ class _LoginState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Asegúrate de que solo tienes un Scaffold en tu widget
       body: SingleChildScrollView(
         // Permite el desplazamiento cuando el teclado aparece
         child: Container(

@@ -2,32 +2,29 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataService {
   final SupabaseClient client;
-  List<List<dynamic>>? categoriasSuscritas;
+  List<Categoria> categoriasSuscritas = [];
   List<Discount> listofdiscounts = [];
 
   DataService(this.client);
 
-  Future<void> fetchCategoriasSuscritas(String userId) async {
+  Future<void> fetchCategoriasSuscritas(int userId) async {
     try {
-      final data =
-          await client.from('suscribe').select().eq('id_usuario', userId);
+      final data = await client
+          .from('subscribe')
+          .select('id_categoria, categoria(id, name, description)')
+          .eq('id_usuario', userId);
+
       final List<dynamic> initiallist = data;
 
-      List<List<dynamic>> tempCategories = [];
-      for (var item in initiallist) {
-        final idCategoria = item['id_categoria'];
-        final categoryData =
-            await client.from('categoria').select().eq('id', idCategoria);
-        final categoria = Categoria.fromMap(categoryData[0]);
-        tempCategories.add([categoria.id, categoria.name]);
-      }
-      categoriasSuscritas = tempCategories;
+      categoriasSuscritas = initiallist.map<Categoria>((item) {
+        return Categoria.fromMap(item['categoria']);
+      }).toList();
     } catch (e) {
-      throw Exception('Error fetching categories');
+      throw Exception('Error fetching subscribed categories: $e');
     }
   }
 
-  List<List<dynamic>>? getCategoriasSuscritas() {
+  List<Categoria> getCategoriasSuscritas() {
     return categoriasSuscritas;
   }
 

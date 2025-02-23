@@ -4,7 +4,7 @@ import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Favspage extends StatefulWidget {
-  final String userId;
+  final int userId;
 
   const Favspage({required this.userId, super.key});
 
@@ -14,21 +14,25 @@ class Favspage extends StatefulWidget {
 
 class _FavspageState extends State<Favspage> {
   //lista de categorias
-  List<List<dynamic>> categories = [];
+  List<Categoria> categories = [];
   List<Discount> listofdiscounts = [];
+  List<int> selectedCategories = [];
 
+  final dataService = DataService(Supabase
+      .instance.client); //esto antes estaba dentro de c/funcion y lo saque
+
+  //Cargar categorias suscritas
   void getcat() async {
     /// Esto deberia estar en el VM
-    final dataService = DataService(Supabase.instance.client);
     await dataService.fetchCategoriasSuscritas(widget.userId);
     setState(() {
-      categories = dataService.getCategoriasSuscritas() ?? [];
+      categories = dataService.getCategoriasSuscritas();
     });
   }
 
+  //Cargar descuentos
   void getdis() async {
     // Esto deberia estar en el VM
-    final dataService = DataService(Supabase.instance.client);
     await dataService.fetchDiscounts();
     setState(() {
       listofdiscounts = dataService.getDescuentos() ?? [];
@@ -42,14 +46,11 @@ class _FavspageState extends State<Favspage> {
     getdis();
   }
 
-  //categorias seleccionadas
-  List<int> selectedCategories = [];
-
   // Función de logout
   void logout() async {
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
-      Navigator.pushReplacementNamed(context, '/login'); // Redirige a login
+      Navigator.pushReplacementNamed(context, '/start');
     }
   }
 
@@ -112,11 +113,11 @@ class _FavspageState extends State<Favspage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              "Tus categorías", // Agregado el título aquí
+              "Mis categorías", // Agregado el título aquí
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 35,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.white,
                 fontFamily: 'San Francisco',
               ),
             ),
@@ -129,20 +130,20 @@ class _FavspageState extends State<Favspage> {
                     Axis.horizontal, // Hacemos que se desplace horizontalmente
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
-                  final category = categories[index][1];
-                  final idcategory = categories[index][0];
+                  final category = categories[index];
+                  //final idcategory = categories[index][0];
                   return Padding(
                     padding: const EdgeInsets.only(
                         right: 8.0), // Espaciado entre categorías
                     child: FilterChip(
-                      selected: selectedCategories.contains(idcategory),
+                      selected: selectedCategories.contains(category.id),
                       label: Text(
-                        category,
+                        category.name,
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'San Francisco',
-                          color: selectedCategories.contains(idcategory)
+                          color: selectedCategories.contains(category.id)
                               ? Colors.white
                               : Colors.black,
                         ),
@@ -150,13 +151,13 @@ class _FavspageState extends State<Favspage> {
                       onSelected: (selected) {
                         setState(() {
                           if (selected) {
-                            selectedCategories.add(idcategory);
+                            selectedCategories.add(category.id);
                           } else {
-                            selectedCategories.remove(idcategory);
+                            selectedCategories.remove(category.id);
                           }
                         });
                       },
-                      backgroundColor: selectedCategories.contains(idcategory)
+                      backgroundColor: selectedCategories.contains(category.id)
                           ? Color(0xFFFAAF90)
                           : Color(0xFFFFFFFF),
                       selectedColor: Color(0xFFFAAF90),
@@ -165,7 +166,7 @@ class _FavspageState extends State<Favspage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       side: BorderSide(
-                        color: selectedCategories.contains(idcategory)
+                        color: selectedCategories.contains(category.id)
                             ? Color(0xFFFAAF90)
                             : Color(0xFFFAAF90),
                         width: 2.0,

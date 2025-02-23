@@ -27,20 +27,26 @@ class MyApp extends StatelessWidget {
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
       initialRoute: '/start', // Ruta inicial
-      routes: {
-        '/landing': (context) => Landing(),
-        '/start': (context) => StartView()
-
-        //'/login': (context) => LoginProvView(),
-      },
+      //rutas pasando el userId a las vistas
       onGenerateRoute: (settings) {
+        if (settings.name == '/landing') {
+          final userId = settings.arguments as int?;
+          return MaterialPageRoute(
+            builder: (context) => Landing(userId: userId),
+          );
+        }
+
         if (settings.name == '/favorites') {
-          final userId = settings.arguments as String;
+          final userId = settings.arguments as int;
           return MaterialPageRoute(
             builder: (context) => Favspage(userId: userId),
           );
         }
-        return null; // Default case
+
+        // Ruta por defecto
+        return MaterialPageRoute(
+          builder: (context) => StartView(),
+        );
       },
       home: const StartView(),
     );

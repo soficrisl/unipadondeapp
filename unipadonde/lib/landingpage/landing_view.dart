@@ -4,7 +4,11 @@ import 'package:unipadonde/landingpage/landin_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Landing extends StatefulWidget {
-  const Landing({super.key});
+  final int? userId;
+  const Landing({
+    super.key,
+    required this.userId,
+  });
 
   @override
   State<Landing> createState() => _LandingState();
@@ -237,7 +241,11 @@ class _LandingState extends State<Landing> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/landing');
+                      Navigator.pushNamed(
+                        context,
+                        '/landing',
+                        arguments: widget.userId,
+                      );
                     },
                     icon: const Icon(
                       FeatherIcons.home,
@@ -253,10 +261,8 @@ class _LandingState extends State<Landing> {
                   ),
                   IconButton(
                     onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/favorites',
-                      ); //arguments: userID
+                      Navigator.pushNamed(context, '/favorites',
+                          arguments: widget.userId); //arguments: userID
                     },
                     icon: const Icon(
                       FeatherIcons.heart,
