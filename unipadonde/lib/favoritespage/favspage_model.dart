@@ -30,6 +30,8 @@ class DataService {
 
   Future<void> fetchDiscounts() async {
     try {
+      final List<int> subscribedCategoryIds =
+          getCategoriasSuscritas().map((c) => c.id).toList();
       final descuentos = await client.from('descuento').select();
       final pertenece = await client.from('pertenece').select();
       final info = await client.from('negocio').select('id, picture');
@@ -46,10 +48,12 @@ class DataService {
       for (var descuento in descuentos) {
         idnegocio = descuento['id_negocio'];
         idcat = perteneceMap[idnegocio];
-        imagen = negocioMap[idnegocio];
-        descuento['businessLogo'] = imagen;
-        descuento['idcategory'] = idcat;
-        descuentoslistos.add(descuento);
+        if (subscribedCategoryIds.contains(idcat)) {
+          imagen = negocioMap[idnegocio];
+          descuento['businessLogo'] = imagen;
+          descuento['idcategory'] = idcat;
+          descuentoslistos.add(descuento);
+        }
       }
       listofdiscounts =
           descuentoslistos.map((json) => Discount.fromJson(json)).toList();

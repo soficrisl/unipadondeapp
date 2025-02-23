@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/login/login_vm.dart';
+import 'package:unipadonde/profilepage/profile_view.dart';
+import 'package:unipadonde/searchbar/search_view.dart';
 
 import 'package:unipadonde/startpage/start_view.dart';
 
@@ -29,24 +32,37 @@ class MyApp extends StatelessWidget {
       initialRoute: '/start', // Ruta inicial
       //rutas pasando el userId a las vistas
       onGenerateRoute: (settings) {
-        if (settings.name == '/landing') {
-          final userId = settings.arguments as int?;
+        final userId = settings.arguments as int?;
+        if (userId == null) {
           return MaterialPageRoute(
-            builder: (context) => Landing(userId: userId),
+            builder: (context) => const loginVm(),
           );
         }
 
-        if (settings.name == '/favorites') {
-          final userId = settings.arguments as int;
-          return MaterialPageRoute(
-            builder: (context) => Favspage(userId: userId),
-          );
-        }
+        switch (settings.name) {
+          case '/landing':
+            return MaterialPageRoute(
+              builder: (context) => Landing(userId: userId),
+            );
 
-        // Ruta por defecto
-        return MaterialPageRoute(
-          builder: (context) => StartView(),
-        );
+          case '/search':
+            return MaterialPageRoute(
+              builder: (context) => Search(userId: userId),
+            );
+
+          case '/favorites':
+            return MaterialPageRoute(
+              builder: (context) => Favspage(userId: userId),
+            );
+          case '/profile':
+            return MaterialPageRoute(
+              builder: (context) => ProfilePage(userId: userId),
+            );
+          default:
+            return MaterialPageRoute(
+              builder: (context) => StartView(),
+            );
+        }
       },
       home: const StartView(),
     );

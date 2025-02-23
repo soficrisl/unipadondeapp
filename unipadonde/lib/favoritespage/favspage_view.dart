@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/widgets/bottom_bar.dart';
 
 class Favspage extends StatefulWidget {
   final int userId;
@@ -28,6 +28,7 @@ class _FavspageState extends State<Favspage> {
     setState(() {
       categories = dataService.getCategoriasSuscritas();
     });
+    getdis();
   }
 
   //Cargar descuentos
@@ -43,7 +44,6 @@ class _FavspageState extends State<Favspage> {
   void initState() {
     super.initState();
     getcat();
-    getdis();
   }
 
   // Función de logout
@@ -51,6 +51,29 @@ class _FavspageState extends State<Favspage> {
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/start');
+    }
+  }
+
+  int _selectedIndex = 1;
+
+  void _navigateToPage(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/landing',
+            arguments: widget.userId);
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/favorites',
+            arguments: widget.userId);
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/profile',
+            arguments: widget.userId);
+        break;
     }
   }
 
@@ -89,8 +112,13 @@ class _FavspageState extends State<Favspage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {},
+            icon: Icon(Icons.search_rounded),
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 3;
+              });
+              _navigateToPage(3);
+            },
           ),
           IconButton(
               onPressed: logout,
@@ -235,48 +263,18 @@ class _FavspageState extends State<Favspage> {
                 },
               ),
             ),
-
-            // Este es el bottom bar dentro del container con el degradado
-            Container(
-              height: 65,
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(69),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/landing');
-                    },
-                    icon: const Icon(
-                      FeatherIcons.home,
-                      size: 30,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      FeatherIcons.search,
-                      size: 30,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/favorites');
-                    },
-                    icon: const Icon(
-                      FeatherIcons.heart,
-                      size: 30,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
+      ),
+      //botombar
+      bottomNavigationBar: CustomBottomBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          _navigateToPage(index);
+        },
       ),
     );
   }

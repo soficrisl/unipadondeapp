@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/loginprov/loginprov_mv.dart';
-import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/register/register_vm.dart';
 //import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';

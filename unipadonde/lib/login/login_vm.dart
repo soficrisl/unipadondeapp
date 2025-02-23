@@ -14,7 +14,6 @@ class loginVm extends StatelessWidget {
     final response =
         await supabase.from('usuario').select('id').eq('mail', mail).single();
     if (response != null) {
-      print("Response: $response");
       return response['id'];
     }
     return null;
@@ -37,8 +36,7 @@ class loginVm extends StatelessWidget {
           //estoy provando como obtener el userid
 
           if (session != null) {
-            final mail =
-                session.user?.email ?? ''; // Asegurarse de que mail no sea null
+            final mail = session.user?.email ?? '';
             if (mail.isNotEmpty) {
               return FutureBuilder<int?>(
                 future: fetchUserId(mail),
