@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_view.dart';
 //import 'package:unipadonde/profilepage/profile_view.dart';
 

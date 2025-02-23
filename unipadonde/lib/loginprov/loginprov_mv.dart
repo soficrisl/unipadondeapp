@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/loginprov/loginprov_view.dart';
 
 class loginVmProv extends StatelessWidget {

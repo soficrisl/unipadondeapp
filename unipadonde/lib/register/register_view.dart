@@ -103,16 +103,6 @@ class _RegisterViewState extends State<RegisterView> {
     return null;
   }
 
-  // ! VALIDACION UNIVERSIDAD
-  String? validUni(String? uni) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z ]+$');
-    final isUniValid = userRegex.hasMatch(uni ?? '');
-    if (!isUniValid) {
-      return 'Ingreso inválido';
-    }
-    return null;
-  }
-
   // ! VALIDACION CONTRASEÑA
   String? validPassword(String? password) {
     RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
@@ -167,6 +157,29 @@ class _RegisterViewState extends State<RegisterView> {
                   )),
               SizedBox(height: 20),
               Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Registro",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 45,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'San Francisco',
+                      )),
+                  Text(
+                    "Bienvenido ESTUDIANTE: ",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'San Francisco',
+                    ),
+                  )
+                ],
+              )),
+              SizedBox(height: 20),
+              Expanded(
                   child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -180,7 +193,6 @@ class _RegisterViewState extends State<RegisterView> {
                           child: Column(
                             children: [
                               SizedBox(height: 60),
-
                               // * CAJA FORM
                               Container(
                                 padding: EdgeInsets.all(20),
@@ -233,10 +245,21 @@ class _RegisterViewState extends State<RegisterView> {
                                                 200, 158, 158, 158),
                                           )),
                                         ),
+                                        child: TextFormField(
+                                          controller: _passwordController,
+                                          decoration: InputDecoration(
+                                              hintText: "Contraseña",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: validPassword,
+                                        ),
                                       ),
 
                                       // ! CONFIRMAR CONTRASEÑA
-                                      Container(
+                                      /*Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           border: Border(
@@ -256,7 +279,7 @@ class _RegisterViewState extends State<RegisterView> {
                                           validator: validPassword,
                                         ),
                                       ),
-
+*/
                                       // ! NOMBRE
                                       Container(
                                         padding: EdgeInsets.all(10),
@@ -268,6 +291,7 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
+                                          controller: _nameController,
                                           decoration: InputDecoration(
                                               hintText: "Nombre",
                                               hintStyle: TextStyle(
@@ -290,6 +314,7 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
+                                          controller: _lastnameController,
                                           decoration: InputDecoration(
                                               hintText: "Apellido",
                                               hintStyle: TextStyle(
@@ -312,6 +337,7 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
+                                          controller: _universidadController,
                                           decoration: InputDecoration(
                                               hintText:
                                                   "Nombre de la Universidad",
@@ -320,7 +346,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: validUni,
+                                          validator: validName,
                                         ),
                                       ),
 
@@ -335,6 +361,7 @@ class _RegisterViewState extends State<RegisterView> {
                                           )),
                                         ),
                                         child: TextFormField(
+                                          controller: _ciController,
                                           decoration: InputDecoration(
                                               hintText: "Cédula",
                                               hintStyle: TextStyle(
@@ -470,7 +497,6 @@ class _RegisterViewState extends State<RegisterView> {
                                   fontFamily: 'San Francisco',
                                 ),
                               ),
-
                               GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
