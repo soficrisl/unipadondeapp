@@ -4,7 +4,6 @@ import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
-import 'package:unipadonde/searchbar/search_view.dart';
 
 import 'package:unipadonde/startpage/start_view.dart';
 
@@ -43,11 +42,6 @@ class MyApp extends StatelessWidget {
           case '/landing':
             return MaterialPageRoute(
               builder: (context) => Landing(userId: userId),
-            );
-
-          case '/search':
-            return MaterialPageRoute(
-              builder: (context) => Search(userId: userId),
             );
 
           case '/favorites':

@@ -112,15 +112,6 @@ class _FavspageState extends State<Favspage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 3;
-              });
-              _navigateToPage(3);
-            },
-          ),
-          IconButton(
               onPressed: logout,
               icon: const Icon(Icons.logout, color: Colors.black)),
         ],
