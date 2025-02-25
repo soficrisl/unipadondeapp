@@ -39,7 +39,7 @@ class StartView extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFAAF90),
+                    backgroundColor: Color(0xFFFFA500),
                     padding: EdgeInsets.symmetric(vertical: 25, horizontal: 60),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),

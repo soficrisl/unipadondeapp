@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/favoritesbusinesspage/favsbusiness_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/loginprov/loginprov_view.dart';
@@ -53,7 +54,7 @@ class loginVmProv extends StatelessWidget {
 
                   final userId = userIdSnapshot.data;
                   if (userId != null) {
-                    return Landing(userId: userId);
+                    return Favsbusinesspage(userId: userId);
                   } else {
                     return const LoginProvView();
                   }

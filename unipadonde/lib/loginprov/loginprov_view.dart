@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unipadonde/login/login_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
@@ -87,7 +88,7 @@ class _LoginProvState extends State<LoginProvView> {
                       )
                     ],
                   )),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Expanded(
                   child: Container(
                 decoration: BoxDecoration(
@@ -99,7 +100,7 @@ class _LoginProvState extends State<LoginProvView> {
                   padding: EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      SizedBox(height: 60),
+                      SizedBox(height: 20),
 
                       //cajita email y password
                       Container(
@@ -181,7 +182,7 @@ class _LoginProvState extends State<LoginProvView> {
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 15,
                       ),
 
                       //boton Login
@@ -224,7 +225,7 @@ class _LoginProvState extends State<LoginProvView> {
                         ),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 5,
                       ),
 
                       // Boton Registrar
@@ -237,7 +238,7 @@ class _LoginProvState extends State<LoginProvView> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                const Color(0xFFFAAF90), // Background color
+                                const Color(0xFFFFA500), // Background color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -255,7 +256,7 @@ class _LoginProvState extends State<LoginProvView> {
 
                       //Proveedor
                       SizedBox(
-                        height: 20,
+                        height: 15,
                       ),
                       Text(
                         "No eres Proveedor? Ingresa como",
@@ -268,7 +269,7 @@ class _LoginProvState extends State<LoginProvView> {
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const loginVm())),
+                                  builder: (context) => const LoginView())),
                           child: Text(
                             "ESTUDIANTE",
                             style: TextStyle(

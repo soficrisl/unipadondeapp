@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/favoritesbusinesspage/favsbusiness_view.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
@@ -54,10 +55,17 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (context) => Favspage(userId: userId),
             );
+
           case '/profile':
             return MaterialPageRoute(
               builder: (context) => ProfilePage(userId: userId),
             );
+
+          case '/favsbusiness':
+            return MaterialPageRoute(
+              builder: (context) => Favsbusinesspage(userId: userId),
+            );
+            
           default:
             return MaterialPageRoute(
               builder: (context) => StartView(),

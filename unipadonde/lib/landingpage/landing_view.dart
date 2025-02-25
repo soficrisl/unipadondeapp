@@ -98,7 +98,8 @@ class _LandingState extends State<Landing> {
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
-              const Color(0xFFFAAF90),
+              const Color(0xFFFFA500),
+              const Color(0xFF7A9BBF),
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
@@ -135,11 +136,10 @@ class _LandingState extends State<Landing> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFFFAAF90), //fondo principal
               const Color(0xFF8CB1F1),
+              Colors.white,   
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
           ),
         ),
         child: Column(
@@ -182,17 +182,17 @@ class _LandingState extends State<Landing> {
                         });
                       },
                       backgroundColor: selectedCategories.contains(idcategory)
-                          ? Color(0xFFFAAF90)
+                          ? const Color(0xFFFFA500)
                           : Color(0xFFFFFFFF),
-                      selectedColor: Color(0xFFFAAF90),
+                      selectedColor: const Color(0xFFFFA500),
                       checkmarkColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       side: BorderSide(
                         color: selectedCategories.contains(idcategory)
-                            ? Color(0xFFFAAF90)
-                            : Color(0xFFFAAF90),
+                            ? const Color(0xFFFFA500)
+                            : const Color(0xFFFFA500),
                         width: 2.0,
                       ),
                       elevation: 5.0,
@@ -271,6 +271,7 @@ class _LandingState extends State<Landing> {
           });
           _navigateToPage(index);
         },
+
       ),
     );
   }
@@ -355,7 +356,7 @@ class _LandingState extends State<Landing> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        Color(0xFFfcc9b5), // Color de fondo del botón
+                        Color(0xFFFFA500), // Color de fondo del botón
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(
