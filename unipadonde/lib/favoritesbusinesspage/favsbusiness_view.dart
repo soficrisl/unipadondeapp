@@ -79,7 +79,7 @@ class _FavspageState extends State<Favsbusinesspage> {
             arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profile',
+        Navigator.pushReplacementNamed(context, '/profileprov',
             arguments: widget.userId);
         break;
     }
@@ -134,146 +134,148 @@ class _FavspageState extends State<Favsbusinesspage> {
               icon: const Icon(Icons.logout, color: Colors.black)),
         ],
       ),
-      body: Container(
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color(0xFF8CB1F1),
-              Colors.white
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              //margin: const EdgeInsets.only(top: 15.0), 
-              height: 50, 
-              color: Color.fromARGB(255, 72, 128, 188), 
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Mis Negocios",
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontFamily: 'San Francisco',
-                          shadows: [
-                            Shadow(
-                              blurRadius: 5.0,
-                              color: Colors.black.withOpacity(0.5),
-                              offset: Offset(2.0, 2.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+            body: Container(
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF8CB1F1),
+                  Colors.white
                 ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-            SizedBox(height: 5,),
-
-            // Aqui se maneja la visualización de los negocios 
-            Expanded(
-              child: ListView.builder(
-                itemCount: filterDiscount.length,
-                itemBuilder: (context, index) {
-                  final discount = filterDiscount[index];
-                  return Card(
-                    elevation: 4.0,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0)),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        leading: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            image: DecorationImage(
-                              image: AssetImage(discount.businessLogo), //negocio.logo
-                              fit: BoxFit.contain,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  //margin: const EdgeInsets.only(top: 15.0), 
+                  height: 50, 
+                  color: Color.fromARGB(255, 72, 128, 188), 
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Mis Negocios",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: 'San Francisco',
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 5.0,
+                                  color: Colors.black.withOpacity(0.5),
+                                  offset: Offset(2.0, 2.0),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        title: Text(
-                          discount.name, //negocio.name
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'San Francisco'),
-                        ),
-                        subtitle: Text(
-                          discount.description, //negocio.description
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontStyle: FontStyle.italic,
-                              fontFamily: 'San Francisco'),
-                        ),
-                        onTap: () {
-                          BuspageView(); //conexion xon business page (OJO CHECK)
-                        },
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Botón para añadir un negocio
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  showAddBusinessDialog();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFA500), // Color de fondo
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    ],
                   ),
                 ),
-                child: Text("Añadir Negocio", style: TextStyle(color: Colors.white, fontFamily: "San Francisco"),),
-              ),
-            )
-          ],
-        ),
-      ),
-      
-    
+                SizedBox(height: 5,),
 
-      //botombar
-    bottomNavigationBar: CustomBottomBarProv(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          _navigateToPage(index);
-        },
-      ),
+                // Aqui se maneja la visualización de los negocios 
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filterDiscount.length,
+                    itemBuilder: (context, index) {
+                      final discount = filterDiscount[index];
+                      return Card(
+                        elevation: 4.0,
+                        margin:
+                            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15.0)),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            leading: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                image: DecorationImage(
+                                  image: AssetImage(discount.businessLogo), //negocio.logo
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              discount.name, //negocio.name
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'San Francisco'),
+                            ),
+                            subtitle: Text(
+                              discount.description, //negocio.description
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontStyle: FontStyle.italic,
+                                  fontFamily: 'San Francisco'),
+                            ),
+                            onTap: () {
+                              BuspageView(); //conexion xon business page (OJO CHECK)
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Botón para añadir un negocio
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showAddBusinessDialog();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFFFA500), // Color de fondo
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text("Añadir Negocio", style: TextStyle(color: Colors.white, fontFamily: "San Francisco"),),
+                  ),
+                )
+              ],
+            ),
+          ),
+          
+        
+
+          //botombar
+        bottomNavigationBar: CustomBottomBarProv(
+            selectedIndex: _selectedIndex,
+            onItemTapped: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+              _navigateToPage(index);
+            },
+          ),
+
+
     );
   }
 
