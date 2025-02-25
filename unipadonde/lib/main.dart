@@ -5,6 +5,7 @@ import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
+import 'package:unipadonde/profileprovpage/profileprov_view.dart';
 
 import 'package:unipadonde/startpage/start_view.dart';
 
@@ -53,6 +54,11 @@ class MyApp extends StatelessWidget {
           case '/profile':
             return MaterialPageRoute(
               builder: (context) => ProfilePage(userId: userId),
+            );
+
+          case '/profileprov':
+            return MaterialPageRoute(
+              builder: (context) => ProfileProvPage(userId: userId),
             );
 
           case '/favsbusiness':

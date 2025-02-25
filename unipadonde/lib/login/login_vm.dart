@@ -75,6 +75,7 @@ class loginVm extends StatelessWidget {
               }
             },
           );
-        });
+        }
+      );
   }
 }
