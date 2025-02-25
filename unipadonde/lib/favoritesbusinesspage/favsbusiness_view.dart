@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:unipadonde/business%20page/buspage_view.dart';
 import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/widgets/bottom_bar.dart';
+//import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/widgets/bottom_barProv.dart';
 
-class Favspage extends StatefulWidget {
+class Favsbusinesspage extends StatefulWidget {
   final int userId;
 
-  const Favspage({required this.userId, super.key});
+  const Favsbusinesspage({required this.userId, super.key});
 
   @override
-  State<Favspage> createState() => _FavspageState();
+  State<Favsbusinesspage> createState() => _FavspageState();
 }
 
-class _FavspageState extends State<Favspage> {
+class _FavspageState extends State<Favsbusinesspage> {
   //lista de categorias
   List<Categoria> categories = [];
   List<Discount> listofdiscounts = [];
@@ -40,6 +42,16 @@ class _FavspageState extends State<Favspage> {
     });
   }
 
+  // Variables para el formulario de añadir negocio
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _instagramController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _tiktokController = TextEditingController();
+  final TextEditingController _websiteController = TextEditingController();
+
+
   @override
   void initState() {
     super.initState();
@@ -63,14 +75,10 @@ class _FavspageState extends State<Favspage> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/landing',
+        Navigator.pushReplacementNamed(context, '/favsbusiness',
             arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/favorites',
-            arguments: widget.userId);
-        break;
-      case 2:
         Navigator.pushReplacementNamed(context, '/profile',
             arguments: widget.userId);
         break;
@@ -79,7 +87,7 @@ class _FavspageState extends State<Favspage> {
 
   @override
   Widget build(BuildContext context) {
-    //filtrar los descuentos de acuerdo a la categoria seleccionada
+    //filtrar los  de acuerdo a la categoria seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
       return selectedCategories.isEmpty ||
           selectedCategories.contains(discount.idcategory);
@@ -131,7 +139,7 @@ class _FavspageState extends State<Favspage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color.fromARGB(255, 72, 128, 188),
+              const Color(0xFF8CB1F1),
               Colors.white
             ],
             begin: Alignment.topLeft,
@@ -144,14 +152,14 @@ class _FavspageState extends State<Favspage> {
             Container(
               //margin: const EdgeInsets.only(top: 15.0), 
               height: 50, 
-              color: Colors.orange, 
+              color: Color.fromARGB(255, 72, 128, 188), 
               child: Row(
                 children: [
                   Expanded(
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
-                        "Mis Categorías",
+                        "Mis Negocios",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -171,67 +179,9 @@ class _FavspageState extends State<Favspage> {
                 ],
               ),
             ),
+            SizedBox(height: 5,),
 
-            // Este container muestra los botones de categorías
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-              height: 60, // Ajusta la altura del carrusel
-              child: ListView.builder(
-                scrollDirection:
-                    Axis.horizontal, // Hacemos que se desplace horizontalmente
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  //final idcategory = categories[index][0];
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        right: 8.0), // Espaciado entre categorías
-                    child: FilterChip(
-                      selected: selectedCategories.contains(category.id),
-                      label: Text(
-                        category.name,
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'San Francisco',
-                          color: selectedCategories.contains(category.id)
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            selectedCategories.add(category.id);
-                          } else {
-                            selectedCategories.remove(category.id);
-                          }
-                        });
-                      },
-                      backgroundColor: selectedCategories.contains(category.id)
-                          ? Color(0xFFFFA500)
-                          : Color(0xFFFFFFFF),
-                      selectedColor: Color(0xFFFFA500),
-                      checkmarkColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      side: BorderSide(
-                        color: selectedCategories.contains(category.id)
-                            ? Color(0xFFFFA500)
-                            : Color(0xFFFFA500),
-                        width: 2.0,
-                      ),
-                      elevation: 5.0,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Aqui se maneja la visualización de los descuentos filtrados
+            // Aqui se maneja la visualización de los negocios 
             Expanded(
               child: ListView.builder(
                 itemCount: filterDiscount.length,
@@ -257,28 +207,27 @@ class _FavspageState extends State<Favspage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             image: DecorationImage(
-                              image: AssetImage(discount.businessLogo),
+                              image: AssetImage(discount.businessLogo), //negocio.logo
                               fit: BoxFit.contain,
                             ),
                           ),
                         ),
                         title: Text(
-                          discount.name,
+                          discount.name, //negocio.name
                           style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'San Francisco'),
                         ),
                         subtitle: Text(
-                          discount.description,
+                          discount.description, //negocio.description
                           style: const TextStyle(
                               color: Colors.black,
                               fontStyle: FontStyle.italic,
                               fontFamily: 'San Francisco'),
                         ),
-                        // Eliminado el ícono de tres puntos (trailing)
                         onTap: () {
-                          openDialog(discount);
+                          BuspageView(); //conexion xon business page (OJO CHECK)
                         },
                       ),
                     ),
@@ -286,11 +235,37 @@ class _FavspageState extends State<Favspage> {
                 },
               ),
             ),
+
+            // Botón para añadir un negocio
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  showAddBusinessDialog();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFFA500), // Color de fondo
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text("Añadir Negocio", style: TextStyle(color: Colors.white, fontFamily: "San Francisco"),),
+              ),
+            )
           ],
         ),
       ),
+      
+    
+
       //botombar
-      bottomNavigationBar: CustomBottomBar(
+    bottomNavigationBar: CustomBottomBarProv(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
           setState(() {
@@ -302,9 +277,8 @@ class _FavspageState extends State<Favspage> {
     );
   }
 
-  // Método para mostrar un pop-up con información del descuento
-
-  Future openDialog(Discount discount) => showDialog(
+  // Método para mostrar el formulario de añadir negocio
+  Future showAddBusinessDialog() => showDialog(
         context: context,
         builder: (context) => Dialog(
           shape: RoundedRectangleBorder(
@@ -315,7 +289,6 @@ class _FavspageState extends State<Favspage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Botón X para cerrar el diálogo
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
@@ -323,81 +296,119 @@ class _FavspageState extends State<Favspage> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
-                // Imagen  del negocio
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      discount.businessLogo,
-                      fit:
-                          BoxFit.contain, // Ajusta la imagen dentro del círculo
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-                //Titulo / Nombre de descuento
                 Text(
-                  discount.name,
+                  "Añadir Negocio",
                   style: TextStyle(
+                    fontFamily: "San Francisco",
                     fontSize: 24,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text("Ingresa los siguientes datos:", 
+                style: TextStyle(
+                  fontFamily: "San Francisco",
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.black,
                   ),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.right
                 ),
-
-                const SizedBox(height: 20),
-                //Descripcion del descuento
-                Text(
-                  discount.description,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
                 const SizedBox(height: 10),
-                //duracion descuento
-                Text(
-                  "Duración: ${discount.duration}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: 'Nombre del negocio:'),
                 ),
-
-                const SizedBox(height: 30),
-                //boton negocio
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: 'Descripción del negocio:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _idController,
+                  decoration: InputDecoration(labelText: 'Id del negocio:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _instagramController,
+                  decoration: InputDecoration(labelText: 'Instagram:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: 'Correo electrónico:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _tiktokController,
+                  decoration: InputDecoration(labelText: 'TikTok:',),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _websiteController,
+                  decoration: InputDecoration(labelText: 'Página web:'),
+                ),
+                const SizedBox(height: 20),
+              
                 ElevatedButton(
                   onPressed: () {
+                    // Añadir el negocio a la lista de negocios
+                    //final newBusiness = Negocio(
+                      //name: _nameController.text,
+                      //description: _descriptionController.text,
+                      //instagram: _instagramController.text,
+                    //);
+                    setState(() {
+                      //businesses.add(newBusiness);
+                    });
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color(0xFFfcc9b5), // Color de fondo del botón
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    textStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  backgroundColor: Color(0xFF8CB1F1), // Color de fondo
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: Text("Visitar negocio"),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+
+                child: Text("Añadir", style: TextStyle(color: Colors.white, fontFamily: "San Francisco" ),),
                 ),
               ],
             ),
           ),
         ),
       );
+
+
+  //pop-up con información del negocio
+  //Future openDialog(Discount discount) => showDialog(
+        //context: context,
+        //builder: (context) => Dialog(
+          //shape: RoundedRectangleBorder(
+            //borderRadius: BorderRadius.circular(20),
+          //),
+          //child: Padding(
+            //padding: const EdgeInsets.all(16),
+            //child: 
+                //Titulo / Nombre de descuento
+                //Text(
+                  //Negocio(id: id, name: name, description: description, tiktok: tiktok, instagram: instagram, webpage: webpage, mail: mail).name,
+                  //"Negocio ",
+                  //style: TextStyle(
+                    //fontSize: 24,
+                    //fontWeight: FontWeight.bold,
+                    //color: Colors.black87,
+                  //),
+                  //textAlign: TextAlign.center,
+                //),
+
+            //),
+        //)
+      //);
 }

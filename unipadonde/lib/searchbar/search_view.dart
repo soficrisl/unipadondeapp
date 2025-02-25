@@ -60,7 +60,8 @@ class _SearchState extends State<Search> {
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
-              const Color(0xFFFAAF90),
+              const Color(0xFFFFA500),
+              const Color(0xFF7A9BBF),
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
@@ -97,8 +98,8 @@ class _SearchState extends State<Search> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFFFAAF90), //fondo principal
               const Color(0xFF8CB1F1),
+              Colors.white,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

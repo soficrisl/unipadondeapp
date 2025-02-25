@@ -282,7 +282,7 @@ class _LoginState extends State<LoginView> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                const Color(0xFFFAAF90), // Background color
+                                const Color(0xFFFFA500), // Background color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
