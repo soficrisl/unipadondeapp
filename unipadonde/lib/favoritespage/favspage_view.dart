@@ -113,15 +113,6 @@ class _FavspageState extends State<Favspage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 3;
-              });
-              _navigateToPage(3);
-            },
-          ),
-          IconButton(
               onPressed: logout,
               icon: const Icon(Icons.logout, color: Colors.black)),
         ],
@@ -130,10 +121,7 @@ class _FavspageState extends State<Favspage> {
         height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(255, 72, 128, 188),
-              Colors.white
-            ],
+            colors: [const Color.fromARGB(255, 72, 128, 188), Colors.white],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -142,9 +130,9 @@ class _FavspageState extends State<Favspage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              //margin: const EdgeInsets.only(top: 15.0), 
-              height: 50, 
-              color: Colors.orange, 
+              //margin: const EdgeInsets.only(top: 15.0),
+              height: 50,
+              color: Colors.orange,
               child: Row(
                 children: [
                   Expanded(
@@ -382,7 +370,7 @@ class _FavspageState extends State<Favspage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        Color(0xFFfcc9b5), // Color de fondo del botón
+                        Color(0xFFFFA500), // Color de fondo del botón
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(

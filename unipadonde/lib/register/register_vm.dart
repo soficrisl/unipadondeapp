@@ -33,12 +33,17 @@ class RegisterVM extends StatelessWidget {
   Future<int?> fetchUserId(String mail) async {
     final supabase = Supabase.instance.client;
 
-    final response =
-        await supabase.from('usuario').select('id').eq('mail', mail).single();
-    if (response != null) {
-      return response['id'];
+    try {
+      final response = await supabase
+          .from('usuario')
+          .select('id')
+          .eq('mail', mail)
+          .maybeSingle();
+
+      return response?['id'];
+    } catch (e) {
+      return null;
     }
-    return null;
   }
 
   @override
@@ -56,36 +61,41 @@ class RegisterVM extends StatelessWidget {
           }
           final session = snapshot.hasData ? snapshot.data!.session : null;
           //estoy provando como obtener el userid
-          if (session != null) {
-            final mail = session.user?.email ?? '';
-            if (mail.isNotEmpty) {
-              return FutureBuilder<int?>(
-                future: fetchUserId(mail),
-                builder: (context, userIdSnapshot) {
-                  if (userIdSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Scaffold(
-                        body: Center(
-                            child: CircularProgressIndicator(
-                      backgroundColor: Color(0xFF8CB1F1),
-                      color: Colors.white,
-                    )));
-                  }
-
-                  final userId = userIdSnapshot.data;
-                  if (userId != null) {
-                    return Landing(userId: userId);
-                  } else {
-                    return const RegisterView();
-                  }
-                },
-              );
-            } else {
-              return const RegisterView();
-            }
-          } else {
+          if (session == null) {
             return const RegisterView();
           }
+
+          final mail = session.user.email ?? '';
+          if (mail.isEmpty) {
+            return const RegisterView();
+          }
+
+          return FutureBuilder<int?>(
+            future: fetchUserId(mail),
+            builder: (context, userIdSnapshot) {
+              if (userIdSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                    body: Center(
+                        child: CircularProgressIndicator(
+                  backgroundColor: Color(0xFF8CB1F1),
+                  color: Colors.white,
+                )));
+              }
+
+              final userId = userIdSnapshot.data;
+              if (userId != null) {
+                return Landing(userId: userId);
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text("Error al obtener el ID del usuario.")),
+                  );
+                }
+                return const RegisterView();
+              }
+            },
+          );
         });
   }
 }

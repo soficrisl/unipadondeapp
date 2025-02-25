@@ -28,16 +28,17 @@ class CustomBottomBarProv extends StatelessWidget {
             icon: Icon(
               FeatherIcons.home,
               size: 30,
-              color: selectedIndex == 0 ? const Color(0xFFFFA500) : Colors.black,
+              color:
+                  selectedIndex == 0 ? const Color(0xFFFFA500) : Colors.black,
             ),
           ),
-          
           IconButton(
             onPressed: () => onItemTapped(1),
             icon: Icon(
               FeatherIcons.user,
               size: 30,
-              color: selectedIndex == 2 ? const Color(0xFFFFA500) : Colors.black,
+              color:
+                  selectedIndex == 2 ? const Color(0xFFFFA500) : Colors.black,
             ),
           ),
         ],

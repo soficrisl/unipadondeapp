@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/landingpage/landin_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/searchbar/search_mv.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 
 class Landing extends StatefulWidget {
@@ -118,12 +119,9 @@ class _LandingState extends State<Landing> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
+            icon: const Icon(Icons.search_rounded),
             onPressed: () {
-              setState(() {
-                _selectedIndex = 3;
-              });
-              _navigateToPage(3);
+              showSearch(context: context, delegate: CustomSearchDelegate());
             },
           ),
           IconButton(
