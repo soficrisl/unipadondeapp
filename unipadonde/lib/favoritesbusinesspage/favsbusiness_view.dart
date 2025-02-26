@@ -51,7 +51,6 @@ class _FavspageState extends State<Favsbusinesspage> {
   final TextEditingController _tiktokController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
@@ -80,6 +79,10 @@ class _FavspageState extends State<Favsbusinesspage> {
         break;
       case 1:
         Navigator.pushReplacementNamed(context, '/profileprov',
+            arguments: widget.userId);
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/cdiscount',
             arguments: widget.userId);
         break;
     }
@@ -134,148 +137,148 @@ class _FavspageState extends State<Favsbusinesspage> {
               icon: const Icon(Icons.logout, color: Colors.black)),
         ],
       ),
-            body: Container(
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF8CB1F1),
-                  Colors.white
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  //margin: const EdgeInsets.only(top: 15.0), 
-                  height: 50, 
-                  color: Color.fromARGB(255, 72, 128, 188), 
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Mis Negocios",
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontFamily: 'San Francisco',
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 5.0,
-                                  color: Colors.black.withOpacity(0.5),
-                                  offset: Offset(2.0, 2.0),
-                                ),
-                              ],
+      body: Container(
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [const Color(0xFF8CB1F1), Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              //margin: const EdgeInsets.only(top: 15.0),
+              height: 50,
+              color: Color.fromARGB(255, 72, 128, 188),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Mis Negocios",
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontFamily: 'San Francisco',
+                          shadows: [
+                            Shadow(
+                              blurRadius: 5.0,
+                              color: Colors.black.withOpacity(0.5),
+                              offset: Offset(2.0, 2.0),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 5,),
-
-                // Aqui se maneja la visualización de los negocios 
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: filterDiscount.length,
-                    itemBuilder: (context, index) {
-                      final discount = filterDiscount[index];
-                      return Card(
-                        elevation: 4.0,
-                        margin:
-                            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15.0)),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            leading: Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                image: DecorationImage(
-                                  image: AssetImage(discount.businessLogo), //negocio.logo
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                            title: Text(
-                              discount.name, //negocio.name
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'San Francisco'),
-                            ),
-                            subtitle: Text(
-                              discount.description, //negocio.description
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontStyle: FontStyle.italic,
-                                  fontFamily: 'San Francisco'),
-                            ),
-                            onTap: () {
-                              BuspageView(); //conexion xon business page (OJO CHECK)
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // Botón para añadir un negocio
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showAddBusinessDialog();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFFFA500), // Color de fondo
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: Text("Añadir Negocio", style: TextStyle(color: Colors.white, fontFamily: "San Francisco"),),
                   ),
-                )
-              ],
+                ],
+              ),
             ),
-          ),
-          
-        
+            SizedBox(
+              height: 5,
+            ),
 
-          //botombar
-        bottomNavigationBar: CustomBottomBarProv(
-            selectedIndex: _selectedIndex,
-            onItemTapped: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-              _navigateToPage(index);
-            },
-          ),
+            // Aqui se maneja la visualización de los negocios
+            Expanded(
+              child: ListView.builder(
+                itemCount: filterDiscount.length,
+                itemBuilder: (context, index) {
+                  final discount = filterDiscount[index];
+                  return Card(
+                    elevation: 4.0,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15.0)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        leading: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  discount.businessLogo), //negocio.logo
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          discount.name, //negocio.name
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco'),
+                        ),
+                        subtitle: Text(
+                          discount.description, //negocio.description
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontStyle: FontStyle.italic,
+                              fontFamily: 'San Francisco'),
+                        ),
+                        onTap: () {
+                          BuspageView(); //conexion xon business page (OJO CHECK)
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
 
+            // Botón para añadir un negocio
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  showAddBusinessDialog();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFFA500), // Color de fondo
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  "Añadir Negocio",
+                  style: TextStyle(
+                      color: Colors.white, fontFamily: "San Francisco"),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
 
+      //botombar
+      bottomNavigationBar: CustomBottomBarProv(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          _navigateToPage(index);
+        },
+      ),
     );
   }
 
@@ -307,15 +310,14 @@ class _FavspageState extends State<Favsbusinesspage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                Text("Ingresa los siguientes datos:", 
-                style: TextStyle(
-                  fontFamily: "San Francisco",
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.right
-                ),
+                Text("Ingresa los siguientes datos:",
+                    style: TextStyle(
+                      fontFamily: "San Francisco",
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.right),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
@@ -324,7 +326,8 @@ class _FavspageState extends State<Favsbusinesspage> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(labelText: 'Descripción del negocio:'),
+                  decoration:
+                      InputDecoration(labelText: 'Descripción del negocio:'),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -344,7 +347,9 @@ class _FavspageState extends State<Favsbusinesspage> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _tiktokController,
-                  decoration: InputDecoration(labelText: 'TikTok:',),
+                  decoration: InputDecoration(
+                    labelText: 'TikTok:',
+                  ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -352,14 +357,13 @@ class _FavspageState extends State<Favsbusinesspage> {
                   decoration: InputDecoration(labelText: 'Página web:'),
                 ),
                 const SizedBox(height: 20),
-              
                 ElevatedButton(
                   onPressed: () {
                     // Añadir el negocio a la lista de negocios
                     //final newBusiness = Negocio(
-                      //name: _nameController.text,
-                      //description: _descriptionController.text,
-                      //instagram: _instagramController.text,
+                    //name: _nameController.text,
+                    //description: _descriptionController.text,
+                    //instagram: _instagramController.text,
                     //);
                     setState(() {
                       //businesses.add(newBusiness);
@@ -367,19 +371,22 @@ class _FavspageState extends State<Favsbusinesspage> {
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF8CB1F1), // Color de fondo
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    backgroundColor: Color(0xFF8CB1F1), // Color de fondo
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                  child: Text(
+                    "Añadir",
+                    style: TextStyle(
+                        color: Colors.white, fontFamily: "San Francisco"),
                   ),
-                ),
-
-                child: Text("Añadir", style: TextStyle(color: Colors.white, fontFamily: "San Francisco" ),),
                 ),
               ],
             ),
@@ -387,30 +394,29 @@ class _FavspageState extends State<Favsbusinesspage> {
         ),
       );
 
-
   //pop-up con información del negocio
   //Future openDialog(Discount discount) => showDialog(
-        //context: context,
-        //builder: (context) => Dialog(
-          //shape: RoundedRectangleBorder(
-            //borderRadius: BorderRadius.circular(20),
-          //),
-          //child: Padding(
-            //padding: const EdgeInsets.all(16),
-            //child: 
-                //Titulo / Nombre de descuento
-                //Text(
-                  //Negocio(id: id, name: name, description: description, tiktok: tiktok, instagram: instagram, webpage: webpage, mail: mail).name,
-                  //"Negocio ",
-                  //style: TextStyle(
-                    //fontSize: 24,
-                    //fontWeight: FontWeight.bold,
-                    //color: Colors.black87,
-                  //),
-                  //textAlign: TextAlign.center,
-                //),
+  //context: context,
+  //builder: (context) => Dialog(
+  //shape: RoundedRectangleBorder(
+  //borderRadius: BorderRadius.circular(20),
+  //),
+  //child: Padding(
+  //padding: const EdgeInsets.all(16),
+  //child:
+  //Titulo / Nombre de descuento
+  //Text(
+  //Negocio(id: id, name: name, description: description, tiktok: tiktok, instagram: instagram, webpage: webpage, mail: mail).name,
+  //"Negocio ",
+  //style: TextStyle(
+  //fontSize: 24,
+  //fontWeight: FontWeight.bold,
+  //color: Colors.black87,
+  //),
+  //textAlign: TextAlign.center,
+  //),
 
-            //),
-        //)
-      //);
+  //),
+  //)
+  //);
 }

@@ -33,7 +33,7 @@ class CustomBottomBarProv extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () => onItemTapped(1),
+            onPressed: () => onItemTapped(2),
             icon: Icon(
               FeatherIcons.user,
               size: 30,

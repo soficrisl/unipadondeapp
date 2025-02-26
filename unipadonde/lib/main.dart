@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/creatediscountpage/cdiscount_view.dart';
 import 'package:unipadonde/favoritesbusinesspage/favsbusiness_view.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
@@ -65,7 +66,11 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (context) => Favsbusinesspage(userId: userId),
             );
-            
+          case '/cdiscount':
+            return MaterialPageRoute(
+              builder: (context) => CDiscountPage(userId: userId),
+            );
+
           default:
             return MaterialPageRoute(
               builder: (context) => StartView(),
