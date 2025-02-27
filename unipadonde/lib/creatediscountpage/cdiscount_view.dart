@@ -26,6 +26,12 @@ class _FavspageState extends State<CDiscountPage> {
   final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _idBusinessController = TextEditingController();
 
+  // Variables para las validaciones
+  String? _nameError;
+  String? _descriptionError;
+  String? _percentageError;
+  String? _dateError;
+
   // Función de logout
   void logout() async {
     await Supabase.instance.client.auth.signOut();
@@ -224,19 +230,23 @@ class _FavspageState extends State<CDiscountPage> {
                 const SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
-                  decoration:
-                      InputDecoration(labelText: 'Nombre del descuento:'),
+                  decoration: InputDecoration(
+                    labelText: 'Nombre del descuento:',
+                    errorText: _nameError,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(labelText: 'Descripción:'),
+                  decoration: InputDecoration(
+                      labelText: 'Descripción:', errorText: _descriptionError),
                 ),
                 const SizedBox(height: 20),
                 TextField(
                   controller: _percentageController,
-                  decoration:
-                      InputDecoration(labelText: 'Porcentaje de descuento:'),
+                  decoration: InputDecoration(
+                      labelText: 'Porcentaje de descuento:',
+                      errorText: _percentageError),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -309,18 +319,56 @@ class _FavspageState extends State<CDiscountPage> {
         ),
       );
 
+  //Metodo para anadir el descuento a Supabase mediante el viewmodel
   Future<void> _addDiscountToDatabase() async {
     DiscountViewModel discountViewModel = DiscountViewModel();
     try {
-      // Convierte las fechas a DateTime
+      //manejo de errores / validaciones:
+      setState(() {
+        _nameError = null;
+        _descriptionError = null;
+        _percentageError = null;
+        _dateError = null;
+      });
+
+      if (_nameController.text.isEmpty) {
+        setState(() => _nameError = "El nombre no puede estar vacío");
+        return;
+      }
+      if (_nameController.text.length > 100) {
+        setState(() => _nameError = "No puede excederse de 100 caracteres");
+        return;
+      }
+      if (_descriptionController.text.isEmpty) {
+        setState(
+            () => _descriptionError = "La descripción no puede estar vacía");
+        return;
+      }
+      if (_descriptionController.text.length > 1000) {
+        setState(
+            () => _descriptionError = "No puede excederse de 1000 caracteres");
+        return;
+      }
+      if (_percentageController.text.isEmpty) {
+        setState(() => _percentageError = "Debe ingresar un porcentaje");
+        return;
+      }
+      if (int.tryParse(_percentageController.text) == null) {
+        setState(() => _percentageError = "Debe ser un número entero");
+        return;
+      }
+      if (_startDateController.text.isEmpty ||
+          _endDateController.text.isEmpty) {
+        setState(() => _dateError = "Debe seleccionar las fechas");
+        return;
+      }
+      //manejo de datos:
       DateTime startDate = DateTime.parse(_startDateController.text);
       DateTime endDate = DateTime.parse(_endDateController.text);
 
-      // Determina el valor de 'state' basado en si la fecha de inicio es hoy
       bool state = startDate.isBefore(DateTime.now()) ||
           startDate.isAtSameMomentAs(DateTime.now());
 
-      // Crear el objeto Discount
       Discount discount = Discount(
         name: _nameController.text,
         description: _descriptionController.text,
@@ -331,11 +379,10 @@ class _FavspageState extends State<CDiscountPage> {
         id_negocio: int.parse(_idBusinessController.text),
       );
 
-      // Llamar al ViewModel
       bool success = await discountViewModel.addDiscount(discount);
 
       if (success) {
-        _showSuccessPopup(); // Llamar al pop-up de éxito
+        _showSuccessPopup();
       } else {
         throw Exception('Error al añadir el descuento');
       }
