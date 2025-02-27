@@ -7,9 +7,10 @@ class DiscountViewModel {
   Future<bool> addDiscount(Discount discount) async {
     try {
       await supabase.from('descuento').insert(discount.toMap());
-      return true; // Se insertó correctamente
+      return true; // Éxito
     } catch (e) {
-      return false; // Hubo un error
+      print("Error inesperado: $e");
+      return false; // Falla
     }
   }
 }

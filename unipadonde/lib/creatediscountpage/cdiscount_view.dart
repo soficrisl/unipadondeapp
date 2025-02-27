@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/business%20page/buspage_view.dart';
+import 'package:unipadonde/creatediscountpage/cdiscount_model.dart';
 import 'package:unipadonde/creatediscountpage/cdiscount_vm.dart';
-import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 //import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
 class CDiscountPage extends StatefulWidget {
   final int userId;
@@ -239,16 +239,40 @@ class _FavspageState extends State<CDiscountPage> {
                       InputDecoration(labelText: 'Porcentaje de descuento:'),
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _startDateController,
-                  decoration: InputDecoration(
-                      labelText: 'Fecha de inicio (YYYY-MM-DD):'),
+                ElevatedButton(
+                  onPressed: () {
+                    DatePicker.showDateTimePicker(
+                      context,
+                      showTitleActions: true,
+                      minTime: DateTime.now(),
+                      maxTime: DateTime(2100),
+                      onConfirm: (date) {
+                        setState(() {
+                          _startDateController.text = date.toIso8601String();
+                        });
+                      },
+                    );
+                  },
+                  child: Text("Seleccionar Fecha de Inicio"),
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _endDateController,
-                  decoration:
-                      InputDecoration(labelText: 'Fecha de fin (YYYY-MM-DD):'),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Muestra el selector de fecha de fin
+                    DateTime? selectedEndDate =
+                        await DatePicker.showDateTimePicker(
+                      context,
+                      showTitleActions: true,
+                      minTime: DateTime.now(),
+                      maxTime: DateTime(2100),
+                    );
+                    if (selectedEndDate != null) {
+                      setState(() {
+                        _endDateController.text = selectedEndDate.toString();
+                      });
+                    }
+                  },
+                  child: Text("Seleccionar Fecha de Fin"),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -284,33 +308,64 @@ class _FavspageState extends State<CDiscountPage> {
           ),
         ),
       );
-  // Método para guardar en Supabase
+
   Future<void> _addDiscountToDatabase() async {
-    final client = Supabase.instance.client;
-
+    DiscountViewModel discountViewModel = DiscountViewModel();
     try {
-      final response = await client.from('descuentos').insert({
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'percentage': int.parse(_percentageController.text),
-        'start_date': _startDateController.text,
-        'end_date': _endDateController.text,
-        'id_negocio': int.parse(_idBusinessController.text),
-      });
+      // Convierte las fechas a DateTime
+      DateTime startDate = DateTime.parse(_startDateController.text);
+      DateTime endDate = DateTime.parse(_endDateController.text);
 
-      if (response.error == null) {
-        // Descuento agregado correctamente
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Descuento añadido con éxito')),
-        );
+      // Determina el valor de 'state' basado en si la fecha de inicio es hoy
+      bool state = startDate.isBefore(DateTime.now()) ||
+          startDate.isAtSameMomentAs(DateTime.now());
+
+      // Crear el objeto Discount
+      Discount discount = Discount(
+        name: _nameController.text,
+        description: _descriptionController.text,
+        porcentaje: int.parse(_percentageController.text),
+        startdate: startDate,
+        enddate: endDate,
+        state: state,
+        id_negocio: int.parse(_idBusinessController.text),
+      );
+
+      // Llamar al ViewModel
+      bool success = await discountViewModel.addDiscount(discount);
+
+      if (success) {
+        _showSuccessPopup(); // Llamar al pop-up de éxito
       } else {
-        throw response.error!;
+        throw Exception('Error al añadir el descuento');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al añadir descuento: $e')),
       );
     }
+  }
+
+  // Función para mostrar el pop-up de éxito y cerrar el formulario
+  void _showSuccessPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("¡Éxito!"),
+          content: Text("El descuento se ha añadido correctamente."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el pop-up
+                Navigator.of(context)
+                    .pop(); // Cierra la pantalla de añadir descuento
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

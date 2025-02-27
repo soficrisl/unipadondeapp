@@ -3,20 +3,20 @@ class Discount {
   final String name;
   final String description;
   final int porcentaje;
-  final DateTime startDate;
-  final DateTime endDate;
+  final DateTime startdate;
+  final DateTime enddate;
   final bool state;
-  final int idNegocio;
+  final int id_negocio;
 
   Discount({
     this.id,
     required this.name,
     required this.description,
     required this.porcentaje,
-    required this.startDate,
-    required this.endDate,
+    required this.startdate,
+    required this.enddate,
     required this.state,
-    required this.idNegocio,
+    required this.id_negocio,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,10 +24,10 @@ class Discount {
       'name': name,
       'description': description,
       'porcentaje': porcentaje,
-      'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
+      'startdate': startdate.toIso8601String(),
+      'enddate': enddate.toIso8601String(),
       'state': state,
-      'idNegocio': idNegocio,
+      'id_negocio': id_negocio,
     };
   }
 }
