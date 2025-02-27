@@ -266,7 +266,7 @@ class _FavspageState extends State<Favspage> {
           ],
         ),
       ),
-      //botombar
+      //bottombar
       bottomNavigationBar: CustomBottomBar(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
