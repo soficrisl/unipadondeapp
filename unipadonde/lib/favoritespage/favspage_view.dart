@@ -101,7 +101,7 @@ class _FavspageState extends State<Favspage> {
             end: Alignment.bottomRight,
           ).createShader(bounds),
           child: Text(
-            "UnipaDonde",
+            "Mis Categorías",
             style: TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -137,36 +137,6 @@ class _FavspageState extends State<Favspage> {
               child: SingleChildScrollView( 
                 child: Column(
                   children: [
-                    Container(
-                      height: 50,
-                      color: Colors.orange,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Mis Categorías",
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontFamily: 'San Francisco',
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 5.0,
-                                      color: Colors.black.withOpacity(0.5),
-                                      offset: Offset(2.0, 2.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
                     // Categorias
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),

@@ -65,7 +65,7 @@ class _FavspageState extends State<Favsbusinesspage> {
     }
   }
 
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   void _navigateToPage(int index) {
     setState(() {
@@ -79,10 +79,6 @@ class _FavspageState extends State<Favsbusinesspage> {
         break;
       case 1:
         Navigator.pushReplacementNamed(context, '/profileprov',
-            arguments: widget.userId);
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/cdiscount',
             arguments: widget.userId);
         break;
     }
@@ -112,7 +108,7 @@ class _FavspageState extends State<Favsbusinesspage> {
             end: Alignment.bottomRight,
           ).createShader(bounds),
           child: Text(
-            "UnipaDonde",
+            "Mis Negocios",
             style: TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -149,36 +145,6 @@ class _FavspageState extends State<Favsbusinesspage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              //margin: const EdgeInsets.only(top: 15.0),
-              height: 50,
-              color: Color.fromARGB(255, 72, 128, 188),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Mis Negocios",
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontFamily: 'San Francisco',
-                          shadows: [
-                            Shadow(
-                              blurRadius: 5.0,
-                              color: Colors.black.withOpacity(0.5),
-                              offset: Offset(2.0, 2.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             SizedBox(
               height: 5,
             ),
