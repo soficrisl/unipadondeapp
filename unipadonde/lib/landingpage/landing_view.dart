@@ -130,149 +130,165 @@ class _LandingState extends State<Landing> {
         ],
       ),
       body: Stack(
-          children: [
-            Container(
-              height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFF8CB1F1),
-                    Colors.white,
-                  ],
-                  begin: Alignment.topCenter,
-                ),
+        children: [
+          Container(
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF8CB1F1),
+                  Colors.white,
+                ],
+                begin: Alignment.topCenter,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Este container muestra los botones de categorías
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                    height: 60, // Ajusta la altura del carrusel
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal, // Hacemos que se desplace horizontalmente
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index][1];
-                        final idcategory = categories[index][0];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0), // Espaciado entre categorías
-                          child: FilterChip(
-                            selected: selectedCategories.contains(idcategory),
-                            label: Text(
-                              category,
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'San Francisco',
-                                color: selectedCategories.contains(idcategory)
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                if (selected) {
-                                  selectedCategories.add(idcategory);
-                                } else {
-                                  selectedCategories.remove(idcategory);
-                                }
-                              });
-                            },
-                            backgroundColor: selectedCategories.contains(idcategory)
-                                ? const Color(0xFFFFA500)
-                                : Color(0xFFFFFFFF),
-                            selectedColor: const Color(0xFFFFA500),
-                            checkmarkColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            side: BorderSide(
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Este container muestra los botones de categorías
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  height: 60, // Ajusta la altura del carrusel
+                  child: ListView.builder(
+                    scrollDirection: Axis
+                        .horizontal, // Hacemos que se desplace horizontalmente
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index][1];
+                      final idcategory = categories[index][0];
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            right: 8.0), // Espaciado entre categorías
+                        child: FilterChip(
+                          selected: selectedCategories.contains(idcategory),
+                          label: Text(
+                            category,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'San Francisco',
                               color: selectedCategories.contains(idcategory)
-                                  ? const Color(0xFFFFA500)
-                                  : const Color(0xFFFFA500),
-                              width: 2.0,
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
-                            elevation: 5.0,
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  // Aqui se maneja la visualización de los descuentos filtrados
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: filterDiscount.length,
-                      itemBuilder: (context, index) {
-                        final discount = filterDiscount[index];
-                        return Card(
-                          elevation: 4.0,
-                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                selectedCategories.add(idcategory);
+                              } else {
+                                selectedCategories.remove(idcategory);
+                              }
+                            });
+                          },
+                          backgroundColor:
+                              selectedCategories.contains(idcategory)
+                                  ? const Color(0xFFFFA500)
+                                  : Color(0xFFFFFFFF),
+                          selectedColor: const Color(0xFFFFA500),
+                          checkmarkColor: Colors.white,
                           shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          side: BorderSide(
+                            color: selectedCategories.contains(idcategory)
+                                ? const Color(0xFFFFA500)
+                                : const Color(0xFFFFA500),
+                            width: 2.0,
+                          ),
+                          elevation: 5.0,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                // Aqui se maneja la visualización de los descuentos filtrados
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filterDiscount.length,
+                    itemBuilder: (context, index) {
+                      final discount = filterDiscount[index];
+                      return Card(
+                        elevation: 4.0,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(15.0),
                           ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15.0),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            leading: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                image: DecorationImage(
+                                  image: AssetImage(discount.businessLogo),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                             ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              leading: Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  image: DecorationImage(
-                                    image: AssetImage(discount.businessLogo),
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
+                            title: Text(
+                              discount.name,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'San Francisco',
                               ),
-                              title: Text(
-                                discount.name,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
-                              subtitle: Text(
-                                discount.description,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontStyle: FontStyle.italic,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
-                              // Eliminado el ícono de tres puntos (trailing)
-                              onTap: () {
-                                openDialog(discount);
-                              },
                             ),
+                            subtitle: Text(
+                              discount.description,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontStyle: FontStyle.italic,
+                                fontFamily: 'San Francisco',
+                              ),
+                            ),
+                            // Eliminado el ícono de tres puntos (trailing)
+                            onTap: () {
+                              openDialog(discount);
+                            },
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+                CustomBottomBar(
+                  selectedIndex: _selectedIndex,
+                  onItemTapped: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                    _navigateToPage(index);
+                  },
+                ),
+              ],
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: CustomBottomBar(
-                selectedIndex: _selectedIndex,
-                onItemTapped: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                  _navigateToPage(index);
-                },
-              ),
+          ),
+          /*Align(
+            alignment: Alignment.bottomCenter,
+            child: CustomBottomBar(
+              selectedIndex: _selectedIndex,
+              onItemTapped: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+                _navigateToPage(index);
+              },
             ),
-          ],
-        ),
+          ),*/
+        ],
+      ),
     );
   }
 
