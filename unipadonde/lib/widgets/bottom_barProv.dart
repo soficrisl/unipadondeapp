@@ -38,7 +38,7 @@ class CustomBottomBarProv extends StatelessWidget {
               FeatherIcons.user,
               size: 30,
               color:
-                  selectedIndex == 2 ? const Color(0xFFFFA500) : Colors.black,
+                  selectedIndex == 1 ? const Color(0xFFFFA500) : Colors.black,
             ),
           ),
         ],

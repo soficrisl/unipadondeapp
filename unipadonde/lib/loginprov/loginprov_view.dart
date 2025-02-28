@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/login/login_view.dart';
-import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
 
@@ -293,4 +292,3 @@ class _LoginProvState extends State<LoginProvView> {
   }
 }
 // FADEANIMATION¿?
-
