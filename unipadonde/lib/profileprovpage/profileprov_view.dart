@@ -157,11 +157,6 @@ class _ProfilePageState extends State<ProfileProvPage> {
                 });
                 Navigator.of(context).pop();
               },
-              child: Text(
-                'Guardar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
-              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 186, 209, 247),
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
@@ -169,6 +164,11 @@ class _ProfilePageState extends State<ProfileProvPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
+              ),
+              child: Text(
+                'Guardar',
+                style:
+                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
               ),
             ),
           ],
@@ -332,13 +332,6 @@ class _ProfilePageState extends State<ProfileProvPage> {
                     onPressed: () {
                       // Acción para cambiar la foto de perfil
                     },
-                    child: Text(
-                      'Cambiar Foto',
-                      style: TextStyle(
-                          fontFamily: 'San Francisco',
-                          fontSize: 16,
-                          color: Colors.black),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 207, 207, 207),
                       padding:
@@ -348,6 +341,13 @@ class _ProfilePageState extends State<ProfileProvPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
+                    ),
+                    child: Text(
+                      'Cambiar Foto',
+                      style: TextStyle(
+                          fontFamily: 'San Francisco',
+                          fontSize: 16,
+                          color: Colors.black),
                     ),
                   ),
                   SizedBox(height: 20),
