@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/business page/buspage_view.dart';
+
 
 class Favspage extends StatefulWidget {
   final int userId;
@@ -149,7 +151,7 @@ class _FavspageState extends State<Favspage> {
                 fontFamily: 'San Francisco',
               ),
             ),
-            // Este container muestra los botones de categorías
+            // ! Este container muestra los botones de categorías
             Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               height: 60, // Ajusta la altura del carrusel
@@ -208,7 +210,7 @@ class _FavspageState extends State<Favspage> {
               ),
             ),
 
-            // Aqui se maneja la visualización de los descuentos filtrados
+            //! Aqui se maneja la visualización de los descuentos filtrados
             Expanded(
               child: ListView.builder(
                 itemCount: filterDiscount.length,
@@ -318,7 +320,7 @@ class _FavspageState extends State<Favspage> {
                 ),
 
                 const SizedBox(height: 20),
-                //Titulo / Nombre de descuento
+                //Titulo | Nombre de descuento
                 Text(
                   discount.name,
                   style: TextStyle(
@@ -352,10 +354,13 @@ class _FavspageState extends State<Favspage> {
                 ),
 
                 const SizedBox(height: 30),
-                //boton negocio
+                
+                //! BOTON VISITAR NEGOCIO
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => BusinessPage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:

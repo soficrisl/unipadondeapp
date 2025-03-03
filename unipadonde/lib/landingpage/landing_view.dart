@@ -18,6 +18,7 @@ class _LandingState extends State<Landing> {
   //lista de categorias
   List<List<dynamic>> categories = [];
   List<Discount> listofdiscounts = [];
+  bool showSubscribeButton = false;
 
   void getcat() async {
     /// Esto deberia estar en el VM
@@ -176,8 +177,11 @@ class _LandingState extends State<Landing> {
                         setState(() {
                           if (selected) {
                             selectedCategories.add(idcategory);
+                            showSubscribeButton = true;
                           } else {
                             selectedCategories.remove(idcategory);
+                            showSubscribeButton =
+                                selectedCategories.isNotEmpty;
                           }
                         });
                       },
@@ -263,19 +267,48 @@ class _LandingState extends State<Landing> {
         ),
       ),
       // Este es el bottom bar dentro del container con el degradado
-      bottomNavigationBar: CustomBottomBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          _navigateToPage(index);
-        },
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showSubscribeButton)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  // ! AQUÍ VA LA LÓGICA PARA METER LAS CATEGORÍAS SUSCRITAS AL FAVORITESPAGE
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF8CB1F1), // Color del botón
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text("Suscribirse a categoría"),
+              ),
+            ),
+          
+          // ! Esto me está dando problemas, revisar
+          CustomBottomBar(
+            selectedIndex: _selectedIndex,
+            onItemTapped: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+              _navigateToPage(index);
+            },
+          ), 
+        ],
       ),
     );
   }
 
-  // Método para mostrar un pop-up con información del descuento
+  //* Método para mostrar un pop-up con información del descuento
 
   Future openDialog(Discount discount) => showDialog(
         context: context,

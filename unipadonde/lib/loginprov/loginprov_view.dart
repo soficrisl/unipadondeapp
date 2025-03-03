@@ -127,6 +127,7 @@ class _LoginProvState extends State<LoginProvView> {
 
                                 //EMAIL
                                 child: TextField(
+                                  
                                   controller: _emailController,
                                   decoration: InputDecoration(
                                       hintText: "Correo personal",

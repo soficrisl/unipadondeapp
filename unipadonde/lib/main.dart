@@ -5,6 +5,9 @@ import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/searchbar/search_view.dart';
+import 'package:unipadonde/business page/buspage_view.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
+
 
 import 'package:unipadonde/startpage/start_view.dart';
 
@@ -29,13 +32,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/start', // Ruta inicial
+      initialRoute: '/favorites', // Ruta inicial
       //rutas pasando el userId a las vistas
       onGenerateRoute: (settings) {
         final userId = settings.arguments as int?;
         if (userId == null) {
           return MaterialPageRoute(
-            builder: (context) => const loginVm(),
+            builder: (context) => BusinessPageProv(),
           );
         }
 
@@ -64,7 +67,7 @@ class MyApp extends StatelessWidget {
             );
         }
       },
-      home: const StartView(),
+      home: const Favspage(userId: 0),
     );
   }
 }
