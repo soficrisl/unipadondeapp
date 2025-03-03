@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 import 'dart:io';
 
 class BusinessPageProv extends StatefulWidget {

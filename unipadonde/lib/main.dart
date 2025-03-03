@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         final userId = settings.arguments as int?;
         if (userId == null) {
           return MaterialPageRoute(
-            builder: (context) => BusinessPageProv(),
+            builder: (context) => StartView(),
           );
         }
 
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
             );
         }
       },
-      home: const Favspage(userId: 0),
+      home: const StartView(),
     );
   }
 }
