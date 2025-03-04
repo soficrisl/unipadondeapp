@@ -4,11 +4,9 @@ import 'package:unipadonde/creatediscountpage/cdiscount_view.dart';
 import 'package:unipadonde/favoritesbusinesspage/favsbusiness_view.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
-import 'package:unipadonde/login/login_vm.dart';
+// import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
-import 'package:unipadonde/searchbar/search_view.dart';
-import 'package:unipadonde/business page/buspage_view.dart';
-import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
+// import 'package:unipadonde/searchbar/search_model.dart';
 import 'package:unipadonde/profileprovpage/profileprov_view.dart';
 import 'package:unipadonde/startpage/start_view.dart';
 

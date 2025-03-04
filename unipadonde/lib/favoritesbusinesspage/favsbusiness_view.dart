@@ -196,7 +196,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                               fontFamily: 'San Francisco'),
                         ),
                         onTap: () {
-                          BuspageView(); //conexion xon business page (OJO CHECK)
+                          BusinessPage(); //conexion xon business page (OJO CHECK)
                         },
                       ),
                     ),

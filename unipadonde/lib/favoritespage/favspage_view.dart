@@ -251,11 +251,11 @@ class _FavspageState extends State<Favspage> {
                         );
                       },
                     ),
+                    )
                   ],
                 ),
               ),
-            ),
-      bottomNavigationBar: CustomBottomBar(
+              bottomNavigationBar: CustomBottomBar(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
           setState(() {
@@ -264,8 +264,9 @@ class _FavspageState extends State<Favspage> {
           _navigateToPage(index);
         },
       ),
-    );
+            );  
   }
+  
 
   // Método para mostrar un pop-up con información del descuento
 

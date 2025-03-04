@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/favoritespage/favspage_view.dart';
-import 'package:unipadonde/favoritespage/favspage_model.dart';
+// import 'package:unipadonde/favoritespage/favspage_view.dart';
+// import 'package:unipadonde/favoritespage/favspage_model.dart';
 
 
 class BusinessPage extends StatelessWidget {

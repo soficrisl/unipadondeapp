@@ -285,6 +285,7 @@ class _LandingState extends State<Landing> {
           if (showSubscribeButton)
             Padding(
               padding: const EdgeInsets.all(8.0),
+              
               // ! BOTÓN PARA SUSCRIBIRSE 
               child: ElevatedButton(
                 onPressed: subscribeToCategories,
