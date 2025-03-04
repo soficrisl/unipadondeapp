@@ -58,6 +58,22 @@ class DataService {
   List<Discount>? getDescuentos() {
     return listofdiscounts;
   }
+
+  // ! Añadir método addSubscription
+  Future<void> addSubscription(int userId, String categoryId) async {
+    try {
+      final response = await client.from('subscriptions').insert({
+        'user_id': userId,
+        'category_id': categoryId,
+      });
+
+      if (response.error != null) {
+        throw Exception('Failed to add subscription: ${response.error!.message}');
+      }
+    } catch (e) {
+      throw Exception('Error adding subscription');
+    }
+  }
 }
 
 //Atributos del descuento
