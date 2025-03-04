@@ -60,6 +60,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
               decoration: InputDecoration(
                 labelText: 'Nombre del negocio',
                 border: OutlineInputBorder(),
+                
               ),
             ),
             SizedBox(height: 16),

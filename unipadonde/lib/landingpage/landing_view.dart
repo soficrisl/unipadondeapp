@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/landingpage/landin_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/business page/buspage_view.dart';
 
 class Landing extends StatefulWidget {
   final int userId;
@@ -15,13 +16,13 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  //lista de categorias
+  // Lista de categorías
   List<List<dynamic>> categories = [];
   List<Discount> listofdiscounts = [];
   bool showSubscribeButton = false;
 
   void getcat() async {
-    /// Esto deberia estar en el VM
+    /// Esto debería estar en el VM
     final dataService = DataService(Supabase.instance.client);
     await dataService.fetchCategorias();
     setState(() {
@@ -30,7 +31,7 @@ class _LandingState extends State<Landing> {
   }
 
   void getdis() async {
-    // Esto deberia estar en el VM
+    // Esto debería estar en el VM
     final dataService = DataService(Supabase.instance.client);
     await dataService.fetchDiscounts();
     setState(() {
@@ -45,7 +46,7 @@ class _LandingState extends State<Landing> {
     getdis();
   }
 
-  //categorias seleccionadas
+  // Categorías seleccionadas
   List<int> selectedCategories = [];
 
   int _selectedIndex = 0;
@@ -83,9 +84,19 @@ class _LandingState extends State<Landing> {
     }
   }
 
+  // ! Función para suscribirse a las categorías seleccionadas
+  void subscribeToCategories() async {
+    final dataService = DataService(Supabase.instance.client);
+    for (int categoryId in selectedCategories) {
+      await dataService.addSubscription(widget.userId, categoryId.toString());
+    }
+    // ! Redirigir a la página de favoritos después de suscribirse
+    Navigator.pushReplacementNamed(context, '/favorites', arguments: widget.userId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    //filtrar los descuentos de acuerdo a la categoria seleccionada
+    // Filtrar los descuentos de acuerdo a la categoría seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
       return selectedCategories.isEmpty ||
           selectedCategories.contains(discount.idcategory);
@@ -93,7 +104,7 @@ class _LandingState extends State<Landing> {
 
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
+        // AppBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -136,7 +147,7 @@ class _LandingState extends State<Landing> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFFFAAF90), //fondo principal
+              const Color(0xFFFAAF90), // Fondo principal
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
@@ -208,7 +219,7 @@ class _LandingState extends State<Landing> {
               ),
             ),
 
-            // Aqui se maneja la visualización de los descuentos filtrados
+            // Aquí se maneja la visualización de los descuentos filtrados
             Expanded(
               child: ListView.builder(
                 itemCount: filterDiscount.length,
@@ -273,10 +284,9 @@ class _LandingState extends State<Landing> {
           if (showSubscribeButton)
             Padding(
               padding: const EdgeInsets.all(8.0),
+              // ! BOTÓN PARA SUSCRIBIRSE 
               child: ElevatedButton(
-                onPressed: () {
-                  // ! AQUÍ VA LA LÓGICA PARA METER LAS CATEGORÍAS SUSCRITAS AL FAVORITESPAGE
-                },
+                onPressed: subscribeToCategories,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF8CB1F1), // Color del botón
                   foregroundColor: Colors.white,
@@ -381,10 +391,12 @@ class _LandingState extends State<Landing> {
                 ),
 
                 const SizedBox(height: 30),
-                //boton negocio
+                //! BOTON VISITAR NEGOCIO
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => BusinessPage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:

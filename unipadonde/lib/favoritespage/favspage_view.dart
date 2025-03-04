@@ -4,10 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/business page/buspage_view.dart';
 
-
 class Favspage extends StatefulWidget {
   final int userId;
-
   const Favspage({required this.userId, super.key});
 
   @override
@@ -15,17 +13,15 @@ class Favspage extends StatefulWidget {
 }
 
 class _FavspageState extends State<Favspage> {
-  //lista de categorias
+  // Lista de categorías
   List<Categoria> categories = [];
   List<Discount> listofdiscounts = [];
   List<int> selectedCategories = [];
 
-  final dataService = DataService(Supabase
-      .instance.client); //esto antes estaba dentro de c/funcion y lo saque
+  final dataService = DataService(Supabase.instance.client); //esto antes estaba dentro de c/funcion y lo saque
 
-  //Cargar categorias suscritas
+  // Cargar categorías suscritas
   void getcat() async {
-    /// Esto deberia estar en el VM
     await dataService.fetchCategoriasSuscritas(widget.userId);
     setState(() {
       categories = dataService.getCategoriasSuscritas();
@@ -33,9 +29,8 @@ class _FavspageState extends State<Favspage> {
     getdis();
   }
 
-  //Cargar descuentos
+  // Cargar descuentos
   void getdis() async {
-    // Esto deberia estar en el VM
     await dataService.fetchDiscounts();
     setState(() {
       listofdiscounts = dataService.getDescuentos() ?? [];
@@ -65,31 +60,27 @@ class _FavspageState extends State<Favspage> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/landing',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/landing', arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/favorites',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/favorites', arguments: widget.userId);
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/profile',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/profile', arguments: widget.userId);
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //filtrar los descuentos de acuerdo a la categoria seleccionada
+    // Filtrar los descuentos de acuerdo a la categoría seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
-      return selectedCategories.isEmpty ||
-          selectedCategories.contains(discount.idcategory);
+      return selectedCategories.isEmpty || selectedCategories.contains(discount.idcategory);
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
+        // AppBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -123,8 +114,9 @@ class _FavspageState extends State<Favspage> {
             },
           ),
           IconButton(
-              onPressed: logout,
-              icon: const Icon(Icons.logout, color: Colors.black)),
+            onPressed: logout,
+            icon: const Icon(Icons.logout, color: Colors.black),
+          ),
         ],
       ),
       body: Container(
@@ -132,7 +124,7 @@ class _FavspageState extends State<Favspage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFFFAAF90), //fondo principal
+              const Color(0xFFFAAF90),
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
@@ -143,7 +135,7 @@ class _FavspageState extends State<Favspage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              "Mis categorías", // Agregado el título aquí
+              "Mis categorías",
               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.bold,
@@ -154,17 +146,14 @@ class _FavspageState extends State<Favspage> {
             // ! Este container muestra los botones de categorías
             Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-              height: 60, // Ajusta la altura del carrusel
+              height: 60,
               child: ListView.builder(
-                scrollDirection:
-                    Axis.horizontal, // Hacemos que se desplace horizontalmente
+                scrollDirection: Axis.horizontal,
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
-                  //final idcategory = categories[index][0];
                   return Padding(
-                    padding: const EdgeInsets.only(
-                        right: 8.0), // Espaciado entre categorías
+                    padding: const EdgeInsets.only(right: 8.0),
                     child: FilterChip(
                       selected: selectedCategories.contains(category.id),
                       label: Text(
@@ -173,9 +162,7 @@ class _FavspageState extends State<Favspage> {
                           fontSize: 17,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'San Francisco',
-                          color: selectedCategories.contains(category.id)
-                              ? Colors.white
-                              : Colors.black,
+                          color: selectedCategories.contains(category.id) ? Colors.white : Colors.black,
                         ),
                       ),
                       onSelected: (selected) {
@@ -202,15 +189,14 @@ class _FavspageState extends State<Favspage> {
                         width: 2.0,
                       ),
                       elevation: 5.0,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     ),
                   );
                 },
               ),
             ),
 
-            //! Aqui se maneja la visualización de los descuentos filtrados
+            //! Aquí se maneja la visualización de los descuentos filtrados
             Expanded(
               child: ListView.builder(
                 itemCount: filterDiscount.length,
@@ -218,18 +204,17 @@ class _FavspageState extends State<Favspage> {
                   final discount = filterDiscount[index];
                   return Card(
                     elevation: 4.0,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0)),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         leading: Container(
                           width: 80,
                           height: 80,
@@ -244,18 +229,19 @@ class _FavspageState extends State<Favspage> {
                         title: Text(
                           discount.name,
                           style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'San Francisco'),
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'San Francisco',
+                          ),
                         ),
                         subtitle: Text(
                           discount.description,
                           style: const TextStyle(
-                              color: Colors.black,
-                              fontStyle: FontStyle.italic,
-                              fontFamily: 'San Francisco'),
+                            color: Colors.black,
+                            fontStyle: FontStyle.italic,
+                            fontFamily: 'San Francisco',
+                          ),
                         ),
-                        // Eliminado el ícono de tres puntos (trailing)
                         onTap: () {
                           openDialog(discount);
                         },
@@ -268,7 +254,6 @@ class _FavspageState extends State<Favspage> {
           ],
         ),
       ),
-      //bottombar
       bottomNavigationBar: CustomBottomBar(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
@@ -354,7 +339,6 @@ class _FavspageState extends State<Favspage> {
                 ),
 
                 const SizedBox(height: 30),
-                
                 //! BOTON VISITAR NEGOCIO
                 ElevatedButton(
                   onPressed: () {

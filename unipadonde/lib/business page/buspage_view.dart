@@ -37,7 +37,7 @@ class BusinessPage extends StatelessWidget {
                 ),
                 child: ClipOval(
                   child: Image.asset(
-                    'assets/images/american.jpg',
+                    'assets/images/american.jpg',  // ! AQUÍ ESTÁ PUESTA UNA IMAGEN RANDOM DE LOS ASSETS. FALTA QUE SE VEA LA INFO REAL
                     fit: BoxFit.contain, // Ajusta la imagen dentro del círculo
                   ),
                 ),

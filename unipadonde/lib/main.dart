@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         final userId = settings.arguments as int?;
         if (userId == null) {
           return MaterialPageRoute(
-            builder: (context) => StartView(),
+            builder: (context) => BusinessPageProv(),
           );
         }
 
