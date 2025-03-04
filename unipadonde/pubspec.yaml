@@ -39,6 +39,7 @@ dependencies:
   flutter_svg: ^2.0.17
   google_fonts: ^6.2.1
   flutter_feather_icons: ^2.0.0+1
+  flutter_datetime_picker_plus: ^2.1.0
 
 
 

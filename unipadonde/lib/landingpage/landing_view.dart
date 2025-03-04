@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/landingpage/landin_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/searchbar/search_mv.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/business page/buspage_view.dart';
 
@@ -110,7 +111,8 @@ class _LandingState extends State<Landing> {
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
-              const Color(0xFFFAAF90),
+              const Color(0xFFFFA500),
+              const Color(0xFF7A9BBF),
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
@@ -129,12 +131,9 @@ class _LandingState extends State<Landing> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
+            icon: const Icon(Icons.search_rounded),
             onPressed: () {
-              setState(() {
-                _selectedIndex = 3;
-              });
-              _navigateToPage(3);
+              showSearch(context: context, delegate: CustomSearchDelegate());
             },
           ),
           IconButton(
@@ -247,33 +246,35 @@ class _LandingState extends State<Landing> {
                             image: DecorationImage(
                               image: AssetImage(discount.businessLogo),
                               fit: BoxFit.contain,
+                                ),
+                              ),
                             ),
+                            title: Text(
+                              discount.name,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'San Francisco',
+                              ),
+                            ),
+                            subtitle: Text(
+                              discount.description,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontStyle: FontStyle.italic,
+                                fontFamily: 'San Francisco',
+                              ),
+                            ),
+                            // Eliminado el ícono de tres puntos (trailing)
+                            onTap: () {
+                              openDialog(discount);
+                            },
                           ),
                         ),
-                        title: Text(
-                          discount.name,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'San Francisco'),
-                        ),
-                        subtitle: Text(
-                          discount.description,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontStyle: FontStyle.italic,
-                              fontFamily: 'San Francisco'),
-                        ),
-                        // Eliminado el ícono de tres puntos (trailing)
-                        onTap: () {
-                          openDialog(discount);
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                      );
+                    },
+                  ),
+                ),
           ],
         ),
       ),
@@ -400,7 +401,7 @@ class _LandingState extends State<Landing> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        Color(0xFFfcc9b5), // Color de fondo del botón
+                        Color(0xFFFFA500), // Color de fondo del botón
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(

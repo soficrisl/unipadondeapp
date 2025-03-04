@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 
-class CustomBottomBar extends StatelessWidget {
+class CustomBottomBarProv extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
-  const CustomBottomBar({
+  const CustomBottomBarProv({
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
@@ -28,23 +28,17 @@ class CustomBottomBar extends StatelessWidget {
             icon: Icon(
               FeatherIcons.home,
               size: 30,
-              color: selectedIndex == 0 ? const Color(0xFFFFA500) : Colors.black,
+              color:
+                  selectedIndex == 0 ? const Color(0xFFFFA500) : Colors.black,
             ),
           ),
           IconButton(
             onPressed: () => onItemTapped(1),
             icon: Icon(
-              FeatherIcons.heart,
-              size: 30,
-              color: selectedIndex == 1 ? const Color(0xFFFFA500) : Colors.black,
-            ),
-          ),
-          IconButton(
-            onPressed: () => onItemTapped(2),
-            icon: Icon(
               FeatherIcons.user,
               size: 30,
-              color: selectedIndex == 2 ? const Color(0xFFFFA500) : Colors.black,
+              color:
+                  selectedIndex == 1 ? const Color(0xFFFFA500) : Colors.black,
             ),
           ),
         ],

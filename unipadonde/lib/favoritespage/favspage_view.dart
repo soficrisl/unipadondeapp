@@ -86,14 +86,15 @@ class _FavspageState extends State<Favspage> {
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
-              const Color(0xFFFAAF90),
+              const Color(0xFFFFA500),
+              const Color(0xFF7A9BBF),
               const Color(0xFF8CB1F1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),
           child: Text(
-            "UnipaDonde",
+            "Mis Categorías",
             style: TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -244,16 +245,16 @@ class _FavspageState extends State<Favspage> {
                         ),
                         onTap: () {
                           openDialog(discount);
-                        },
-                      ),
+                              },
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: CustomBottomBar(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
@@ -348,7 +349,7 @@ class _FavspageState extends State<Favspage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        Color(0xFFfcc9b5), // Color de fondo del botón
+                        Color(0xFFFFA500), // Color de fondo del botón
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(

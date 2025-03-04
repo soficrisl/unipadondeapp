@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/repository/supabase.dart';
-import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/widgets/bottom_barProv.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfileProvPage extends StatefulWidget {
   final int userId;
 
-  const ProfilePage({required this.userId, super.key});
+  const ProfileProvPage({required this.userId, super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<ProfileProvPage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfileProvPage> {
   final authService = AuthenticationService();
   String previousName =
       "Juan Pérez"; // Este valor provendría de la base de datos
@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
         context, '/landing'); // Redirigir a la pantalla de inicio
   }
 
-  int _selectedIndex = 2;
+  int _selectedIndex = 1;
 
   void _navigateToPage(int index) {
     setState(() {
@@ -38,15 +38,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/landing',
+        Navigator.pushReplacementNamed(context, '/favsbusiness',
             arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/favorites',
-            arguments: widget.userId);
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/profile',
+        Navigator.pushReplacementNamed(context, '/profileprov',
             arguments: widget.userId);
         break;
     }
@@ -468,7 +464,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: CustomBottomBar(
+            child: CustomBottomBarProv(
               selectedIndex: _selectedIndex,
               onItemTapped: (index) {
                 setState(() {

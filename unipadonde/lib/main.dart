@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/creatediscountpage/cdiscount_view.dart';
+import 'package:unipadonde/favoritesbusinesspage/favsbusiness_view.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
@@ -7,8 +9,7 @@ import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/searchbar/search_view.dart';
 import 'package:unipadonde/business page/buspage_view.dart';
 import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
-
-
+import 'package:unipadonde/profileprovpage/profileprov_view.dart';
 import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
@@ -48,19 +49,30 @@ class MyApp extends StatelessWidget {
               builder: (context) => Landing(userId: userId),
             );
 
-          case '/search':
-            return MaterialPageRoute(
-              builder: (context) => Search(userId: userId),
-            );
-
           case '/favorites':
             return MaterialPageRoute(
               builder: (context) => Favspage(userId: userId),
             );
+
           case '/profile':
             return MaterialPageRoute(
               builder: (context) => ProfilePage(userId: userId),
             );
+
+          case '/profileprov':
+            return MaterialPageRoute(
+              builder: (context) => ProfileProvPage(userId: userId),
+            );
+
+          case '/favsbusiness':
+            return MaterialPageRoute(
+              builder: (context) => Favsbusinesspage(userId: userId),
+            );
+          case '/cdiscount':
+            return MaterialPageRoute(
+              builder: (context) => CDiscountPage(userId: userId),
+            );
+
           default:
             return MaterialPageRoute(
               builder: (context) => StartView(),
