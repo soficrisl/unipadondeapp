@@ -32,13 +32,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/favorites', // Ruta inicial
+      initialRoute: '/start', // Ruta inicial
       //rutas pasando el userId a las vistas
       onGenerateRoute: (settings) {
         final userId = settings.arguments as int?;
         if (userId == null) {
           return MaterialPageRoute(
-            builder: (context) => BusinessPageProv(),
+            builder: (context) => StartView(),
           );
         }
 
