@@ -7,6 +7,7 @@ import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/profileprovpage/profileprov_view.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
 
 import 'package:unipadonde/startpage/start_view.dart';
 
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         final userId = settings.arguments as int?;
         if (userId == null) {
           return MaterialPageRoute(
-            builder: (context) => const loginVm(),
+            builder: (context) => BusinessPageProv(),
           );
         }
 

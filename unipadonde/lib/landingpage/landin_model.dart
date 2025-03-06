@@ -17,7 +17,7 @@ class DataService {
         return [categoria.id, categoria.name];
       }).toList();
     } catch (e) {
-      throw Exception('Error fetching categories');
+      throw Exception('Error fetching categories: $e');
     }
   }
 
@@ -26,41 +26,79 @@ class DataService {
   }
 
   Future<void> fetchDiscounts() async {
-    try {
-      final descuentos = await client.from('descuento').select();
-      final pertenece = await client.from('pertenece').select();
-      final info = await client.from('negocio').select('id, picture');
+  try {
+    final descuentos = await client.from('descuento').select();
+    final pertenece = await client.from('pertenece').select();
+    final info = await client.from('negocio').select('id, picture, tiktok, instagram, webpage'); // Añadir campos necesarios
 
-      List<Map<String, dynamic>> descuentoslistos = [];
-      final negocioMap = {for (var n in info) n['id']: n['picture']};
-      final perteneceMap = {
-        for (var n in pertenece) n['id_negocio']: n["id_categoria"]
-      };
-
-      int? idcat;
-      String? imagen;
-      int? idnegocio;
-      for (var descuento in descuentos) {
-        idnegocio = descuento['id_negocio'];
-        idcat = perteneceMap[idnegocio];
-        imagen = negocioMap[idnegocio];
-        descuento['businessLogo'] = imagen;
-        descuento['idcategory'] = idcat;
-        descuentoslistos.add(descuento);
+    List<Map<String, dynamic>> descuentoslistos = [];
+    final negocioMap = {
+      for (var n in info) n['id']: {
+        'picture': n['picture'],
+        'tiktok': n['tiktok'],
+        'instagram': n['instagram'],
+        'webpage': n['webpage'],
       }
-      listofdiscounts =
-          descuentoslistos.map((json) => Discount.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception('Error fetching discounts');
+    };
+    final perteneceMap = {
+      for (var n in pertenece) n['id_negocio']: n["id_categoria"]
+    };
+
+    int? idcat;
+    String? imagen;
+    String? tiktok;
+    String? instagram;
+    String? webpage;
+    int? idnegocio;
+    for (var descuento in descuentos) {
+      idnegocio = descuento['id_negocio'];
+      idcat = perteneceMap[idnegocio];
+      imagen = negocioMap[idnegocio]?['picture'];
+      tiktok = negocioMap[idnegocio]?['tiktok']; // Puede ser null
+      instagram = negocioMap[idnegocio]?['instagram']; // Puede ser null
+      webpage = negocioMap[idnegocio]?['webpage']; // Puede ser null
+      descuento['businessLogo'] = imagen;
+      descuento['idcategory'] = idcat;
+      descuento['tiktok'] = tiktok; // Asignar null si no está presente
+      descuento['instagram'] = instagram; // Asignar null si no está presente
+      descuento['webpage'] = webpage; // Asignar null si no está presente
+      descuentoslistos.add(descuento);
     }
+    listofdiscounts =
+        descuentoslistos.map((json) => Discount.fromJson(json)).toList();
+  } catch (e) {
+    throw Exception('Error fetching discounts: $e');
   }
+}
 
   List<Discount>? getDescuentos() {
     return listofdiscounts;
   }
+
+  // Método para añadir suscripciones
+  Future<void> addSubscription(int userId, String categoryId) async {
+    try {
+      print('Attempting to add subscription for user $userId and category $categoryId');
+
+      final response = await client.from('subscriptions').insert({
+        'user_id': userId,
+        'category_id': categoryId,
+      });
+
+      if (response.error != null) {
+        print('Error adding subscription: ${response.error!.message}');
+        throw Exception('Failed to add subscription: ${response.error!.message}');
+      } else {
+        print('Subscription added successfully');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Error adding subscription: $e');
+    }
+  }
 }
 
-//Atributos del descuento
+// Atributos del descuento
 class Discount {
   final int id;
   final String name;
@@ -70,6 +108,9 @@ class Discount {
   final String duration;
   final int idcategory;
   final int idbusiness;
+  final String? tiktok; // Campo opcional
+  final String? instagram; // Campo opcional
+  final String? webpage; // Campo opcional
 
   Discount({
     required this.id,
@@ -80,6 +121,9 @@ class Discount {
     required this.duration,
     required this.idbusiness,
     required this.porcentaje,
+    this.tiktok, // Campo opcional
+    this.instagram, // Campo opcional
+    this.webpage, // Campo opcional
   });
 
   factory Discount.fromJson(Map<String, dynamic> json) {
@@ -92,6 +136,9 @@ class Discount {
       duration: "Dos dias",
       idcategory: json['idcategory'],
       idbusiness: json['id_negocio'],
+      tiktok: json['tiktok'], // Campo opcional
+      instagram: json['instagram'], // Campo opcional
+      webpage: json['webpage'], // Campo opcional
     );
   }
 }
@@ -143,7 +190,7 @@ class Negocio {
   });
 }
 
-//Listamos los descuentos
+// Listamos los descuentos
 final List<Discount> listOfDIscounts = [
   /*
   Discount(

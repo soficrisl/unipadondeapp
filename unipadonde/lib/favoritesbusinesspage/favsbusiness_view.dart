@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/business%20page/buspage_view.dart';
 import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-//import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
+
 
 class Favsbusinesspage extends StatefulWidget {
   final int userId;
@@ -15,17 +15,15 @@ class Favsbusinesspage extends StatefulWidget {
 }
 
 class _FavspageState extends State<Favsbusinesspage> {
-  //lista de categorias
+  // Lista de categorías
   List<Categoria> categories = [];
   List<Discount> listofdiscounts = [];
   List<int> selectedCategories = [];
 
-  final dataService = DataService(Supabase
-      .instance.client); //esto antes estaba dentro de c/funcion y lo saque
+  final dataService = DataService(Supabase.instance.client);
 
-  //Cargar categorias suscritas
+  // Cargar categorías suscritas
   void getcat() async {
-    /// Esto deberia estar en el VM
     await dataService.fetchCategoriasSuscritas(widget.userId);
     setState(() {
       categories = dataService.getCategoriasSuscritas();
@@ -33,9 +31,8 @@ class _FavspageState extends State<Favsbusinesspage> {
     getdis();
   }
 
-  //Cargar descuentos
+  // Cargar descuentos
   void getdis() async {
-    // Esto deberia estar en el VM
     await dataService.fetchDiscounts();
     setState(() {
       listofdiscounts = dataService.getDescuentos() ?? [];
@@ -74,27 +71,23 @@ class _FavspageState extends State<Favsbusinesspage> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/favsbusiness',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/favsbusiness', arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profileprov',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/profileprov', arguments: widget.userId);
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //filtrar los  de acuerdo a la categoria seleccionada
+    // Filtrar los descuentos de acuerdo a la categoría seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
-      return selectedCategories.isEmpty ||
-          selectedCategories.contains(discount.idcategory);
+      return selectedCategories.isEmpty || selectedCategories.contains(discount.idcategory);
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -149,7 +142,7 @@ class _FavspageState extends State<Favsbusinesspage> {
               height: 5,
             ),
 
-            // Aqui se maneja la visualización de los negocios
+            // Aquí se maneja la visualización de los negocios
             Expanded(
               child: ListView.builder(
                 itemCount: filterDiscount.length,
@@ -157,8 +150,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                   final discount = filterDiscount[index];
                   return Card(
                     elevation: 4.0,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
@@ -175,28 +167,39 @@ class _FavspageState extends State<Favsbusinesspage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             image: DecorationImage(
-                              image: AssetImage(
-                                  discount.businessLogo), //negocio.logo
+                              image: AssetImage(discount.businessLogo),
                               fit: BoxFit.contain,
                             ),
                           ),
                         ),
                         title: Text(
-                          discount.name, //negocio.name
+                          discount.name,
                           style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'San Francisco'),
                         ),
                         subtitle: Text(
-                          discount.description, //negocio.description
+                          discount.description,
                           style: const TextStyle(
                               color: Colors.black,
                               fontStyle: FontStyle.italic,
                               fontFamily: 'San Francisco'),
                         ),
                         onTap: () {
-                          BuspageView(); //conexion xon business page (OJO CHECK)
+                          // Navegar a BuspageView con los datos del negocio
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => BuspageView(
+                                businessName: discount.name,
+                                businessDescription: discount.description,
+                                businessTiktok: discount.tiktok ?? 'No disponible', // Valor por defecto si es null
+                                businessInstagram: discount.instagram ?? 'No disponible', // Valor por defecto si es null
+                                businessWebsite: discount.webpage ?? 'No disponible', // Valor por defecto si es null
+                                businessLogo: discount.businessLogo,
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -213,7 +216,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                   showAddBusinessDialog();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFA500), // Color de fondo
+                  backgroundColor: Color(0xFFFFA500),
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   textStyle: TextStyle(
                     color: Colors.white,
@@ -235,7 +238,7 @@ class _FavspageState extends State<Favsbusinesspage> {
         ),
       ),
 
-      //botombar
+      // Bottom bar
       bottomNavigationBar: CustomBottomBarProv(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
@@ -337,7 +340,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF8CB1F1), // Color de fondo
+                    backgroundColor: Color(0xFF8CB1F1),
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(
                       color: Colors.white,
@@ -359,30 +362,4 @@ class _FavspageState extends State<Favsbusinesspage> {
           ),
         ),
       );
-
-  //pop-up con información del negocio
-  //Future openDialog(Discount discount) => showDialog(
-  //context: context,
-  //builder: (context) => Dialog(
-  //shape: RoundedRectangleBorder(
-  //borderRadius: BorderRadius.circular(20),
-  //),
-  //child: Padding(
-  //padding: const EdgeInsets.all(16),
-  //child:
-  //Titulo / Nombre de descuento
-  //Text(
-  //Negocio(id: id, name: name, description: description, tiktok: tiktok, instagram: instagram, webpage: webpage, mail: mail).name,
-  //"Negocio ",
-  //style: TextStyle(
-  //fontSize: 24,
-  //fontWeight: FontWeight.bold,
-  //color: Colors.black87,
-  //),
-  //textAlign: TextAlign.center,
-  //),
-
-  //),
-  //)
-  //);
 }

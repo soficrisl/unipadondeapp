@@ -65,6 +65,19 @@ class DataService {
   List<Discount>? getDescuentos() {
     return listofdiscounts;
   }
+
+  Future<void> removeSubscription(int userId, String categoryId) async {
+    try {
+      await client
+          .from('subscribe')
+          .delete()
+          .eq('id_usuario', userId)
+          .eq('id_categoria', categoryId);
+      categoriasSuscritas.removeWhere((cat) => cat.id.toString() == categoryId);
+    } catch (e) {
+      throw Exception('Error removing subscription: $e');
+    }
+  }
 }
 
 //Atributos del descuento
@@ -77,6 +90,9 @@ class Discount {
   final String duration;
   final int idcategory;
   final int idbusiness;
+  final String? tiktok; // Campo opcional
+  final String? instagram; // Campo opcional
+  final String? webpage; // Campo opcional
 
   Discount({
     required this.id,
@@ -87,6 +103,9 @@ class Discount {
     required this.duration,
     required this.idbusiness,
     required this.porcentaje,
+    this.tiktok, // Campo opcional
+    this.instagram, // Campo opcional
+    this.webpage, // Campo opcional
   });
 
   factory Discount.fromJson(Map<String, dynamic> json) {
