@@ -4,7 +4,6 @@ import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
 
-
 class Favsbusinesspage extends StatefulWidget {
   final int userId;
 
@@ -197,6 +196,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                                 businessInstagram: discount.instagram ?? 'No disponible', // Valor por defecto si es null
                                 businessWebsite: discount.webpage ?? 'No disponible', // Valor por defecto si es null
                                 businessLogo: discount.businessLogo,
+                                idNegocio: discount.idbusiness, // Pasar el idNegocio
                               ),
                             ),
                           );

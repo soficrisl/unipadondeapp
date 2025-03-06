@@ -26,50 +26,58 @@ class DataService {
   }
 
   Future<void> fetchDiscounts() async {
-  try {
-    final descuentos = await client.from('descuento').select();
-    final pertenece = await client.from('pertenece').select();
-    final info = await client.from('negocio').select('id, picture, tiktok, instagram, webpage'); // Añadir campos necesarios
+    try {
+      final descuentos = await client.from('descuento').select();
+      final pertenece = await client.from('pertenece').select();
+      final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage'); // Añadir campos necesarios
 
-    List<Map<String, dynamic>> descuentoslistos = [];
-    final negocioMap = {
-      for (var n in info) n['id']: {
-        'picture': n['picture'],
-        'tiktok': n['tiktok'],
-        'instagram': n['instagram'],
-        'webpage': n['webpage'],
+      List<Map<String, dynamic>> descuentoslistos = [];
+      final negocioMap = {
+        for (var n in info) n['id']: {
+          'name': n['name'],
+          'description': n['description'],
+          'picture': n['picture'],
+          'tiktok': n['tiktok'],
+          'instagram': n['instagram'],
+          'webpage': n['webpage'],
+        }
+      };
+      final perteneceMap = {
+        for (var n in pertenece) n['id_negocio']: n["id_categoria"]
+      };
+
+      int? idcat;
+      String? imagen;
+      String? tiktok;
+      String? instagram;
+      String? webpage;
+      String? businessName;
+      String? businessDescription;
+      int? idnegocio;
+      for (var descuento in descuentos) {
+        idnegocio = descuento['id_negocio'];
+        idcat = perteneceMap[idnegocio];
+        businessName = negocioMap[idnegocio]?['name'];
+        businessDescription = negocioMap[idnegocio]?['description'];
+        imagen = negocioMap[idnegocio]?['picture'];
+        tiktok = negocioMap[idnegocio]?['tiktok']; // Puede ser null
+        instagram = negocioMap[idnegocio]?['instagram']; // Puede ser null
+        webpage = negocioMap[idnegocio]?['webpage']; // Puede ser null
+        descuento['businessName'] = businessName;
+        descuento['businessDescription'] = businessDescription;
+        descuento['businessLogo'] = imagen;
+        descuento['idcategory'] = idcat;
+        descuento['tiktok'] = tiktok; // Asignar null si no está presente
+        descuento['instagram'] = instagram; // Asignar null si no está presente
+        descuento['webpage'] = webpage; // Asignar null si no está presente
+        descuentoslistos.add(descuento);
       }
-    };
-    final perteneceMap = {
-      for (var n in pertenece) n['id_negocio']: n["id_categoria"]
-    };
-
-    int? idcat;
-    String? imagen;
-    String? tiktok;
-    String? instagram;
-    String? webpage;
-    int? idnegocio;
-    for (var descuento in descuentos) {
-      idnegocio = descuento['id_negocio'];
-      idcat = perteneceMap[idnegocio];
-      imagen = negocioMap[idnegocio]?['picture'];
-      tiktok = negocioMap[idnegocio]?['tiktok']; // Puede ser null
-      instagram = negocioMap[idnegocio]?['instagram']; // Puede ser null
-      webpage = negocioMap[idnegocio]?['webpage']; // Puede ser null
-      descuento['businessLogo'] = imagen;
-      descuento['idcategory'] = idcat;
-      descuento['tiktok'] = tiktok; // Asignar null si no está presente
-      descuento['instagram'] = instagram; // Asignar null si no está presente
-      descuento['webpage'] = webpage; // Asignar null si no está presente
-      descuentoslistos.add(descuento);
+      listofdiscounts =
+          descuentoslistos.map((json) => Discount.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Error fetching discounts: $e');
     }
-    listofdiscounts =
-        descuentoslistos.map((json) => Discount.fromJson(json)).toList();
-  } catch (e) {
-    throw Exception('Error fetching discounts: $e');
   }
-}
 
   List<Discount>? getDescuentos() {
     return listofdiscounts;
@@ -111,6 +119,8 @@ class Discount {
   final String? tiktok; // Campo opcional
   final String? instagram; // Campo opcional
   final String? webpage; // Campo opcional
+  final String businessName; // Nuevo campo
+  final String businessDescription; // Nuevo campo
 
   Discount({
     required this.id,
@@ -124,6 +134,8 @@ class Discount {
     this.tiktok, // Campo opcional
     this.instagram, // Campo opcional
     this.webpage, // Campo opcional
+    required this.businessName, // Nuevo campo
+    required this.businessDescription, // Nuevo campo
   });
 
   factory Discount.fromJson(Map<String, dynamic> json) {
@@ -139,6 +151,8 @@ class Discount {
       tiktok: json['tiktok'], // Campo opcional
       instagram: json['instagram'], // Campo opcional
       webpage: json['webpage'], // Campo opcional
+      businessName: json['businessName'], // Nuevo campo
+      businessDescription: json['businessDescription'], // Nuevo campo
     );
   }
 }

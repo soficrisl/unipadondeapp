@@ -328,7 +328,7 @@ class _LandingState extends State<Landing> {
           ),
           const SizedBox(height: 20),
           Text(
-            discount.name,
+            discount.businessName, // Nombre del negocio
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -336,9 +336,19 @@ class _LandingState extends State<Landing> {
             ),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 10),
+          Text(
+            discount.name, // Nombre del descuento
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange,
+            ),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 20),
           Text(
-            discount.description,
+            discount.description, // Descripción del descuento
             style: TextStyle(
               fontSize: 16,
               color: Colors.black54,
@@ -357,25 +367,16 @@ class _LandingState extends State<Landing> {
           const SizedBox(height: 30),
           ElevatedButton(
             onPressed: () {
-
-              //* prints para verificar los datos (borrar cuando se compruebe que todo está bien)
-              /*
-              print('Nombre: ${discount.name}');
-              print('Descripción: ${discount.description}');
-              print('Tiktok: ${discount.tiktok}');
-              print('Instagram: ${discount.instagram}');
-              print('Webpage: ${discount.webpage}');
-              print('Logo: ${discount.businessLogo}');
-              */
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => BuspageView(
-                    businessName: discount.name,
-                    businessDescription: discount.description,
-                    businessTiktok: discount.tiktok ?? 'No disponible',
-                    businessInstagram: discount.instagram ?? 'No disponible',
-                    businessWebsite: discount.webpage ?? 'No disponible',
-                    businessLogo: discount.businessLogo,
+                    businessName: discount.businessName, // Nombre del negocio
+                    businessDescription: discount.businessDescription, // Descripción del negocio
+                    businessTiktok: discount.tiktok ?? 'No disponible', // TikTok del negocio
+                    businessInstagram: discount.instagram ?? 'No disponible', // Instagram del negocio
+                    businessWebsite: discount.webpage ?? 'No disponible', // Página web del negocio
+                    businessLogo: discount.businessLogo, // Logo del negocio
+                    idNegocio: discount.idbusiness, // ID del negocio
                   ),
                 ),
               );
