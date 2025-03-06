@@ -78,7 +78,7 @@ class _FavspageState extends State<Favsbusinesspage> {
             arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profileprov',
+        Navigator.pushReplacementNamed(context, '/cdiscount',
             arguments: widget.userId);
         break;
     }

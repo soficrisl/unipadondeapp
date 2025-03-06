@@ -4,7 +4,9 @@ import 'package:unipadonde/creatediscountpage/cdiscount_vm.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 //import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 class CDiscountPage extends StatefulWidget {
   final int userId;
@@ -18,7 +20,7 @@ class CDiscountPage extends StatefulWidget {
 class _FavspageState extends State<CDiscountPage> {
   final DiscountViewModel discountViewModel = DiscountViewModel();
 
-  // Variables para el formulario de añadir negocio
+  // probando cambios
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _percentageController = TextEditingController();
@@ -27,10 +29,55 @@ class _FavspageState extends State<CDiscountPage> {
   final TextEditingController _idBusinessController = TextEditingController();
 
   // Variables para las validaciones
+  DateTime? _selectedStartDate;
+  DateTime? _selectedEndDate;
   String? _nameError;
   String? _descriptionError;
   String? _percentageError;
   String? _dateError;
+
+  bool _isLoading = false;
+
+  //PRUEBA DATE TIME RANGE PICKER
+
+  showDateTimeRangePicker() async {
+    List<DateTime>? dateTimeList = await showOmniDateTimeRangePicker(
+      context: context,
+      startInitialDate: DateTime.now(),
+      startFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      startLastDate: DateTime.now().add(
+        const Duration(days: 3652),
+      ),
+      endInitialDate: DateTime.now(),
+      endFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      endLastDate: DateTime.now().add(
+        const Duration(days: 3652),
+      ),
+      is24HourMode: false,
+      isShowSeconds: false,
+      minutesInterval: 1,
+      secondsInterval: 1,
+      borderRadius: const BorderRadius.all(Radius.circular(16)),
+      constraints: const BoxConstraints(
+        maxWidth: 350,
+        maxHeight: 650,
+      ),
+      transitionBuilder: (context, anim1, anim2, child) {
+        return FadeTransition(
+          opacity: anim1.drive(
+            Tween(
+              begin: 0,
+              end: 1,
+            ),
+          ),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 200),
+      barrierDismissible: true,
+    );
+    print(dateTimeList);
+  }
 
   // Función de logout
   void logout() async {
@@ -113,6 +160,9 @@ class _FavspageState extends State<CDiscountPage> {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          //PRUEBA DE DATE TIME PICKER RANGE
+          //mainAxisAlignment: MainAxisAlignmetn.center
+          //crossAxisAlignment : CrossAxisALignment.center
           children: [
             Container(
               //margin: const EdgeInsets.only(top: 15.0),
@@ -144,11 +194,9 @@ class _FavspageState extends State<CDiscountPage> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-
-            // Botón para añadir un negocio
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
@@ -210,109 +258,34 @@ class _FavspageState extends State<CDiscountPage> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
-                Text(
-                  "Añadir Descuento",
-                  style: TextStyle(
-                    fontFamily: "San Francisco",
-                    fontSize: 24,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                Text("Ingresa los siguientes datos:",
-                    style: TextStyle(
-                      fontFamily: "San Francisco",
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.right),
-                const SizedBox(height: 10),
+                Text("Añadir Descuento",
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre del descuento:',
-                    errorText: _nameError,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                        labelText: 'Nombre:', errorText: _nameError)),
                 TextField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                      labelText: 'Descripción:', errorText: _descriptionError),
-                ),
-                const SizedBox(height: 20),
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                        labelText: 'Descripción:',
+                        errorText: _descriptionError)),
                 TextField(
-                  controller: _percentageController,
-                  decoration: InputDecoration(
-                      labelText: 'Porcentaje de descuento:',
-                      errorText: _percentageError),
-                ),
-                const SizedBox(height: 20),
+                    controller: _percentageController,
+                    decoration: InputDecoration(
+                        labelText: 'Porcentaje:', errorText: _percentageError)),
+                //PRUEBA DE DATE TIME PICKER RANGE
                 ElevatedButton(
                   onPressed: () {
-                    DatePicker.showDateTimePicker(
-                      context,
-                      showTitleActions: true,
-                      minTime: DateTime.now(),
-                      maxTime: DateTime(2100),
-                      onConfirm: (date) {
-                        setState(() {
-                          _startDateController.text = date.toIso8601String();
-                        });
-                      },
-                    );
+                    showDateTimeRangePicker();
                   },
-                  child: Text("Seleccionar Fecha de Inicio"),
+                  child: const Text('Fecha del descuento'),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    // Muestra el selector de fecha de fin
-                    DateTime? selectedEndDate =
-                        await DatePicker.showDateTimePicker(
-                      context,
-                      showTitleActions: true,
-                      minTime: DateTime.now(),
-                      maxTime: DateTime(2100),
-                    );
-                    if (selectedEndDate != null) {
-                      setState(() {
-                        _endDateController.text = selectedEndDate.toString();
-                      });
-                    }
-                  },
-                  child: Text("Seleccionar Fecha de Fin"),
-                ),
-                const SizedBox(height: 20),
                 TextField(
-                  controller: _idBusinessController,
-                  decoration: InputDecoration(labelText: 'ID del negocio:'),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 20),
+                    controller: _idBusinessController,
+                    decoration: InputDecoration(labelText: 'ID Negocio:')),
                 ElevatedButton(
-                  onPressed: () async {
-                    await _addDiscountToDatabase();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF8CB1F1), // Color de fondo
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: Text(
-                    "Añadir",
-                    style: TextStyle(
-                        color: Colors.white, fontFamily: "San Francisco"),
-                  ),
-                ),
+                    onPressed: _addDiscountToDatabase, child: Text("Añadir")),
               ],
             ),
           ),
@@ -320,62 +293,42 @@ class _FavspageState extends State<CDiscountPage> {
       );
 
   //Metodo para anadir el descuento a Supabase mediante el viewmodel
+
   Future<void> _addDiscountToDatabase() async {
-    DiscountViewModel discountViewModel = DiscountViewModel();
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+
     try {
-      //manejo de errores / validaciones:
       setState(() {
-        _nameError = null;
-        _descriptionError = null;
-        _percentageError = null;
-        _dateError = null;
+        _nameError = _nameController.text.isEmpty
+            ? "El nombre no puede estar vacío"
+            : null;
+        _descriptionError = _descriptionController.text.isEmpty
+            ? "La descripción no puede estar vacía"
+            : null;
+        _percentageError = int.tryParse(_percentageController.text) == null
+            ? "Debe ser un número entero"
+            : null;
+        _dateError = (_selectedStartDate == null || _selectedEndDate == null)
+            ? "Debe seleccionar las fechas"
+            : null;
       });
 
-      if (_nameController.text.isEmpty) {
-        setState(() => _nameError = "El nombre no puede estar vacío");
+      if (_nameError != null ||
+          _descriptionError != null ||
+          _percentageError != null ||
+          _dateError != null) {
+        setState(() => _isLoading = false);
         return;
       }
-      if (_nameController.text.length > 100) {
-        setState(() => _nameError = "No puede excederse de 100 caracteres");
-        return;
-      }
-      if (_descriptionController.text.isEmpty) {
-        setState(
-            () => _descriptionError = "La descripción no puede estar vacía");
-        return;
-      }
-      if (_descriptionController.text.length > 1000) {
-        setState(
-            () => _descriptionError = "No puede excederse de 1000 caracteres");
-        return;
-      }
-      if (_percentageController.text.isEmpty) {
-        setState(() => _percentageError = "Debe ingresar un porcentaje");
-        return;
-      }
-      if (int.tryParse(_percentageController.text) == null) {
-        setState(() => _percentageError = "Debe ser un número entero");
-        return;
-      }
-      if (_startDateController.text.isEmpty ||
-          _endDateController.text.isEmpty) {
-        setState(() => _dateError = "Debe seleccionar las fechas");
-        return;
-      }
-      //manejo de datos:
-      DateTime startDate = DateTime.parse(_startDateController.text);
-      DateTime endDate = DateTime.parse(_endDateController.text);
-
-      bool state = startDate.isBefore(DateTime.now()) ||
-          startDate.isAtSameMomentAs(DateTime.now());
 
       Discount discount = Discount(
         name: _nameController.text,
         description: _descriptionController.text,
         porcentaje: int.parse(_percentageController.text),
-        startdate: startDate,
-        enddate: endDate,
-        state: state,
+        startdate: _selectedStartDate!,
+        enddate: _selectedEndDate!,
+        state: _selectedStartDate!.isBefore(DateTime.now()),
         id_negocio: int.parse(_idBusinessController.text),
       );
 
@@ -390,10 +343,11 @@ class _FavspageState extends State<CDiscountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al añadir descuento: $e')),
       );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
-  // Función para mostrar el pop-up de éxito y cerrar el formulario
   void _showSuccessPopup() {
     showDialog(
       context: context,
@@ -404,9 +358,8 @@ class _FavspageState extends State<CDiscountPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cierra el pop-up
-                Navigator.of(context)
-                    .pop(); // Cierra la pantalla de añadir descuento
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               child: Text("OK"),
             ),
