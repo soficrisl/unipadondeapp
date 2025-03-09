@@ -29,7 +29,7 @@ class StartView extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 50),
-                // Botón de Estudiante
+                // ! Botón de Estudiante
                 ElevatedButton(
                   onPressed: () {
                     // Navega a la pantalla LoginView
@@ -56,7 +56,7 @@ class StartView extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Botón de Proveedor
+                // ! Botón de Proveedor
                 ElevatedButton(
                   onPressed: () {
                     // Navega a la pantalla LoginProvView

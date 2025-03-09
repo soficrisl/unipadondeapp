@@ -8,6 +8,8 @@ import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
 // import 'package:unipadonde/searchbar/search_model.dart';
 import 'package:unipadonde/profileprovpage/profileprov_view.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
+
 import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
@@ -32,43 +34,51 @@ class MyApp extends StatelessWidget {
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
       initialRoute: '/start', // Ruta inicial
-      //rutas pasando el userId a las vistas
+      // Rutas pasando el userId a las vistas
       onGenerateRoute: (settings) {
-        final userId = settings.arguments as int?;
+        // Manejo seguro de settings.arguments
+        int? userId;
+        if (settings.arguments != null && settings.arguments is int) {
+          userId = settings.arguments as int;
+        }
+
+        // Si userId es null, redirigir a una página por defecto
         if (userId == null) {
           return MaterialPageRoute(
             builder: (context) => StartView(),
           );
         }
 
+        // Navegación basada en la ruta
         switch (settings.name) {
           case '/landing':
             return MaterialPageRoute(
-              builder: (context) => Landing(userId: userId),
+              builder: (context) => Landing(userId: userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/favorites':
             return MaterialPageRoute(
-              builder: (context) => Favspage(userId: userId),
+              builder: (context) => Favspage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/profile':
             return MaterialPageRoute(
-              builder: (context) => ProfilePage(userId: userId),
+              builder: (context) => ProfilePage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/profileprov':
             return MaterialPageRoute(
-              builder: (context) => ProfileProvPage(userId: userId),
+              builder: (context) => ProfileProvPage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/favsbusiness':
             return MaterialPageRoute(
-              builder: (context) => Favsbusinesspage(userId: userId),
+              builder: (context) => Favsbusinesspage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
             );
+
           case '/cdiscount':
             return MaterialPageRoute(
-              builder: (context) => CDiscountPage(userId: userId),
+              builder: (context) => CDiscountPage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           default:
