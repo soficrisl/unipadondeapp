@@ -6,6 +6,7 @@ import 'package:unipadonde/loginprov/loginprov_mv.dart';
 import 'package:unipadonde/register/register_vm.dart';
 //import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:flutter/scheduler.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -25,28 +26,30 @@ class _LoginState extends State<LoginView> {
 
   //Login function
   void login() async {
-    // Esto deberia estar en el view model. Esta modificada para obtener el userID
-    final mail = _emailController.text;
-    final password = _passwordController.text;
+  final mail = _emailController.text;
+  final password = _passwordController.text;
 
-    // Validación: Asegúrate de que los campos no estén vacíos
-    if (mail.isEmpty || password.isEmpty) {
+  // Validación: Asegúrate de que los campos no estén vacíos
+  if (mail.isEmpty || password.isEmpty) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text("Por favor, ingresa tu correo y contraseña.")),
         );
       }
-      return;
-    }
+    });
+    return;
+  }
 
-    //Attempt to login
-    try {
-      final session = await authService.signIn(mail, password);
-      final authUserId = session.user?.id;
+  // Attempt to login
+  try {
+    final session = await authService.signIn(mail, password);
+    final authUserId = session.user?.id;
 
-      if (authUserId != null) {
-        final userId = await _viewModel.fetchUserId(mail); //view model
+    if (authUserId != null) {
+      final userId = await _viewModel.fetchUserId(mail); // view model
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           if (userId != null) {
             Navigator.pushReplacement(
@@ -54,16 +57,16 @@ class _LoginState extends State<LoginView> {
               MaterialPageRoute(builder: (context) => Landing(userId: userId)),
             );
           } else {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Error al obtener el ID del usuario.")),
-              );
-            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Error al obtener el ID del usuario.")),
+            );
           }
         }
-      }
-    } on AuthException catch (error) {
+      });
+    }
+  } on AuthException catch (error) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         if (error.code == "invalid_credentials") {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -76,13 +79,17 @@ class _LoginState extends State<LoginView> {
               SnackBar(content: Text("Error de autenticación: $error")));
         }
       }
-    } on PostgrestException catch (error) {
+    });
+  } on PostgrestException catch (error) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error de base de datos: ${error.message}")),
         );
       }
-    } catch (error) {
+    });
+  } catch (error) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -90,8 +97,9 @@ class _LoginState extends State<LoginView> {
                   "Verifique que el correo y la contraseña sean correctos.")),
         );
       }
-    }
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

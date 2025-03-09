@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
+import 'package:flutter/scheduler.dart';
 
 class AuthenticationService {
   final SupabaseClient supabaseClient;
@@ -99,120 +100,121 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
   }
 
   void _showEditDialog() {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController phoneController = TextEditingController();
-    TextEditingController addressController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
-    nameController.text = previousName;
-    emailController.text = previousEmail;
-    phoneController.text = previousPhone;
-    addressController.text = previousAddress;
+  nameController.text = previousName;
+  emailController.text = previousEmail;
+  phoneController.text = previousPhone;
+  addressController.text = previousAddress;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 215, 228, 252),
-          title: Text(
-            'Modificar Datos',
-            style: TextStyle(
-              fontFamily: 'San Francisco',
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 215, 228, 252),
+        title: Text(
+          'Modificar Datos',
+          style: TextStyle(
+            fontFamily: 'San Francisco',
+          ),
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Nombre',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
             ),
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Nombre',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu nombre',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Correo Electrónico',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu correo electrónico',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Teléfono',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu teléfono',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Dirección',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: addressController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu dirección',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Cancelar',
-                style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                hintText: 'Introduce tu nombre',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
               ),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                // Actualizar los datos en Supabase
-                await authService.updateUserData(widget.userId, {
-                  'name': nameController.text,
-                  'mail': emailController.text,
-                });
+            SizedBox(height: 10),
+            Text(
+              'Correo Electrónico',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
+            ),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                hintText: 'Introduce tu correo electrónico',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Teléfono',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
+            ),
+            TextField(
+              controller: phoneController,
+              decoration: InputDecoration(
+                hintText: 'Introduce tu teléfono',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Dirección',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
+            ),
+            TextField(
+              controller: addressController,
+              decoration: InputDecoration(
+                hintText: 'Introduce tu dirección',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Cancelar',
+              style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // Actualizar los datos en Supabase
+              await authService.updateUserData(widget.userId, {
+                'name': nameController.text,
+                'mail': emailController.text,
+              });
 
-                setState(() {
-                  previousName = nameController.text;
-                  previousEmail = emailController.text;
-                  previousPhone = phoneController.text;
-                  previousAddress = addressController.text;
-                });
+              setState(() {
+                previousName = nameController.text;
+                previousEmail = emailController.text;
+                previousPhone = phoneController.text;
+                previousAddress = addressController.text;
+              });
 
-                Navigator.of(context).pop();
+              Navigator.of(context).pop();
 
-                // Mostrar SnackBar de confirmación
+              // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
+              SchedulerBinding.instance.addPostFrameCallback((_) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -222,25 +224,26 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                     backgroundColor: Colors.green,
                   ),
                 );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 186, 209, 247),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'Guardar',
-                style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromARGB(255, 186, 209, 247),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+              textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-          ],
-        );
-      },
-    );
-  }
+            child: Text(
+              'Guardar',
+              style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   void _showCookiePolicy() {
     showDialog(

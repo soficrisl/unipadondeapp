@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:flutter/scheduler.dart';
 
 class AuthenticationService {
   final SupabaseClient supabaseClient;
@@ -149,62 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Nombre',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: 'Introduce tu nombre',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Apellido',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            TextField(
-              controller: lastNameController,
-              decoration: InputDecoration(
-                hintText: 'Introduce tu apellido',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Sexo',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            // DropdownMenu para seleccionar el sexo
-            DropdownMenu<String>(
-              initialSelection: selectedGender,
-              onSelected: (String? value) {
-                setState(() {
-                  selectedGender = value!;
-                });
-              },
-              dropdownMenuEntries: genderOptions
-                  .map<DropdownMenuEntry<String>>((String value) {
-                return DropdownMenuEntry<String>(
-                  value: value,
-                  label: value,
-                );
-              }).toList(),
-              inputDecorationTheme: InputDecorationTheme(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
-              ),
-            ),
+            // Campos del formulario...
           ],
         ),
         actions: [
@@ -214,8 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
             },
             child: Text(
               'Cancelar',
-              style:
-                  TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+              style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
             ),
           ),
           ElevatedButton(
@@ -239,16 +184,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
               Navigator.of(context).pop();
 
-              // Mostrar SnackBar de confirmación
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Información actualizada exitosamente',
-                    style: TextStyle(fontFamily: 'San Francisco'),
+              // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Información actualizada exitosamente',
+                      style: TextStyle(fontFamily: 'San Francisco'),
+                    ),
+                    backgroundColor: Colors.green,
                   ),
-                  backgroundColor: Colors.green,
-                ),
-              );
+                );
+              });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color.fromARGB(255, 186, 209, 247),
@@ -260,8 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: Text(
               'Guardar',
-              style:
-                  TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+              style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
             ),
           ),
         ],

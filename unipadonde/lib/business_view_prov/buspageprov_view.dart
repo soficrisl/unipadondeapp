@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_model.dart';
 
 class BusinessPageProv extends StatefulWidget {
+  final Business business;
+
+  const BusinessPageProv({required this.business});
+
   @override
   _BusinessPageProvState createState() => _BusinessPageProvState();
 }
@@ -15,6 +21,16 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
   final TextEditingController websiteController = TextEditingController();
   File? _image;
 
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.business.name;
+    descriptionController.text = widget.business.description;
+    tiktokController.text = widget.business.tiktok;
+    instagramController.text = widget.business.instagram;
+    websiteController.text = widget.business.webpage;
+  }
+
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -23,6 +39,36 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
       });
     }
   }
+
+  Future<void> _updateBusiness() async {
+  try {
+    final client = Supabase.instance.client;
+    await client.from('negocio').update({
+      'name': nameController.text,
+      'description': descriptionController.text,
+      'tiktok': tiktokController.text,
+      'instagram': instagramController.text,
+      'webpage': websiteController.text,
+    }).eq('id', widget.business.id);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Información actualizada correctamente'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // Devuelve `true` para indicar que los datos se han actualizado
+    Navigator.of(context).pop(true);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error al actualizar la información: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -119,16 +165,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
               ),
               SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
-                  print('Nombre: ${nameController.text}');
-                  print('Descripción: ${descriptionController.text}');
-                  print('Tiktok: ${tiktokController.text}');
-                  print('Instagram: ${instagramController.text}');
-                  print('Página web: ${websiteController.text}');
-                  if (_image != null) {
-                    print('Imagen guardada en: ${_image!.path}');
-                  }
-                },
+                onPressed: _updateBusiness,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF7A9BBF),
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
