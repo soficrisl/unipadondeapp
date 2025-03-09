@@ -186,7 +186,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                               fontFamily: 'San Francisco'),
                         ),
                         onTap: () {
-                          // Navegar a BuspageView con los datos del negocio
+                          // ! Navegar a BuspageView con los datos del negocio
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => BuspageView(

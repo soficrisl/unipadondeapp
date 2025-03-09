@@ -22,12 +22,12 @@ class _FavspageState extends State<Favspage> {
   final dataService = DataService(Supabase.instance.client);
 
   void getcat() async {
-    await dataService.fetchCategoriasSuscritas(widget.userId);
-    setState(() {
-      categories = dataService.getCategoriasSuscritas();
-    });
-    getdis();
-  }
+  await dataService.fetchCategoriasSuscritas(widget.userId);
+  setState(() {
+    categories = dataService.getCategoriasSuscritas();
+  });
+  getdis();
+}
 
   void getdis() async {
     await dataService.fetchDiscounts();

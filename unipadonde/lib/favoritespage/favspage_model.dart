@@ -8,21 +8,22 @@ class DataService {
   DataService(this.client);
 
   Future<void> fetchCategoriasSuscritas(int userId) async {
-    try {
-      final data = await client
-          .from('subscribe')
-          .select('id_categoria, categoria(id, name, description)')
-          .eq('id_usuario', userId);
+  try {
+    final data = await client
+        .from('subscribe')
+        .select('id_categoria, categoria(id, name, description)')
+        .eq('id_usuario', userId)
+        .eq('state', true); // Solo obtener las categorías con state TRUE
 
-      final List<dynamic> initiallist = data;
+    final List<dynamic> initiallist = data;
 
-      categoriasSuscritas = initiallist.map<Categoria>((item) {
-        return Categoria.fromMap(item['categoria']);
-      }).toList();
-    } catch (e) {
-      throw Exception('Error fetching subscribed categories: $e');
-    }
+    categoriasSuscritas = initiallist.map<Categoria>((item) {
+      return Categoria.fromMap(item['categoria']);
+    }).toList();
+  } catch (e) {
+    throw Exception('Error fetching subscribed categories: $e');
   }
+}
 
   List<Categoria> getCategoriasSuscritas() {
     return categoriasSuscritas;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/landingpage/landin_model.dart';
+import 'package:unipadonde/landingpage/landin_model.dart'; // Importar el archivo correcto
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/searchbar/search_mv.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
@@ -18,7 +18,7 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   List<List<dynamic>> categories = [];
-  List<Discount> listofdiscounts = [];
+  List<Discount> listofdiscounts = []; // Usar la clase Discount
   bool showSubscribeButton = false;
 
   void getcat() async {
@@ -76,11 +76,37 @@ class _LandingState extends State<Landing> {
   }
 
   void subscribeToCategories() async {
-    final dataService = DataService(Supabase.instance.client);
-    for (int categoryId in selectedCategories) {
+  final dataService = DataService(Supabase.instance.client);
+  // Crear una copia de la lista para evitar la modificación concurrente
+  final List<int> categoriesToSubscribe = List.from(selectedCategories);
+  for (int categoryId in categoriesToSubscribe) { // Iterar sobre la copia
+    bool isAlreadySubscribed = await dataService.isSubscribed(widget.userId, categoryId);
+    if (!isAlreadySubscribed) {
       await dataService.addSubscription(widget.userId, categoryId.toString());
     }
-    Navigator.pushReplacementNamed(context, '/favorites', arguments: widget.userId);
+  }
+  setState(() {
+    showSubscribeButton = false;
+    selectedCategories.clear(); // Limpiar la lista original después de la iteración
+  });
+  Navigator.pushReplacementNamed(context, '/favorites', arguments: widget.userId);
+}
+
+  void updateSubscribeButtonVisibility() async {
+    final dataService = DataService(Supabase.instance.client);
+    bool hasNewCategories = false;
+
+    for (int categoryId in selectedCategories) {
+      bool isAlreadySubscribed = await dataService.isSubscribed(widget.userId, categoryId);
+      if (!isAlreadySubscribed) {
+        hasNewCategories = true;
+        break;
+      }
+    }
+
+    setState(() {
+      showSubscribeButton = hasNewCategories;
+    });
   }
 
   @override
@@ -165,16 +191,15 @@ class _LandingState extends State<Landing> {
                                   : Colors.black,
                             ),
                           ),
-                          onSelected: (selected) {
+                          onSelected: (selected) async {
                             setState(() {
                               if (selected) {
                                 selectedCategories.add(idcategory);
-                                showSubscribeButton = true;
                               } else {
                                 selectedCategories.remove(idcategory);
-                                showSubscribeButton = selectedCategories.isNotEmpty;
                               }
                             });
+                            updateSubscribeButtonVisibility();
                           },
                           backgroundColor: selectedCategories.contains(idcategory)
                               ? const Color(0xFFFFA500)
@@ -328,7 +353,7 @@ class _LandingState extends State<Landing> {
           ),
           const SizedBox(height: 20),
           Text(
-            discount.businessName, // Nombre del negocio
+            discount.businessName,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -338,7 +363,7 @@ class _LandingState extends State<Landing> {
           ),
           const SizedBox(height: 10),
           Text(
-            discount.name, // Nombre del descuento
+            discount.name,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -348,7 +373,7 @@ class _LandingState extends State<Landing> {
           ),
           const SizedBox(height: 20),
           Text(
-            discount.description, // Descripción del descuento
+            discount.description,
             style: TextStyle(
               fontSize: 16,
               color: Colors.black54,
@@ -370,13 +395,13 @@ class _LandingState extends State<Landing> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => BuspageView(
-                    businessName: discount.businessName, // Nombre del negocio
-                    businessDescription: discount.businessDescription, // Descripción del negocio
-                    businessTiktok: discount.tiktok ?? 'No disponible', // TikTok del negocio
-                    businessInstagram: discount.instagram ?? 'No disponible', // Instagram del negocio
-                    businessWebsite: discount.webpage ?? 'No disponible', // Página web del negocio
-                    businessLogo: discount.businessLogo, // Logo del negocio
-                    idNegocio: discount.idbusiness, // ID del negocio
+                    businessName: discount.businessName,
+                    businessDescription: discount.businessDescription,
+                    businessTiktok: discount.tiktok ?? 'No disponible',
+                    businessInstagram: discount.instagram ?? 'No disponible',
+                    businessWebsite: discount.webpage ?? 'No disponible',
+                    businessLogo: discount.businessLogo,
+                    idNegocio: discount.idbusiness,
                   ),
                 ),
               );

@@ -29,7 +29,7 @@ class DataService {
     try {
       final descuentos = await client.from('descuento').select();
       final pertenece = await client.from('pertenece').select();
-      final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage'); // Añadir campos necesarios
+      final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage');
 
       List<Map<String, dynamic>> descuentoslistos = [];
       final negocioMap = {
@@ -60,16 +60,16 @@ class DataService {
         businessName = negocioMap[idnegocio]?['name'];
         businessDescription = negocioMap[idnegocio]?['description'];
         imagen = negocioMap[idnegocio]?['picture'];
-        tiktok = negocioMap[idnegocio]?['tiktok']; // Puede ser null
-        instagram = negocioMap[idnegocio]?['instagram']; // Puede ser null
-        webpage = negocioMap[idnegocio]?['webpage']; // Puede ser null
+        tiktok = negocioMap[idnegocio]?['tiktok'];
+        instagram = negocioMap[idnegocio]?['instagram'];
+        webpage = negocioMap[idnegocio]?['webpage'];
         descuento['businessName'] = businessName;
         descuento['businessDescription'] = businessDescription;
         descuento['businessLogo'] = imagen;
         descuento['idcategory'] = idcat;
-        descuento['tiktok'] = tiktok; // Asignar null si no está presente
-        descuento['instagram'] = instagram; // Asignar null si no está presente
-        descuento['webpage'] = webpage; // Asignar null si no está presente
+        descuento['tiktok'] = tiktok;
+        descuento['instagram'] = instagram;
+        descuento['webpage'] = webpage;
         descuentoslistos.add(descuento);
       }
       listofdiscounts =
@@ -83,14 +83,15 @@ class DataService {
     return listofdiscounts;
   }
 
-  // Método para añadir suscripciones
   Future<void> addSubscription(int userId, String categoryId) async {
     try {
       print('Attempting to add subscription for user $userId and category $categoryId');
 
-      final response = await client.from('subscriptions').insert({
-        'user_id': userId,
-        'category_id': categoryId,
+      final response = await client.from('subscribe').insert({
+        'id_usuario': userId,
+        'id_categoria': categoryId,
+        'date': DateTime.now().toIso8601String(),
+        'state': true,
       });
 
       if (response.error != null) {
@@ -101,12 +102,28 @@ class DataService {
       }
     } catch (e) {
       print('Exception caught: $e');
-      throw Exception('Error adding subscription: $e');
+    }
+  }
+
+  Future<bool> isSubscribed(int userId, int categoryId) async {
+    try {
+      final response = await client
+          .from('subscribe')
+          .select()
+          .eq('id_usuario', userId)
+          .eq('id_categoria', categoryId)
+          .eq('state', true);
+
+      // Si hay algún registro, el usuario ya está suscrito
+      return response.isNotEmpty;
+    } catch (e) {
+      print('Error checking subscription: $e');
+      throw Exception('Error checking subscription: $e');
     }
   }
 }
 
-// Atributos del descuento
+// Definición de la clase Discount
 class Discount {
   final int id;
   final String name;
@@ -116,11 +133,11 @@ class Discount {
   final String duration;
   final int idcategory;
   final int idbusiness;
-  final String? tiktok; // Campo opcional
-  final String? instagram; // Campo opcional
-  final String? webpage; // Campo opcional
-  final String businessName; // Nuevo campo
-  final String businessDescription; // Nuevo campo
+  final String? tiktok;
+  final String? instagram;
+  final String? webpage;
+  final String businessName;
+  final String businessDescription;
 
   Discount({
     required this.id,
@@ -131,11 +148,11 @@ class Discount {
     required this.duration,
     required this.idbusiness,
     required this.porcentaje,
-    this.tiktok, // Campo opcional
-    this.instagram, // Campo opcional
-    this.webpage, // Campo opcional
-    required this.businessName, // Nuevo campo
-    required this.businessDescription, // Nuevo campo
+    this.tiktok,
+    this.instagram,
+    this.webpage,
+    required this.businessName,
+    required this.businessDescription,
   });
 
   factory Discount.fromJson(Map<String, dynamic> json) {
@@ -148,15 +165,16 @@ class Discount {
       duration: "Dos dias",
       idcategory: json['idcategory'],
       idbusiness: json['id_negocio'],
-      tiktok: json['tiktok'], // Campo opcional
-      instagram: json['instagram'], // Campo opcional
-      webpage: json['webpage'], // Campo opcional
-      businessName: json['businessName'], // Nuevo campo
-      businessDescription: json['businessDescription'], // Nuevo campo
+      tiktok: json['tiktok'],
+      instagram: json['instagram'],
+      webpage: json['webpage'],
+      businessName: json['businessName'],
+      businessDescription: json['businessDescription'],
     );
   }
 }
 
+// Definición de la clase Categoria
 class Categoria {
   final int id;
   final String name;
@@ -173,66 +191,3 @@ class Categoria {
         id: map['id'], name: map['name'], description: map['description']);
   }
 }
-
-class Pertenece {
-  final int business;
-  final int category;
-
-  Pertenece({
-    required this.business,
-    required this.category,
-  });
-}
-
-class Negocio {
-  final int id;
-  final String description;
-  final String tiktok;
-  final String instagram;
-  final String name;
-  final String mail;
-  final String webpage;
-
-  Negocio({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.tiktok,
-    required this.instagram,
-    required this.webpage,
-    required this.mail,
-  });
-}
-
-// Listamos los descuentos
-final List<Discount> listOfDIscounts = [
-  /*
-  Discount(
-    name: "Food Kart",
-    category: "Games",
-    description: "Ven a jugar GoKarts en 2x1",
-    buisnessLogo: "assets/images/fk.png",
-    duration: "2 dias",
-  ),
-  Discount(
-    name: "Laser",
-    category: "Travel",
-    description: "20% descuento en pasajes Ccs-Miami",
-    buisnessLogo: "assets/images/laser.png",
-    duration: "1 dias",
-  ),
-  Discount(
-    name: "Mykonos",
-    category: "Food",
-    description: "Por la compra de 3 helados uno gratis",
-    buisnessLogo: "assets/images/mykonis.jpg",
-    duration: "2 dias",
-  ),
-  Discount(
-    name: "Plan B",
-    category: "Food",
-    description: "Cheeseburger clasica por tan solo 2 dolares",
-    buisnessLogo: "assets/images/planb.png",
-    duration: "2 dias",
-  ) */
-];

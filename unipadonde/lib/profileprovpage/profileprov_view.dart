@@ -1,6 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/repository/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
+
+class AuthenticationService {
+  final SupabaseClient supabaseClient;
+
+  AuthenticationService({required this.supabaseClient});
+
+  // Método para obtener los datos del usuario desde la tabla "usuario"
+  Future<Map<String, dynamic>> getUserData(int userId) async {
+    final response = await supabaseClient
+        .from('usuario')
+        .select()
+        .eq('id', userId)
+        .single();
+    return response;
+  }
+
+
+  // Método para actualizar los datos del usuario en la tabla "usuario"
+  Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
+    try {
+      await supabaseClient
+          .from('usuario')
+          .update(data)
+          .eq('id', userId);
+    } catch (e) {
+      throw Exception('Error updating user data: $e');
+    }
+  }
+
+  // Método para cerrar sesión
+  Future<void> singOut() async {
+    await supabaseClient.auth.signOut();
+  }
+}
 
 class ProfileProvPage extends StatefulWidget {
   final int userId;
@@ -8,28 +42,44 @@ class ProfileProvPage extends StatefulWidget {
   const ProfileProvPage({required this.userId, super.key});
 
   @override
-  State<ProfileProvPage> createState() => _ProfilePageState();
+  State<ProfileProvPage> createState() => _ProfileProvPageState();
 }
 
-class _ProfilePageState extends State<ProfileProvPage> {
-  final authService = AuthenticationService();
-  String previousName =
-      "Juan Pérez"; // Este valor provendría de la base de datos
-  String previousEmail =
-      "juanperez@example.com"; // Este valor provendría de la base de datos
-  String previousPhone =
-      "123456789"; // Este valor provendría de la base de datos
-  String previousAddress =
-      "Calle Ficticia 123"; // Este valor provendría de la base de datos
+class _ProfileProvPageState extends State<ProfileProvPage> {
+  final authService = AuthenticationService(
+    supabaseClient: SupabaseClient(
+      'https://atswkwzuztfzaerlpcpc.supabase.co', // Reemplaza con tu URL de Supabase
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c3drd3p1enRmemFlcmxwY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5MjczNTcsImV4cCI6MjA1MzUwMzM1N30.FzMP9I3qs9aVol2njwWYjFPKJAgtBE-RkcQ-UrinA2A', // Reemplaza con tu clave de Supabase
+    ),
+  );
 
-  // Cerrar sesión y redirigir a la pantalla de inicio
-  void logout() async {
-    await authService.singOut(); // Cerrar sesión
-    Navigator.pushReplacementNamed(
-        context, '/landing'); // Redirigir a la pantalla de inicio
-  }
+  String previousName = "";
+  String previousEmail = "";
+  String previousPhone = "";
+  String previousAddress = "";
 
   int _selectedIndex = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final userData = await authService.getUserData(widget.userId);
+
+    setState(() {
+      previousName = userData['name'];
+      previousEmail = userData['mail'];
+
+    });
+  }
+
+  void logout() async {
+    await authService.singOut();
+    Navigator.pushReplacementNamed(context, '/landing');
+  }
 
   void _navigateToPage(int index) {
     setState(() {
@@ -75,13 +125,13 @@ class _ProfilePageState extends State<ProfileProvPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Nombre Completo',
+                'Nombre',
                 style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
               ),
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  hintText: 'Introduce tu nombre completo',
+                  hintText: 'Introduce tu nombre',
                   fillColor: Colors.white,
                   filled: true,
                   border: OutlineInputBorder(),
@@ -142,20 +192,36 @@ class _ProfilePageState extends State<ProfileProvPage> {
               },
               child: Text(
                 'Cancelar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+                style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                // Aquí puedes actualizar los valores en la base de datos
+              onPressed: () async {
+                // Actualizar los datos en Supabase
+                await authService.updateUserData(widget.userId, {
+                  'name': nameController.text,
+                  'mail': emailController.text,
+                });
+
                 setState(() {
                   previousName = nameController.text;
                   previousEmail = emailController.text;
                   previousPhone = phoneController.text;
                   previousAddress = addressController.text;
                 });
+
                 Navigator.of(context).pop();
+
+                // Mostrar SnackBar de confirmación
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Información actualizada exitosamente',
+                      style: TextStyle(fontFamily: 'San Francisco'),
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 186, 209, 247),
@@ -167,8 +233,7 @@ class _ProfilePageState extends State<ProfileProvPage> {
               ),
               child: Text(
                 'Guardar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+                style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
               ),
             ),
           ],
@@ -310,7 +375,7 @@ class _ProfilePageState extends State<ProfileProvPage> {
           Container(
             height: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey[200], // Fondo gris claro para la página
+              color: Colors.grey[200],
             ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
@@ -319,11 +384,11 @@ class _ProfilePageState extends State<ProfileProvPage> {
                   GestureDetector(
                     child: CircleAvatar(
                       radius: 60,
-                      backgroundColor: Color(0xFF8CB1F1), // Fondo azul
+                      backgroundColor: Color(0xFF8CB1F1),
                       child: Icon(
                         Icons.camera_alt,
                         size: 30,
-                        color: Colors.white, // Cámara blanca
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -334,10 +399,8 @@ class _ProfilePageState extends State<ProfileProvPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 207, 207, 207),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle:
-                          TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -351,7 +414,52 @@ class _ProfilePageState extends State<ProfileProvPage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  // Modificar Datos - Nuevo estilo
+                  // Mostrar datos del usuario
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nombre: $previousName',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Correo: $previousEmail',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Teléfono: $previousPhone',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Dirección: $previousAddress',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Modificar Datos
                   InkWell(
                     onTap: _showEditDialog,
                     child: Container(

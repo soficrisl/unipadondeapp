@@ -1,6 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/repository/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+
+class AuthenticationService {
+  final SupabaseClient supabaseClient;
+
+  AuthenticationService({required this.supabaseClient});
+
+  // Método para obtener los datos del usuario desde la tabla "usuario"
+  Future<Map<String, dynamic>> getUserData(int userId) async {
+    final response = await supabaseClient
+        .from('usuario')
+        .select()
+        .eq('id', userId)
+        .single();
+    return response;
+  }
+
+  // Método para obtener los datos del estudiante desde la tabla "estudiante"
+  Future<Map<String, dynamic>> getStudentData(int userId) async {
+    final response = await supabaseClient
+        .from('estudiante')
+        .select()
+        .eq('id', userId)
+        .single();
+    return response;
+  }
+
+  // Método para actualizar los datos del usuario en la tabla "usuario"
+  Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
+  try {
+    await supabaseClient
+        .from('usuario')
+        .update(data)
+        .eq('id', userId);
+  } catch (e) {
+    throw Exception('Error updating user data: $e');
+  }
+}
+
+
+
+  // Método para cerrar sesión
+  Future<void> singOut() async {
+    await supabaseClient.auth.signOut();
+  }
+}
 
 class ProfilePage extends StatefulWidget {
   final int userId;
@@ -12,24 +57,44 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final authService = AuthenticationService();
-  String previousName =
-      "Juan Pérez"; // Este valor provendría de la base de datos
-  String previousEmail =
-      "juanperez@example.com"; // Este valor provendría de la base de datos
-  String previousPhone =
-      "123456789"; // Este valor provendría de la base de datos
-  String previousAddress =
-      "Calle Ficticia 123"; // Este valor provendría de la base de datos
+  final authService = AuthenticationService(
+    supabaseClient: SupabaseClient(
+      'https://atswkwzuztfzaerlpcpc.supabase.co', // Reemplaza con tu URL de Supabase
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c3drd3p1enRmemFlcmxwY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5MjczNTcsImV4cCI6MjA1MzUwMzM1N30.FzMP9I3qs9aVol2njwWYjFPKJAgtBE-RkcQ-UrinA2A', // Reemplaza con tu clave de Supabase
+    ),
+  );
 
-  // Cerrar sesión y redirigir a la pantalla de inicio
-  void logout() async {
-    await authService.singOut(); // Cerrar sesión
-    Navigator.pushReplacementNamed(
-        context, '/landing'); // Redirigir a la pantalla de inicio
-  }
+  String previousName = "";
+  String previousLastName = "";
+  String previousSex = "";
+  String previousEmail = "";
+  String previousUniversity = "";
 
   int _selectedIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final userData = await authService.getUserData(widget.userId);
+    final studentData = await authService.getStudentData(widget.userId);
+
+    setState(() {
+      previousName = userData['name'];
+      previousLastName = userData['lastname'];
+      previousSex = userData['sex'];
+      previousEmail = userData['mail'];
+      previousUniversity = studentData['universidad'];
+    });
+  }
+
+  void logout() async {
+    await authService.singOut();
+    Navigator.pushReplacementNamed(context, '/landing');
+  }
 
   void _navigateToPage(int index) {
     setState(() {
@@ -53,133 +118,157 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showEditDialog() {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController phoneController = TextEditingController();
-    TextEditingController addressController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController universityController = TextEditingController();
 
-    nameController.text = previousName;
-    emailController.text = previousEmail;
-    phoneController.text = previousPhone;
-    addressController.text = previousAddress;
+  // Lista de opciones para el DropdownMenu
+  List<String> genderOptions = ['Femenino', 'Masculino'];
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 215, 228, 252),
-          title: Text(
-            'Modificar Datos',
-            style: TextStyle(
-              fontFamily: 'San Francisco',
+  // Valor seleccionado en el DropdownMenu
+  String selectedGender = previousSex == 'F' ? 'Femenino' : 'Masculino';
+
+  nameController.text = previousName;
+  lastNameController.text = previousLastName;
+  emailController.text = previousEmail;
+  universityController.text = previousUniversity;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 215, 228, 252),
+        title: Text(
+          'Modificar Datos',
+          style: TextStyle(
+            fontFamily: 'San Francisco',
+          ),
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Nombre',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
             ),
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Nombre Completo',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu nombre completo',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Correo Electrónico',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu correo electrónico',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Teléfono',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu teléfono',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Dirección',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: addressController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu dirección',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Cancelar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                hintText: 'Introduce tu nombre',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                // Aquí puedes actualizar los valores en la base de datos
+            SizedBox(height: 10),
+            Text(
+              'Apellido',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
+            ),
+            TextField(
+              controller: lastNameController,
+              decoration: InputDecoration(
+                hintText: 'Introduce tu apellido',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Sexo',
+              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
+            ),
+            // DropdownMenu para seleccionar el sexo
+            DropdownMenu<String>(
+              initialSelection: selectedGender,
+              onSelected: (String? value) {
                 setState(() {
-                  previousName = nameController.text;
-                  previousEmail = emailController.text;
-                  previousPhone = phoneController.text;
-                  previousAddress = addressController.text;
+                  selectedGender = value!;
                 });
-                Navigator.of(context).pop();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 186, 209, 247),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'Guardar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+              dropdownMenuEntries: genderOptions
+                  .map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(
+                  value: value,
+                  label: value,
+                );
+              }).toList(),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15),
               ),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Cancelar',
+              style:
+                  TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // Convertir la selección del DropdownMenu a "F" o "M"
+              String sex = selectedGender == 'Femenino' ? 'F' : 'M';
+
+              await authService.updateUserData(widget.userId, {
+                'name': nameController.text,
+                'lastname': lastNameController.text,
+                'sex': sex,
+                'mail': emailController.text,
+              });
+              setState(() {
+                previousName = nameController.text;
+                previousLastName = lastNameController.text;
+                previousSex = sex;
+                previousEmail = emailController.text;
+                previousUniversity = universityController.text;
+              });
+
+              Navigator.of(context).pop();
+
+              // Mostrar SnackBar de confirmación
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Información actualizada exitosamente',
+                    style: TextStyle(fontFamily: 'San Francisco'),
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromARGB(255, 186, 209, 247),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+              textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'Guardar',
+              style:
+                  TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   void _showCookiePolicy() {
     showDialog(
@@ -314,7 +403,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             height: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey[200], // Fondo gris claro para la página
+              color: Colors.grey[200],
             ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
@@ -323,11 +412,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   GestureDetector(
                     child: CircleAvatar(
                       radius: 60,
-                      backgroundColor: Color(0xFF8CB1F1), // Fondo azul
+                      backgroundColor: Color(0xFF8CB1F1),
                       child: Icon(
                         Icons.camera_alt,
                         size: 30,
-                        color: Colors.white, // Cámara blanca
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -355,7 +444,60 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  // Modificar Datos - Nuevo estilo
+                  // Mostrar datos del usuario
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nombre: $previousName',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Apellido: $previousLastName',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Sexo: ${previousSex == 'F' ? 'Femenino' : 'Masculino'}',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Correo: $previousEmail',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Universidad: $previousUniversity',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Modificar Datos
                   InkWell(
                     onTap: _showEditDialog,
                     child: Container(
