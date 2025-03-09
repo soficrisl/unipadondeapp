@@ -17,7 +17,7 @@ class DataService {
         return [categoria.id, categoria.name];
       }).toList();
     } catch (e) {
-      throw Exception('Error fetching categories');
+      throw Exception('Error fetching categories: $e');
     }
   }
 
@@ -29,38 +29,101 @@ class DataService {
     try {
       final descuentos = await client.from('descuento').select();
       final pertenece = await client.from('pertenece').select();
-      final info = await client.from('negocio').select('id, picture');
+      final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage');
 
       List<Map<String, dynamic>> descuentoslistos = [];
-      final negocioMap = {for (var n in info) n['id']: n['picture']};
+      final negocioMap = {
+        for (var n in info) n['id']: {
+          'name': n['name'],
+          'description': n['description'],
+          'picture': n['picture'],
+          'tiktok': n['tiktok'],
+          'instagram': n['instagram'],
+          'webpage': n['webpage'],
+        }
+      };
       final perteneceMap = {
         for (var n in pertenece) n['id_negocio']: n["id_categoria"]
       };
 
       int? idcat;
       String? imagen;
+      String? tiktok;
+      String? instagram;
+      String? webpage;
+      String? businessName;
+      String? businessDescription;
       int? idnegocio;
       for (var descuento in descuentos) {
         idnegocio = descuento['id_negocio'];
         idcat = perteneceMap[idnegocio];
-        imagen = negocioMap[idnegocio];
+        businessName = negocioMap[idnegocio]?['name'];
+        businessDescription = negocioMap[idnegocio]?['description'];
+        imagen = negocioMap[idnegocio]?['picture'];
+        tiktok = negocioMap[idnegocio]?['tiktok'];
+        instagram = negocioMap[idnegocio]?['instagram'];
+        webpage = negocioMap[idnegocio]?['webpage'];
+        descuento['businessName'] = businessName;
+        descuento['businessDescription'] = businessDescription;
         descuento['businessLogo'] = imagen;
         descuento['idcategory'] = idcat;
+        descuento['tiktok'] = tiktok;
+        descuento['instagram'] = instagram;
+        descuento['webpage'] = webpage;
         descuentoslistos.add(descuento);
       }
       listofdiscounts =
           descuentoslistos.map((json) => Discount.fromJson(json)).toList();
     } catch (e) {
-      throw Exception('Error fetching discounts');
+      throw Exception('Error fetching discounts: $e');
     }
   }
 
   List<Discount>? getDescuentos() {
     return listofdiscounts;
   }
+
+  Future<void> addSubscription(int userId, String categoryId) async {
+    try {
+      print('Attempting to add subscription for user $userId and category $categoryId');
+
+      final response = await client.from('subscribe').insert({
+        'id_usuario': userId,
+        'id_categoria': categoryId,
+        'date': DateTime.now().toIso8601String(),
+        'state': true,
+      });
+
+      if (response.error != null) {
+        print('Error adding subscription: ${response.error!.message}');
+        throw Exception('Failed to add subscription: ${response.error!.message}');
+      } else {
+        print('Subscription added successfully');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+    }
+  }
+
+  Future<bool> isSubscribed(int userId, int categoryId) async {
+    try {
+      final response = await client
+          .from('subscribe')
+          .select()
+          .eq('id_usuario', userId)
+          .eq('id_categoria', categoryId)
+          .eq('state', true);
+
+      // Si hay algún registro, el usuario ya está suscrito
+      return response.isNotEmpty;
+    } catch (e) {
+      print('Error checking subscription: $e');
+      throw Exception('Error checking subscription: $e');
+    }
+  }
 }
 
-//Atributos del descuento
+// Definición de la clase Discount
 class Discount {
   final int id;
   final String name;
@@ -70,6 +133,11 @@ class Discount {
   final String duration;
   final int idcategory;
   final int idbusiness;
+  final String? tiktok;
+  final String? instagram;
+  final String? webpage;
+  final String businessName;
+  final String businessDescription;
 
   Discount({
     required this.id,
@@ -80,6 +148,11 @@ class Discount {
     required this.duration,
     required this.idbusiness,
     required this.porcentaje,
+    this.tiktok,
+    this.instagram,
+    this.webpage,
+    required this.businessName,
+    required this.businessDescription,
   });
 
   factory Discount.fromJson(Map<String, dynamic> json) {
@@ -92,10 +165,16 @@ class Discount {
       duration: "Dos dias",
       idcategory: json['idcategory'],
       idbusiness: json['id_negocio'],
+      tiktok: json['tiktok'],
+      instagram: json['instagram'],
+      webpage: json['webpage'],
+      businessName: json['businessName'],
+      businessDescription: json['businessDescription'],
     );
   }
 }
 
+// Definición de la clase Categoria
 class Categoria {
   final int id;
   final String name;
@@ -112,66 +191,3 @@ class Categoria {
         id: map['id'], name: map['name'], description: map['description']);
   }
 }
-
-class Pertenece {
-  final int business;
-  final int category;
-
-  Pertenece({
-    required this.business,
-    required this.category,
-  });
-}
-
-class Negocio {
-  final int id;
-  final String description;
-  final String tiktok;
-  final String instagram;
-  final String name;
-  final String mail;
-  final String webpage;
-
-  Negocio({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.tiktok,
-    required this.instagram,
-    required this.webpage,
-    required this.mail,
-  });
-}
-
-//Listamos los descuentos
-final List<Discount> listOfDIscounts = [
-  /*
-  Discount(
-    name: "Food Kart",
-    category: "Games",
-    description: "Ven a jugar GoKarts en 2x1",
-    buisnessLogo: "assets/images/fk.png",
-    duration: "2 dias",
-  ),
-  Discount(
-    name: "Laser",
-    category: "Travel",
-    description: "20% descuento en pasajes Ccs-Miami",
-    buisnessLogo: "assets/images/laser.png",
-    duration: "1 dias",
-  ),
-  Discount(
-    name: "Mykonos",
-    category: "Food",
-    description: "Por la compra de 3 helados uno gratis",
-    buisnessLogo: "assets/images/mykonis.jpg",
-    duration: "2 dias",
-  ),
-  Discount(
-    name: "Plan B",
-    category: "Food",
-    description: "Cheeseburger clasica por tan solo 2 dolares",
-    buisnessLogo: "assets/images/planb.png",
-    duration: "2 dias",
-  ) */
-];

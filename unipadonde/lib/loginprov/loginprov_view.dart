@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/login/login_view.dart';
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:flutter/scheduler.dart';
 
 class LoginProvView extends StatefulWidget {
   const LoginProvView({super.key});
@@ -20,31 +21,34 @@ class _LoginProvState extends State<LoginProvView> {
 
   //Login function
   void login() async {
-    // Esto deberia estar en el view model
-    final email = _emailController.text;
-    final password = _passwordController.text;
+  final email = _emailController.text;
+  final password = _passwordController.text;
 
-    // Validación: Asegúrate de que los campos no estén vacíos
-    if (email.isEmpty || password.isEmpty) {
+  // Validación: Asegúrate de que los campos no estén vacíos
+  if (email.isEmpty || password.isEmpty) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text("Por favor, ingresa tu correo y contraseña.")),
         );
       }
-      return;
-    }
+    });
+    return;
+  }
 
-    //Attempt to login
-    try {
-      await authService.signIn(email, password);
-    } catch (e) {
+  // Attempt to login
+  try {
+    await authService.signIn(email, password);
+  } catch (e) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Error: $e")));
       }
-    }
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

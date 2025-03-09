@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/business%20page/buspage_view.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
 import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-//import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_model.dart';
+import 'package:unipadonde/businessprovinfo/business_info_view.dart';
+import 'dart:math'; // Importa la clase Random
 
 class Favsbusinesspage extends StatefulWidget {
   final int userId;
@@ -15,37 +17,14 @@ class Favsbusinesspage extends StatefulWidget {
 }
 
 class _FavspageState extends State<Favsbusinesspage> {
-  //lista de categorias
-  List<Categoria> categories = [];
-  List<Discount> listofdiscounts = [];
-  List<int> selectedCategories = [];
+  List<Business> businesses = [];
+  bool isLoading = true;
 
-  final dataService = DataService(Supabase
-      .instance.client); //esto antes estaba dentro de c/funcion y lo saque
+  final dataService = DataService(Supabase.instance.client);
 
-  //Cargar categorias suscritas
-  void getcat() async {
-    /// Esto deberia estar en el VM
-    await dataService.fetchCategoriasSuscritas(widget.userId);
-    setState(() {
-      categories = dataService.getCategoriasSuscritas();
-    });
-    getdis();
-  }
-
-  //Cargar descuentos
-  void getdis() async {
-    // Esto deberia estar en el VM
-    await dataService.fetchDiscounts();
-    setState(() {
-      listofdiscounts = dataService.getDescuentos() ?? [];
-    });
-  }
-
-  // Variables para el formulario de añadir negocio
+  // Controladores para el formulario de añadir negocio
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _idController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _tiktokController = TextEditingController();
@@ -54,10 +33,55 @@ class _FavspageState extends State<Favsbusinesspage> {
   @override
   void initState() {
     super.initState();
-    getcat();
+    fetchBusinesses();
   }
 
-  // Función de logout
+  Future<void> fetchBusinesses() async {
+    try {
+      final client = Supabase.instance.client;
+      final response = await client
+          .from('negocio')
+          .select('*')
+          .eq('id_proveedor', widget.userId);
+
+      setState(() {
+        businesses = List<Map<String, dynamic>>.from(response)
+            .map((json) => Business.fromJson(json))
+            .toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching businesses: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // Genera un ID único para el negocio
+  Future<int> generateUniqueId() async {
+    final client = Supabase.instance.client;
+    final random = Random();
+    int id;
+
+    // Genera un ID aleatorio y verifica que no exista en la tabla
+    do {
+      id = random.nextInt(1000000); // Genera un número aleatorio entre 0 y 999999
+      final response = await client
+          .from('negocio')
+          .select('id')
+          .eq('id', id)
+          .maybeSingle();
+
+      // Si no hay respuesta, el ID no existe y es válido
+      if (response == null) {
+        break;
+      }
+    } while (true);
+
+    return id;
+  }
+
   void logout() async {
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
@@ -74,27 +98,18 @@ class _FavspageState extends State<Favsbusinesspage> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/favsbusiness',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/favsbusiness', arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profileprov',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/profileprov', arguments: widget.userId);
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //filtrar los  de acuerdo a la categoria seleccionada
-    final filterDiscount = listofdiscounts.where((discount) {
-      return selectedCategories.isEmpty ||
-          selectedCategories.contains(discount.idcategory);
-    }).toList();
-
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -148,64 +163,67 @@ class _FavspageState extends State<Favsbusinesspage> {
             SizedBox(
               height: 5,
             ),
-
-            // Aqui se maneja la visualización de los negocios
             Expanded(
-              child: ListView.builder(
-                itemCount: filterDiscount.length,
-                itemBuilder: (context, index) {
-                  final discount = filterDiscount[index];
-                  return Card(
-                    elevation: 4.0,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0)),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        leading: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  discount.businessLogo), //negocio.logo
-                              fit: BoxFit.contain,
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: businesses.length,
+                      itemBuilder: (context, index) {
+                        final business = businesses[index];
+                        return Card(
+                          elevation: 4.0,
+                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15.0)),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              leading: Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  image: DecorationImage(
+                                    image: AssetImage(business.picture),
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                business.name,
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'San Francisco'),
+                              ),
+                              subtitle: Text(
+                                business.description,
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontStyle: FontStyle.italic,
+                                    fontFamily: 'San Francisco'),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => BusinessInfoView(
+                                      business: business,
+                                      onBusinessDeleted: fetchBusinesses, // Pasa la función de actualización
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        ),
-                        title: Text(
-                          discount.name, //negocio.name
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'San Francisco'),
-                        ),
-                        subtitle: Text(
-                          discount.description, //negocio.description
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontStyle: FontStyle.italic,
-                              fontFamily: 'San Francisco'),
-                        ),
-                        onTap: () {
-                          BuspageView(); //conexion xon business page (OJO CHECK)
-                        },
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
-
-            // Botón para añadir un negocio
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
@@ -213,7 +231,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                   showAddBusinessDialog();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFA500), // Color de fondo
+                  backgroundColor: Color(0xFFFFA500),
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   textStyle: TextStyle(
                     color: Colors.white,
@@ -234,8 +252,6 @@ class _FavspageState extends State<Favsbusinesspage> {
           ],
         ),
       ),
-
-      //botombar
       bottomNavigationBar: CustomBottomBarProv(
         selectedIndex: _selectedIndex,
         onItemTapped: (index) {
@@ -248,141 +264,167 @@ class _FavspageState extends State<Favsbusinesspage> {
     );
   }
 
-  // Método para mostrar el formulario de añadir negocio
   Future showAddBusinessDialog() => showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ),
-                Text(
-                  "Añadir Negocio",
-                  style: TextStyle(
-                    fontFamily: "San Francisco",
-                    fontSize: 24,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                Text("Ingresa los siguientes datos:",
-                    style: TextStyle(
-                      fontFamily: "San Francisco",
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.right),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Nombre del negocio:'),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _descriptionController,
-                  decoration:
-                      InputDecoration(labelText: 'Descripción del negocio:'),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _idController,
-                  decoration: InputDecoration(labelText: 'Id del negocio:'),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _instagramController,
-                  decoration: InputDecoration(labelText: 'Instagram:'),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Correo electrónico:'),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _tiktokController,
-                  decoration: InputDecoration(
-                    labelText: 'TikTok:',
-                  ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _websiteController,
-                  decoration: InputDecoration(labelText: 'Página web:'),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Añadir el negocio a la lista de negocios
-                    //final newBusiness = Negocio(
-                    //name: _nameController.text,
-                    //description: _descriptionController.text,
-                    //instagram: _instagramController.text,
-                    //);
-                    setState(() {
-                      //businesses.add(newBusiness);
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF8CB1F1), // Color de fondo
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: Text(
-                    "Añadir",
-                    style: TextStyle(
-                        color: Colors.white, fontFamily: "San Francisco"),
-                  ),
-                ),
-              ],
+  context: context,
+  builder: (context) => Dialog(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: Icon(Icons.close, color: Colors.grey),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
-        ),
-      );
+          Text(
+            "Añadir Negocio",
+            style: TextStyle(
+              fontFamily: "San Francisco",
+              fontSize: 24,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          Text("Ingresa los siguientes datos:",
+              style: TextStyle(
+                fontFamily: "San Francisco",
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.right),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(labelText: 'Nombre del negocio:'),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _descriptionController,
+            decoration: InputDecoration(labelText: 'Descripción del negocio:'),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _instagramController,
+            decoration: InputDecoration(labelText: 'Instagram:'),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(labelText: 'Correo electrónico:'),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _tiktokController,
+            decoration: InputDecoration(
+              labelText: 'TikTok:',
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _websiteController,
+            decoration: InputDecoration(labelText: 'Página web:'),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () async {
+              final name = _nameController.text;
+              final description = _descriptionController.text;
+              final instagram = _instagramController.text;
+              final email = _emailController.text;
+              final tiktok = _tiktokController.text;
+              final webpage = _websiteController.text;
 
-  //pop-up con información del negocio
-  //Future openDialog(Discount discount) => showDialog(
-  //context: context,
-  //builder: (context) => Dialog(
-  //shape: RoundedRectangleBorder(
-  //borderRadius: BorderRadius.circular(20),
-  //),
-  //child: Padding(
-  //padding: const EdgeInsets.all(16),
-  //child:
-  //Titulo / Nombre de descuento
-  //Text(
-  //Negocio(id: id, name: name, description: description, tiktok: tiktok, instagram: instagram, webpage: webpage, mail: mail).name,
-  //"Negocio ",
-  //style: TextStyle(
-  //fontSize: 24,
-  //fontWeight: FontWeight.bold,
-  //color: Colors.black87,
-  //),
-  //textAlign: TextAlign.center,
-  //),
+              if (name.isEmpty || description.isEmpty || instagram.isEmpty || email.isEmpty || tiktok.isEmpty || webpage.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Por favor, completa todos los campos.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
 
-  //),
-  //)
-  //);
+              try {
+                final client = Supabase.instance.client;
+
+                // Genera un ID único para el negocio
+                final id = await generateUniqueId();
+
+                // Inserta el nuevo negocio en la tabla
+                await client.from('negocio').insert({
+                  'id': id, // Usa el ID generado
+                  'name': name,
+                  'picture': 'assets/images/notfound.png', // Valor predeterminado para la imagen
+                  'description': description,
+                  'instagram': instagram,
+                  'mail': email,
+                  'tiktok': tiktok,
+                  'webpage': webpage,
+                  'id_proveedor': widget.userId,
+                  'riftype': 'J', // Valor fijo
+                });
+
+                // Cierra el diálogo antes de mostrar el SnackBar
+                Navigator.of(context).pop();
+
+                // Muestra el SnackBar después de cerrar el diálogo
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Negocio añadido correctamente.'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+
+                // Limpia los controladores
+                _nameController.clear();
+                _descriptionController.clear();
+                _instagramController.clear();
+                _emailController.clear();
+                _tiktokController.clear();
+                _websiteController.clear();
+
+                // Actualiza la lista de negocios
+                fetchBusinesses();
+              } catch (e) {
+                // Cierra el diálogo antes de mostrar el SnackBar de error
+                Navigator.of(context).pop();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error al añadir el negocio: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF8CB1F1),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              textStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: Text(
+              "Añadir",
+              style: TextStyle(
+                  color: Colors.white, fontFamily: "San Francisco"),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
 }
