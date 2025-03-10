@@ -40,7 +40,7 @@ class _FavspageState extends State<CDiscountPage> {
 
   //PRUEBA DATE TIME RANGE PICKER
 
-  showDateTimeRangePicker() async {
+  Future<void> showDateTimeRangePicker() async {
     List<DateTime>? dateTimeList = await showOmniDateTimeRangePicker(
       context: context,
       startInitialDate: DateTime.now(),
@@ -76,7 +76,17 @@ class _FavspageState extends State<CDiscountPage> {
       transitionDuration: const Duration(milliseconds: 200),
       barrierDismissible: true,
     );
-    print(dateTimeList);
+    if (dateTimeList != null && dateTimeList.length == 2) {
+      setState(() {
+        _selectedStartDate = dateTimeList[0];
+        _selectedEndDate = dateTimeList[1];
+
+        _startDateController.text =
+            "${_selectedStartDate!.day}/${_selectedStartDate!.month}/${_selectedStartDate!.year} ${_selectedStartDate!.hour}:${_selectedStartDate!.minute}";
+        _endDateController.text =
+            "${_selectedEndDate!.day}/${_selectedEndDate!.month}/${_selectedEndDate!.year} ${_selectedEndDate!.hour}:${_selectedEndDate!.minute}";
+      });
+    }
   }
 
   // Función de logout
@@ -160,12 +170,8 @@ class _FavspageState extends State<CDiscountPage> {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          //PRUEBA DE DATE TIME PICKER RANGE
-          //mainAxisAlignment: MainAxisAlignmetn.center
-          //crossAxisAlignment : CrossAxisALignment.center
           children: [
             Container(
-              //margin: const EdgeInsets.only(top: 15.0),
               height: 50,
               color: Color.fromARGB(255, 72, 128, 188),
               child: Row(
@@ -246,51 +252,155 @@ class _FavspageState extends State<CDiscountPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => Navigator.of(context).pop(),
+          child: StatefulBuilder(
+            builder: (context, setStateDialog) => Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: Colors.grey),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                   ),
-                ),
-                Text("Añadir Descuento",
-                    style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                TextField(
+                  Text(
+                    "Añadir Descuento",
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'San Francisco',
+                        color: Color(0xFFFFA500)),
+                  ),
+                  TextField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                        labelText: 'Nombre:', errorText: _nameError)),
-                TextField(
+                      labelText: 'Nombre:',
+                      errorText: _nameError,
+                    ),
+                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    onChanged: (_) {
+                      setStateDialog(() {
+                        _nameError = _nameController.text.isEmpty
+                            ? "El nombre no puede estar vacío"
+                            : null;
+                      });
+                    },
+                  ),
+                  TextField(
                     controller: _descriptionController,
+                    maxLines: 5,
                     decoration: InputDecoration(
-                        labelText: 'Descripción:',
-                        errorText: _descriptionError)),
-                TextField(
+                      labelText: 'Descripción:',
+                      errorText: _descriptionError,
+                    ),
+                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    onChanged: (_) {
+                      setStateDialog(() {
+                        _descriptionError = _descriptionController.text.isEmpty
+                            ? "La descripción no puede estar vacía"
+                            : null;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
                     controller: _percentageController,
                     decoration: InputDecoration(
-                        labelText: 'Porcentaje:', errorText: _percentageError)),
-                //PRUEBA DE DATE TIME PICKER RANGE
-                ElevatedButton(
-                  onPressed: () {
-                    showDateTimeRangePicker();
-                  },
-                  child: const Text('Fecha del descuento'),
-                ),
-                TextField(
+                      labelText: 'Porcentaje:',
+                      errorText: _percentageError,
+                    ),
+                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    onChanged: (_) {
+                      setStateDialog(() {
+                        _percentageError =
+                            int.tryParse(_percentageController.text) == null
+                                ? "Debe ser un número entero"
+                                : null;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await showDateTimeRangePicker();
+                      setStateDialog(() {
+                        _dateError = (_selectedStartDate == null ||
+                                _selectedEndDate == null)
+                            ? "Debe seleccionar las fechas"
+                            : null;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Color(0xFFFFA500), // Cambia aquí a tu color
+                      textStyle: const TextStyle(
+                          fontFamily: 'San Francisco', color: Colors.white),
+                    ),
+                    child: Text(
+                      _selectedStartDate == null || _selectedEndDate == null
+                          ? 'Seleccionar fechas'
+                          : 'Desde: ${_startDateController.text}\nHasta: ${_endDateController.text}',
+                      style: const TextStyle(fontFamily: 'San Francisco'),
+                    ),
+                  ),
+                  if (_dateError != null)
+                    Text(
+                      _dateError!,
+                      style: TextStyle(
+                          color: Colors.red, fontFamily: 'San Francisco'),
+                    ),
+                  const SizedBox(height: 8),
+                  TextField(
                     controller: _idBusinessController,
-                    decoration: InputDecoration(labelText: 'ID Negocio:')),
-                ElevatedButton(
-                    onPressed: _addDiscountToDatabase, child: Text("Añadir")),
-              ],
+                    decoration: InputDecoration(labelText: 'ID Negocio:'),
+                    style: const TextStyle(fontFamily: 'San Francisco'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setStateDialog(() {
+                        _validateForm();
+                      });
+                      if (_allFieldsValid()) {
+                        _addDiscountToDatabase();
+                      }
+                    },
+                    child: Text(
+                      "Añadir",
+                      style: TextStyle(fontFamily: 'San Francisco'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       );
+
+  /// Método para validar todos los campos
+  void _validateForm() {
+    _nameError =
+        _nameController.text.isEmpty ? "El nombre no puede estar vacío" : null;
+    _descriptionError = _descriptionController.text.isEmpty
+        ? "La descripción no puede estar vacía"
+        : null;
+    _percentageError = int.tryParse(_percentageController.text) == null
+        ? "Debe ser un número entero"
+        : null;
+    _dateError = (_selectedStartDate == null || _selectedEndDate == null)
+        ? "Debe seleccionar las fechas"
+        : null;
+  }
+
+  /// Método para verificar que todos los campos son válidos
+  bool _allFieldsValid() {
+    return _nameError == null &&
+        _descriptionError == null &&
+        _percentageError == null &&
+        _dateError == null;
+  }
 
   //Metodo para anadir el descuento a Supabase mediante el viewmodel
 
@@ -299,29 +409,6 @@ class _FavspageState extends State<CDiscountPage> {
     setState(() => _isLoading = true);
 
     try {
-      setState(() {
-        _nameError = _nameController.text.isEmpty
-            ? "El nombre no puede estar vacío"
-            : null;
-        _descriptionError = _descriptionController.text.isEmpty
-            ? "La descripción no puede estar vacía"
-            : null;
-        _percentageError = int.tryParse(_percentageController.text) == null
-            ? "Debe ser un número entero"
-            : null;
-        _dateError = (_selectedStartDate == null || _selectedEndDate == null)
-            ? "Debe seleccionar las fechas"
-            : null;
-      });
-
-      if (_nameError != null ||
-          _descriptionError != null ||
-          _percentageError != null ||
-          _dateError != null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
       Discount discount = Discount(
         name: _nameController.text,
         description: _descriptionController.text,
@@ -360,6 +447,7 @@ class _FavspageState extends State<CDiscountPage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
+                _clearForm();
               },
               child: Text("OK"),
             ),
@@ -367,5 +455,16 @@ class _FavspageState extends State<CDiscountPage> {
         );
       },
     );
+  }
+
+  void _clearForm() {
+    setState(() {
+      _nameController.clear();
+      _descriptionController.clear();
+      _percentageController.clear();
+      _idBusinessController.clear();
+      _selectedStartDate = null;
+      _selectedEndDate = null;
+    });
   }
 }
