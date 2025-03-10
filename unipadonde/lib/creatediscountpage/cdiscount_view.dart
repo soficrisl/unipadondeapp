@@ -4,8 +4,6 @@ import 'package:unipadonde/creatediscountpage/cdiscount_vm.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 //import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 class CDiscountPage extends StatefulWidget {
