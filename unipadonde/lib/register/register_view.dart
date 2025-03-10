@@ -25,7 +25,7 @@ class _RegisterViewState extends State<RegisterView> {
   final _lastnameController = TextEditingController();
   final _ciController = TextEditingController();
   final _universidadController = TextEditingController();
-  String? selectedSex;
+  String? selectedSex = "F";
   bool possible = true;
 
   void signUp() async {
@@ -39,7 +39,7 @@ class _RegisterViewState extends State<RegisterView> {
     final lastname = _lastnameController.text;
     final ci = int.parse(_ciController.text);
     final universidad = _universidadController.text;
-    String sex = "F";
+    String? sex;
     if (selectedSex == "Masculino") {
       sex = "M";
     } else {
@@ -155,29 +155,6 @@ class _RegisterViewState extends State<RegisterView> {
                       )
                     ],
                   )),
-              SizedBox(height: 20),
-              Expanded(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Registro",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 45,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'San Francisco',
-                      )),
-                  Text(
-                    "Bienvenido ESTUDIANTE: ",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'San Francisco',
-                    ),
-                  )
-                ],
-              )),
               SizedBox(height: 20),
               Expanded(
                   child: Container(
@@ -372,36 +349,41 @@ class _RegisterViewState extends State<RegisterView> {
                                           validator: validCI,
                                         ),
                                       ),
-
+                                      SizedBox(height: 20),
                                       // ! SEXO
                                       Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                                    color: const Color.fromARGB(
-                                                        200, 158, 158, 158))),
-                                          ),
-                                          child: DropdownButton(
-                                              value: selectedSex,
-                                              onChanged: (String? newValue) {
-                                                setState(() {
-                                                  selectedSex = newValue!;
-                                                });
-                                              },
-                                              style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      200, 158, 158, 158)),
-                                              items: <String>[
-                                                'Masculino',
-                                                'Femenino'
-                                              ].map<DropdownMenuItem<String>>(
-                                                  (String value) {
-                                                return DropdownMenuItem<String>(
-                                                  value: value,
-                                                  child: Text(value),
-                                                );
-                                              }).toList())),
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 0.5,
+                                              color: const Color.fromARGB(
+                                                  200, 158, 158, 158),
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                        child: DropdownButton<String>(
+                                            value: selectedSex,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                            underline: Container(
+                                              height: 1,
+                                            ),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedSex = newValue!;
+                                              });
+                                            },
+                                            items: const [
+                                              DropdownMenuItem<String>(
+                                                  value: "Femenino",
+                                                  child: Text("Femenino")),
+                                              DropdownMenuItem<String>(
+                                                  value: "Masculino",
+                                                  child: Text("Masculino"))
+                                            ]),
+                                      ),
 
                                       // ! BOTON REGISTRAR
                                       const SizedBox(height: 30),

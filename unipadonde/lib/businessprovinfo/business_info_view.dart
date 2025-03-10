@@ -1,114 +1,134 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_model.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:intl/intl.dart';
-import 'buspage_vm.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // Importar Supabase
 
-class BuspageView extends StatefulWidget {
-  final String businessName;
-  final String businessDescription;
-  final String businessTiktok;
-  final String businessInstagram;
-  final String businessWebsite;
-  final String businessLogo;
-  final int idNegocio;
+class BusinessInfoView extends StatefulWidget {
+  final Business business;
+  final VoidCallback onBusinessDeleted; // Función de actualización
 
-  BuspageView({
-    required this.businessName,
-    required this.businessDescription,
-    required this.businessTiktok,
-    required this.businessInstagram,
-    required this.businessWebsite,
-    required this.businessLogo,
-    required this.idNegocio,
+  const BusinessInfoView({
+    required this.business,
+    required this.onBusinessDeleted, // Acepta la función de actualización
   });
 
   @override
-  _BuspageViewState createState() => _BuspageViewState();
+  _BusinessInfoViewState createState() => _BusinessInfoViewState();
 }
 
-class _BuspageViewState extends State<BuspageView> {
-  final BuspageViewModel _viewModel = BuspageViewModel();
-  final TextEditingController _commentController = TextEditingController();
+class _BusinessInfoViewState extends State<BusinessInfoView> {
+  List<Map<String, dynamic>> discounts = [];
+  Map<String, dynamic>? address;
+  bool isLoading = true;
+  Business currentBusiness; // Mantén una copia local del negocio
+
+  _BusinessInfoViewState() : currentBusiness = Business(
+    id: 0,
+    name: '',
+    description: '',
+    picture: '',
+    tiktok: '',
+    instagram: '',
+    webpage: '',
+  );
 
   @override
   void initState() {
     super.initState();
-    _viewModel.fetchDiscounts(widget.idNegocio);
-    _viewModel.fetchAddress(widget.idNegocio);
-    _viewModel.fetchComments(widget.idNegocio);
-    _viewModel.addListener(_onViewModelChange);
+    currentBusiness = widget.business; // Inicializa con el negocio recibido
+    fetchDiscounts(); // Llama a fetchDiscounts al iniciar
+    fetchAddress(); // Llama a fetchAddress al iniciar
   }
 
-  void _onViewModelChange() {
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _viewModel.removeListener(_onViewModelChange);
-    super.dispose();
-  }
-
-  Future<void> _submitComment() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Debes iniciar sesión para enviar un comentario.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    if (_commentController.text.isEmpty || _viewModel.rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Por favor, escribe un comentario y selecciona una calificación.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
+  // Método para obtener los descuentos del negocio
+  Future<void> fetchDiscounts() async {
     try {
-      final usuarioResponse = await Supabase.instance.client
-          .from('usuario')
-          .select('id')
-          .eq('uid', user.id)
-          .single();
+      final client = Supabase.instance.client;
+      final response = await client
+          .from('descuento')
+          .select('*')
+          .eq('id_negocio', currentBusiness.id);
 
-      final int usuarioId = usuarioResponse['id'];
-
-      final estudianteResponse = await Supabase.instance.client
-          .from('estudiante')
-          .select('id')
-          .eq('id', usuarioId)
-          .single();
-
-      final int estudianteId = estudianteResponse['id'];
-
-      await _viewModel.submitComment(widget.idNegocio, estudianteId, _commentController.text, _viewModel.rating);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Comentario recibido.'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      _commentController.clear();
-      _viewModel.rating = 0;
+      setState(() {
+        discounts = List<Map<String, dynamic>>.from(response);
+      });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      print('Error fetching discounts: $e');
     }
   }
+
+  // Método para obtener la dirección del negocio
+  Future<void> fetchAddress() async {
+    try {
+      final client = Supabase.instance.client;
+      final response = await client
+          .from('direccion')
+          .select('*')
+          .eq('id_negocio', currentBusiness.id)
+          .single();
+
+      setState(() {
+        address = response;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching address: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // Método para actualizar los datos del negocio
+  Future<void> _refreshBusinessData() async {
+    try {
+      final client = Supabase.instance.client;
+      final response = await client
+          .from('negocio')
+          .select('*')
+          .eq('id', currentBusiness.id)
+          .single();
+
+      setState(() {
+        currentBusiness = Business.fromJson(response);
+      });
+    } catch (e) {
+      print('Error refreshing business data: $e');
+    }
+  }
+
+  // Método para eliminar el negocio
+  Future<void> _deleteBusiness() async {
+  try {
+    final client = Supabase.instance.client;
+
+    // Elimina el negocio de la base de datos
+    await client.from('negocio').delete().eq('id', currentBusiness.id);
+
+    // Muestra un mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Negocio eliminado correctamente.'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // Llama a la función de actualización
+    widget.onBusinessDeleted();
+
+    // Navega de regreso a la pantalla anterior
+    Navigator.of(context).pop();
+  } catch (e) {
+    // Muestra un mensaje de error si algo sale mal
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error al eliminar el negocio: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +186,7 @@ class _BuspageViewState extends State<BuspageView> {
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        widget.businessLogo,
+                        currentBusiness.picture,
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -174,7 +194,7 @@ class _BuspageViewState extends State<BuspageView> {
                   SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      widget.businessName,
+                      currentBusiness.name,
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -187,7 +207,7 @@ class _BuspageViewState extends State<BuspageView> {
               ),
               SizedBox(height: 20),
               Text(
-                widget.businessDescription,
+                currentBusiness.description,
                 style: TextStyle(
                   fontSize: 24,
                   fontFamily: 'San Francisco',
@@ -202,9 +222,9 @@ class _BuspageViewState extends State<BuspageView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoRow('Tiktok', widget.businessTiktok, 'assets/icons/tiktok.png'),
-                        _buildInfoRow('Instagram', widget.businessInstagram, 'assets/icons/instagram.png'),
-                        _buildInfoRow('Página web', widget.businessWebsite, 'assets/icons/sitio-web.png'),
+                        _buildInfoRow('Tiktok', currentBusiness.tiktok, 'assets/icons/tiktok.png'),
+                        _buildInfoRow('Instagram', currentBusiness.instagram, 'assets/icons/instagram.png'),
+                        _buildInfoRow('Página web', currentBusiness.webpage, 'assets/icons/sitio-web.png'),
                       ],
                     ),
                   ),
@@ -213,14 +233,14 @@ class _BuspageViewState extends State<BuspageView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (_viewModel.address != null) ...[
-                          _buildInfoRow('Estado', _viewModel.address!['estado'], ''),
-                          _buildInfoRow('Ciudad', _viewModel.address!['ciudad'], ''),
-                          _buildInfoRow('Municipio', _viewModel.address!['municipio'], ''),
-                          _buildInfoRow('Calle', _viewModel.address!['calle'], ''),
-                          if (_viewModel.address!['additional_info'] != null)
-                            _buildInfoRow('Información adicional', _viewModel.address!['additional_info'], ''),
-                        ] else if (_viewModel.isLoading)
+                        if (address != null) ...[
+                          _buildInfoRow('Estado', address!['estado'], ''),
+                          _buildInfoRow('Ciudad', address!['ciudad'], ''),
+                          _buildInfoRow('Municipio', address!['municipio'], ''),
+                          _buildInfoRow('Calle', address!['calle'], ''),
+                          if (address!['additional_info'] != null)
+                            _buildInfoRow('Información adicional', address!['additional_info'], ''),
+                        ] else if (isLoading)
                           Center(child: CircularProgressIndicator())
                         else
                           Text('No se encontró la dirección'),
@@ -230,23 +250,23 @@ class _BuspageViewState extends State<BuspageView> {
                 ],
               ),
               SizedBox(height: 20),
-              if (_viewModel.isLoading)
+              if (isLoading)
                 Center(child: CircularProgressIndicator())
-              else if (_viewModel.discounts.isEmpty)
+              else if (discounts.isEmpty)
                 Center(child: Text('No hay descuentos disponibles'))
               else
                 CarouselSlider(
                   options: CarouselOptions(
                     height: 250.0,
-                    autoPlay: _viewModel.discounts.length > 1,
+                    autoPlay: discounts.length > 1,
                     enlargeCenterPage: true,
                     aspectRatio: 16 / 9,
                     autoPlayCurve: Curves.fastOutSlowIn,
-                    enableInfiniteScroll: _viewModel.discounts.length > 1,
+                    enableInfiniteScroll: discounts.length > 1,
                     autoPlayAnimationDuration: Duration(milliseconds: 800),
-                    viewportFraction: _viewModel.discounts.length > 1 ? 0.9 : 1.0,
+                    viewportFraction: discounts.length > 1 ? 0.9 : 1.0,
                   ),
-                  items: _viewModel.discounts.map((discount) {
+                  items: discounts.map((discount) {
                     return Builder(
                       builder: (BuildContext context) {
                         return Container(
@@ -305,86 +325,71 @@ class _BuspageViewState extends State<BuspageView> {
                   }).toList(),
                 ),
               SizedBox(height: 20),
-              Text(
-                'Comentarios',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'San Francisco',
-                ),
-              ),
-              SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: _commentController,
-                    decoration: InputDecoration(
-                      hintText: 'Escribe tu comentario...',
-                      border: OutlineInputBorder(),
+              ElevatedButton(
+                onPressed: () async {
+                  // Navega a BusinessPageProv y espera el resultado
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BusinessPageProv(business: currentBusiness),
                     ),
-                    maxLines: 3,
-                  ),
-                  SizedBox(height: 10),
-                  Text('Calificación:'),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return IconButton(
-                        icon: Icon(
-                          index < _viewModel.rating ? Icons.star : Icons.star_border,
-                          color: Colors.orange,
-                        ),
-                        onPressed: () {
-                          _viewModel.rating = index + 1;
-                        },
-                      );
-                    }),
-                  ),
-                  SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: _submitComment,
-                    child: Text('Enviar comentario'),
-                  ),
-                ],
+                  );
+
+                  // Si el resultado es `true`, actualiza los datos
+                  if (result == true) {
+                    await _refreshBusinessData();
+                    await fetchDiscounts(); // Actualiza los descuentos
+                    await fetchAddress(); // Actualiza la dirección
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF7A9BBF),
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                child: Text('Editar información del negocio',
+                    style: TextStyle(color: Colors.white)),
               ),
               SizedBox(height: 20),
-              if (_viewModel.comments.isEmpty)
-                Text('No hay comentarios aún')
-              else
-                Column(
-                  children: _viewModel.comments.map((comment) {
-                    final usuario = comment['estudiante']['usuario'];
-                    final nombreCompleto = '${usuario['name']} ${usuario['lastname']}';
-                    final calificacion = comment['calificacion'];
-                    final fechaOriginal = DateTime.parse(comment['date']);
-                    final fechaFormateada = DateFormat('dd-MM-yyyy').format(fechaOriginal);
-
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      child: ListTile(
-                        title: Text(nombreCompleto),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(comment['content']),
-                            SizedBox(height: 5),
-                            Row(
-                              children: List.generate(5, (index) {
-                                return Icon(
-                                  index < calificacion ? Icons.star : Icons.star_border,
-                                  color: Colors.orange,
-                                  size: 20,
-                                );
-                              }),
-                            ),
-                            SizedBox(height: 5),
-                            Text(fechaFormateada),
-                          ],
+              ElevatedButton(
+                onPressed: () async {
+                  // Muestra un diálogo de confirmación antes de eliminar el negocio
+                  final confirm = await showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Eliminar negocio'),
+                      content: Text('¿Estás seguro de que deseas eliminar este negocio?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text('Cancelar'),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text('Eliminar'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  // Si el usuario confirma, elimina el negocio
+                  if (confirm == true) {
+                    await _deleteBusiness();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
+                child: Text('Eliminar negocio',
+                    style: TextStyle(color: Colors.white)),
+              ),
             ],
           ),
         ),

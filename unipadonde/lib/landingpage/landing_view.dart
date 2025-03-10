@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/landingpage/landin_model.dart';
+import 'package:unipadonde/landingpage/landin_model.dart'; // Importar el archivo correcto
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/searchbar/search_mv.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/business page/buspage_view.dart';
 
 class Landing extends StatefulWidget {
   final int userId;
@@ -16,12 +17,11 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  //lista de categorias
   List<List<dynamic>> categories = [];
-  List<Discount> listofdiscounts = [];
+  List<Discount> listofdiscounts = []; // Usar la clase Discount
+  bool showSubscribeButton = false;
 
   void getcat() async {
-    /// Esto deberia estar en el VM
     final dataService = DataService(Supabase.instance.client);
     await dataService.fetchCategorias();
     setState(() {
@@ -30,7 +30,6 @@ class _LandingState extends State<Landing> {
   }
 
   void getdis() async {
-    // Esto deberia estar en el VM
     final dataService = DataService(Supabase.instance.client);
     await dataService.fetchDiscounts();
     setState(() {
@@ -45,9 +44,7 @@ class _LandingState extends State<Landing> {
     getdis();
   }
 
-  //categorias seleccionadas
   List<int> selectedCategories = [];
-
   int _selectedIndex = 0;
 
   void _navigateToPage(int index) {
@@ -57,43 +54,69 @@ class _LandingState extends State<Landing> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/landing',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/landing', arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/favorites',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/favorites', arguments: widget.userId);
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/profile',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/profile', arguments: widget.userId);
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/search',
-            arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/search', arguments: widget.userId);
         break;
     }
   }
 
-  // Función de logout
   void logout() async {
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
-      Navigator.pushReplacementNamed(context, '/login'); // Redirige a login
+      Navigator.pushReplacementNamed(context, '/login');
     }
+  }
+
+  void subscribeToCategories() async {
+  final dataService = DataService(Supabase.instance.client);
+  // Crear una copia de la lista para evitar la modificación concurrente
+  final List<int> categoriesToSubscribe = List.from(selectedCategories);
+  for (int categoryId in categoriesToSubscribe) { // Iterar sobre la copia
+    bool isAlreadySubscribed = await dataService.isSubscribed(widget.userId, categoryId);
+    if (!isAlreadySubscribed) {
+      await dataService.addSubscription(widget.userId, categoryId.toString());
+    }
+  }
+  setState(() {
+    showSubscribeButton = false;
+    selectedCategories.clear(); // Limpiar la lista original después de la iteración
+  });
+  Navigator.pushReplacementNamed(context, '/favorites', arguments: widget.userId);
+}
+
+  void updateSubscribeButtonVisibility() async {
+    final dataService = DataService(Supabase.instance.client);
+    bool hasNewCategories = false;
+
+    for (int categoryId in selectedCategories) {
+      bool isAlreadySubscribed = await dataService.isSubscribed(widget.userId, categoryId);
+      if (!isAlreadySubscribed) {
+        hasNewCategories = true;
+        break;
+      }
+    }
+
+    setState(() {
+      showSubscribeButton = hasNewCategories;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    //filtrar los descuentos de acuerdo a la categoria seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
-      return selectedCategories.isEmpty ||
-          selectedCategories.contains(discount.idcategory);
+      return selectedCategories.isEmpty || selectedCategories.contains(discount.idcategory);
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -125,239 +148,159 @@ class _LandingState extends State<Landing> {
             },
           ),
           IconButton(
-              onPressed: logout,
-              icon: const Icon(Icons.logout, color: Colors.black)),
+              onPressed: logout, icon: const Icon(Icons.logout, color: Colors.black)),
         ],
       ),
       body: Stack(
-          children: [
-            Container(
-              height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFF8CB1F1),
-                    Colors.white,
-                  ],
-                  begin: Alignment.topCenter,
-                ),
+        children: [
+          Container(
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF8CB1F1),
+                  Colors.white,
+                ],
+                begin: Alignment.topCenter,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Este container muestra los botones de categorías
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                    height: 60, // Ajusta la altura del carrusel
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal, // Hacemos que se desplace horizontalmente
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index][1];
-                        final idcategory = categories[index][0];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0), // Espaciado entre categorías
-                          child: FilterChip(
-                            selected: selectedCategories.contains(idcategory),
-                            label: Text(
-                              category,
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'San Francisco',
-                                color: selectedCategories.contains(idcategory)
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                if (selected) {
-                                  selectedCategories.add(idcategory);
-                                } else {
-                                  selectedCategories.remove(idcategory);
-                                }
-                              });
-                            },
-                            backgroundColor: selectedCategories.contains(idcategory)
-                                ? const Color(0xFFFFA500)
-                                : Color(0xFFFFFFFF),
-                            selectedColor: const Color(0xFFFFA500),
-                            checkmarkColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            side: BorderSide(
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index][1];
+                      final idcategory = categories[index][0];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: FilterChip(
+                          selected: selectedCategories.contains(idcategory),
+                          label: Text(
+                            category,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'San Francisco',
                               color: selectedCategories.contains(idcategory)
-                                  ? const Color(0xFFFFA500)
-                                  : const Color(0xFFFFA500),
-                              width: 2.0,
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
-                            elevation: 5.0,
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  // Aqui se maneja la visualización de los descuentos filtrados
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: filterDiscount.length,
-                      itemBuilder: (context, index) {
-                        final discount = filterDiscount[index];
-                        return Card(
-                          elevation: 4.0,
-                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          onSelected: (selected) async {
+                            setState(() {
+                              if (selected) {
+                                selectedCategories.add(idcategory);
+                              } else {
+                                selectedCategories.remove(idcategory);
+                              }
+                            });
+                            updateSubscribeButtonVisibility();
+                          },
+                          backgroundColor: selectedCategories.contains(idcategory)
+                              ? const Color(0xFFFFA500)
+                              : Color(0xFFFFFFFF),
+                          selectedColor: const Color(0xFFFFA500),
+                          checkmarkColor: Colors.white,
                           shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          side: BorderSide(
+                            color: selectedCategories.contains(idcategory)
+                                ? const Color(0xFFFFA500)
+                                : const Color(0xFFFFA500),
+                            width: 2.0,
+                          ),
+                          elevation: 5.0,
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filterDiscount.length,
+                    itemBuilder: (context, index) {
+                      final discount = filterDiscount[index];
+                      return Card(
+                        elevation: 4.0,
+                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(15.0),
                           ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15.0),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            leading: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                image: DecorationImage(
+                                  image: AssetImage(discount.businessLogo),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                             ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              leading: Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  image: DecorationImage(
-                                    image: AssetImage(discount.businessLogo),
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
+                            title: Text(
+                              discount.name,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'San Francisco',
                               ),
-                              title: Text(
-                                discount.name,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
-                              subtitle: Text(
-                                discount.description,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontStyle: FontStyle.italic,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
-                              // Eliminado el ícono de tres puntos (trailing)
-                              onTap: () {
-                                openDialog(discount);
-                              },
                             ),
+                            subtitle: Text(
+                              discount.description,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontStyle: FontStyle.italic,
+                                fontFamily: 'San Francisco',
+                              ),
+                            ),
+                            onTap: () {
+                              openDialog(discount);
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: CustomBottomBar(
-                selectedIndex: _selectedIndex,
-                onItemTapped: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                  _navigateToPage(index);
-                },
-              ),
-            ),
-          ],
-        ),
-    );
-  }
-
-  // Método para mostrar un pop-up con información del descuento
-
-  Future openDialog(Discount discount) => showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Botón X para cerrar el diálogo
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      );
+                    },
                   ),
                 ),
-                // Imagen  del negocio
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      discount.businessLogo,
-                      fit:
-                          BoxFit.contain, // Ajusta la imagen dentro del círculo
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-                //Titulo / Nombre de descuento
-                Text(
-                  discount.name,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 20),
-                //Descripcion del descuento
-                Text(
-                  discount.description,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 10),
-                //duracion descuento
-                Text(
-                  "Duración: ${discount.duration}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-                //boton negocio
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                CustomBottomBar(
+                  selectedIndex: _selectedIndex,
+                  onItemTapped: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                    _navigateToPage(index);
                   },
+                ),
+              ],
+            ),
+          ),
+          if (showSubscribeButton)
+            Positioned(
+              bottom: 90.0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: subscribeToCategories,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color(0xFFFFA500), // Color de fondo del botón
-                    foregroundColor: Colors.black,
+                    backgroundColor: Color(0xFF8CB1F1),
+                    foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(
                       fontSize: 16,
@@ -367,11 +310,119 @@ class _LandingState extends State<Landing> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text("Visitar negocio"),
+                  child: Text("Suscribirse a categoría"),
                 ),
-              ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future openDialog(Discount discount) => showDialog(
+  context: context,
+  builder: (context) => Dialog(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: Icon(Icons.close, color: Colors.grey),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
-        ),
-      );
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                discount.businessLogo,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            discount.businessName,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            discount.name,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            discount.description,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Duración: ${discount.duration}",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BuspageView(
+                    businessName: discount.businessName,
+                    businessDescription: discount.businessDescription,
+                    businessTiktok: discount.tiktok ?? 'No disponible',
+                    businessInstagram: discount.instagram ?? 'No disponible',
+                    businessWebsite: discount.webpage ?? 'No disponible',
+                    businessLogo: discount.businessLogo,
+                    idNegocio: discount.idbusiness,
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFFFA500),
+              foregroundColor: Colors.black,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              textStyle: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text("Visitar negocio"),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
 }
