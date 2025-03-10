@@ -24,9 +24,9 @@ class _RegisterViewState extends State<RegisterView> {
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _ciController = TextEditingController();
-  final _universidadController = TextEditingController();
-  String? selectedSex = "F";
+  String selectedValue = 'Femenino';
   bool possible = true;
+  String universidad = 'Universidad Metropolitana';
 
   void signUp() async {
     final authService = AuthenticationService();
@@ -38,9 +38,8 @@ class _RegisterViewState extends State<RegisterView> {
     final name = _nameController.text;
     final lastname = _lastnameController.text;
     final ci = int.parse(_ciController.text);
-    final universidad = _universidadController.text;
     String? sex;
-    if (selectedSex == "Masculino") {
+    if (selectedValue == "Masculino") {
       sex = "M";
     } else {
       sex = "F";
@@ -304,27 +303,40 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
 
                                       // ! NOMBRE UNIVERSIDAD
+                                      SizedBox(height: 20),
+                                      // ! SEXO
                                       Container(
+                                        width: double.infinity,
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                            color: const Color.fromARGB(
-                                                200, 158, 158, 158),
-                                          )),
-                                        ),
-                                        child: TextFormField(
-                                          controller: _universidadController,
-                                          decoration: InputDecoration(
-                                              hintText:
-                                                  "Nombre de la Universidad",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey,
-                                                fontFamily: 'San Francisco',
-                                              ),
-                                              border: InputBorder.none),
-                                          validator: validName,
-                                        ),
+                                            border: Border.all(
+                                              width: 0.5,
+                                              color: const Color.fromARGB(
+                                                  200, 158, 158, 158),
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                        child: DropdownButton<String>(
+                                            value: universidad,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                            underline: Container(
+                                              height: 1,
+                                            ),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                universidad = newValue!;
+                                              });
+                                            },
+                                            items: const [
+                                              DropdownMenuItem<String>(
+                                                  value:
+                                                      'Universidad Metropolitana',
+                                                  child: Text(
+                                                      "Universidad Metropolitana")),
+                                            ]),
                                       ),
 
                                       // ! CI
@@ -352,6 +364,7 @@ class _RegisterViewState extends State<RegisterView> {
                                       SizedBox(height: 20),
                                       // ! SEXO
                                       Container(
+                                        width: double.infinity,
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                             border: Border.all(
@@ -362,7 +375,7 @@ class _RegisterViewState extends State<RegisterView> {
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(10))),
                                         child: DropdownButton<String>(
-                                            value: selectedSex,
+                                            value: selectedValue,
                                             icon: const Icon(
                                                 Icons.arrow_drop_down),
                                             style: const TextStyle(
@@ -372,15 +385,15 @@ class _RegisterViewState extends State<RegisterView> {
                                             ),
                                             onChanged: (String? newValue) {
                                               setState(() {
-                                                selectedSex = newValue!;
+                                                selectedValue = newValue!;
                                               });
                                             },
                                             items: const [
                                               DropdownMenuItem<String>(
-                                                  value: "Femenino",
+                                                  value: 'Femenino',
                                                   child: Text("Femenino")),
                                               DropdownMenuItem<String>(
-                                                  value: "Masculino",
+                                                  value: 'Masculino',
                                                   child: Text("Masculino"))
                                             ]),
                                       ),

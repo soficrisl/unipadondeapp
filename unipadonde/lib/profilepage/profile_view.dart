@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:unipadonde/main.dart';
 import 'package:unipadonde/repository/supabase.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/profilepage/components/avatar.dart';
 
 class ProfilePage extends StatefulWidget {
   final int userId;
@@ -12,6 +14,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? _imageUrl;
   final authService = AuthenticationService();
   String previousName =
       "Juan Pérez"; // Este valor provendría de la base de datos
@@ -24,9 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // Cerrar sesión y redirigir a la pantalla de inicio
   void logout() async {
-    await authService.singOut(); // Cerrar sesión
-    Navigator.pushReplacementNamed(
-        context, '/landing'); // Redirigir a la pantalla de inicio
+    authService.singOut();
   }
 
   int _selectedIndex = 2;
@@ -109,13 +110,13 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 10),
               Text(
-                'Teléfono',
+                'Nombre',
                 style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
               ),
               TextField(
                 controller: phoneController,
                 decoration: InputDecoration(
-                  hintText: 'Introduce tu teléfono',
+                  hintText: 'Introduce tu nombre',
                   fillColor: Colors.white,
                   filled: true,
                   border: OutlineInputBorder(),
@@ -124,19 +125,20 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 10),
               Text(
-                'Dirección',
+                'Apellido',
                 style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
               ),
               TextField(
-                controller: addressController,
+                controller: phoneController,
                 decoration: InputDecoration(
-                  hintText: 'Introduce tu dirección',
+                  hintText: 'Introduce tu apellido',
                   fillColor: Colors.white,
                   filled: true,
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 15),
                 ),
               ),
+              SizedBox(height: 10),
             ],
           ),
           actions: [
@@ -320,40 +322,17 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  GestureDetector(
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Color(0xFF8CB1F1), // Fondo azul
-                      child: Icon(
-                        Icons.camera_alt,
-                        size: 30,
-                        color: Colors.white, // Cámara blanca
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Acción para cambiar la foto de perfil
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 207, 207, 207),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle:
-                          TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'Cambiar Foto',
-                      style: TextStyle(
-                          fontFamily: 'San Francisco',
-                          fontSize: 16,
-                          color: Colors.black),
-                    ),
-                  ),
+                  Avatar(
+                      imageUrl: _imageUrl,
+                      onUpload: (imageUrl) async {
+                        setState(() {
+                          _imageUrl = imageUrl;
+                        });
+                        final userId = supabase.auth.currentUser!.id;
+                        await supabase
+                            .from('usuario')
+                            .update({'image_url': imageUrl}).eq('uid', userId);
+                      }),
                   SizedBox(height: 20),
                   // Modificar Datos - Nuevo estilo
                   InkWell(

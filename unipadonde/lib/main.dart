@@ -7,7 +7,6 @@ import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/profileprovpage/profileprov_view.dart';
-
 import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
@@ -21,6 +20,8 @@ void main() async {
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c3drd3p1enRmemFlcmxwY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5MjczNTcsImV4cCI6MjA1MzUwMzM1N30.FzMP9I3qs9aVol2njwWYjFPKJAgtBE-RkcQ-UrinA2A');
   runApp(const MyApp());
 }
+
+final SupabaseClient supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -20,9 +20,8 @@ class _RegisterProvViewState extends State<RegisterProvView> {
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _ciController = TextEditingController();
-  final _rifController = TextEditingController();
 
-  String? selectedSex;
+  String? selectedValue = "Femenino";
   bool possible = true;
 
   void signUp() async {
@@ -34,10 +33,9 @@ class _RegisterProvViewState extends State<RegisterProvView> {
     final name = _nameController.text;
     final lastname = _lastnameController.text;
     final ci = int.parse(_ciController.text);
-    final rif = int.parse(_rifController.text);
 
     String sex = "F";
-    if (selectedSex == "Masculino") {
+    if (selectedValue == "Masculino") {
       sex = "M";
     } else {
       sex = "F";
@@ -267,29 +265,6 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                                             validator: validPassword,
                                           ),
                                         ), */
-
-                                        // ! RIF
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _rifController,
-                                            decoration: InputDecoration(
-                                                hintText: "RIF",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validRIF,
-                                          ),
-                                        ),
                                         /*
                                         // ! NOMBRE NEG /OCIO
                                         Container(
@@ -381,41 +356,42 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                                             validator: validRIF,
                                           ),
                                         ),
-
+                                        SizedBox(height: 20),
                                         // ! SEXO
                                         Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              200,
-                                                              158,
-                                                              158,
-                                                              158))),
-                                            ),
-                                            child: DropdownButton(
-                                                value: selectedSex,
-                                                onChanged: (String? newValue) {
-                                                  setState(() {
-                                                    selectedSex = newValue!;
-                                                  });
-                                                },
-                                                style: TextStyle(
-                                                    color: const Color.fromARGB(
-                                                        200, 158, 158, 158)),
-                                                items: <String>[
-                                                  'Masculino',
-                                                  'Femenino'
-                                                ].map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                                  return DropdownMenuItem<
-                                                      String>(
-                                                    value: value,
-                                                    child: Text(value),
-                                                  );
-                                                }).toList())),
+                                          width: double.infinity,
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                width: 0.5,
+                                                color: const Color.fromARGB(
+                                                    200, 158, 158, 158),
+                                              ),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                          child: DropdownButton<String>(
+                                              value: selectedValue,
+                                              icon: const Icon(
+                                                  Icons.arrow_drop_down),
+                                              style: const TextStyle(
+                                                  color: Colors.grey),
+                                              underline: Container(
+                                                height: 1,
+                                              ),
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  selectedValue = newValue!;
+                                                });
+                                              },
+                                              items: const [
+                                                DropdownMenuItem<String>(
+                                                    value: 'Femenino',
+                                                    child: Text("Femenino")),
+                                                DropdownMenuItem<String>(
+                                                    value: 'Masculino',
+                                                    child: Text("Masculino"))
+                                              ]),
+                                        ),
 
                                         // ! BOTON REGISTRAR
                                         const SizedBox(height: 30),

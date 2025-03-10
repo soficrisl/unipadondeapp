@@ -36,7 +36,9 @@ class _FavspageState extends State<Favspage> {
     // Esto deberia estar en el VM
     await dataService.fetchDiscounts();
     setState(() {
-      listofdiscounts = dataService.getDescuentos() ?? [];
+      if (mounted) {
+        listofdiscounts = dataService.getDescuentos() ?? [];
+      }
     });
   }
 
@@ -118,156 +120,159 @@ class _FavspageState extends State<Favspage> {
         ],
       ),
       body: Stack(
-          children: [
-            //gradiente de fondo
-            Container(
-              height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [const Color.fromARGB(255, 72, 128, 188), Colors.white],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+        children: [
+          //gradiente de fondo
+          Container(
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [const Color.fromARGB(255, 72, 128, 188), Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
+          ),
 
-            Positioned.fill(
-              top: 0,
-              bottom: 60, 
-              child: SingleChildScrollView( 
-                child: Column(
-                  children: [
-                    // Categorias
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                      height: 60,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: categories.length,
-                        itemBuilder: (context, index) {
-                          final category = categories[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: FilterChip(
-                              selected: selectedCategories.contains(category.id),
-                              label: Text(
-                                category.name,
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'San Francisco',
-                                  color: selectedCategories.contains(category.id)
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                              onSelected: (selected) {
-                                setState(() {
-                                  if (selected) {
-                                    selectedCategories.add(category.id);
-                                  } else {
-                                    selectedCategories.remove(category.id);
-                                  }
-                                });
-                              },
-                              backgroundColor: selectedCategories.contains(category.id)
-                                  ? Color(0xFFFFA500)
-                                  : Color(0xFFFFFFFF),
-                              selectedColor: Color(0xFFFFA500),
-                              checkmarkColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              side: BorderSide(
-                                color: selectedCategories.contains(category.id)
-                                    ? Color(0xFFFFA500)
-                                    : Color(0xFFFFA500),
-                                width: 2.0,
-                              ),
-                              elevation: 5.0,
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    // Descuentos
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(), 
-                      itemCount: filterDiscount.length,
+          Positioned.fill(
+            top: 0,
+            bottom: 60,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Categorias
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    height: 60,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: categories.length,
                       itemBuilder: (context, index) {
-                        final discount = filterDiscount[index];
-                        return Card(
-                          elevation: 4.0,
-                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(15.0)),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              leading: Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  image: DecorationImage(
-                                    image: AssetImage(discount.businessLogo),
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
+                        final category = categories[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: FilterChip(
+                            selected: selectedCategories.contains(category.id),
+                            label: Text(
+                              category.name,
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'San Francisco',
+                                color: selectedCategories.contains(category.id)
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
-                              title: Text(
-                                discount.name,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'San Francisco'),
-                              ),
-                              subtitle: Text(
-                                discount.description,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontStyle: FontStyle.italic,
-                                    fontFamily: 'San Francisco'),
-                              ),
-                              onTap: () {
-                                openDialog(discount);
-                              },
                             ),
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  selectedCategories.add(category.id);
+                                } else {
+                                  selectedCategories.remove(category.id);
+                                }
+                              });
+                            },
+                            backgroundColor:
+                                selectedCategories.contains(category.id)
+                                    ? Color(0xFFFFA500)
+                                    : Color(0xFFFFFFFF),
+                            selectedColor: Color(0xFFFFA500),
+                            checkmarkColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            side: BorderSide(
+                              color: selectedCategories.contains(category.id)
+                                  ? Color(0xFFFFA500)
+                                  : Color(0xFFFFA500),
+                              width: 2.0,
+                            ),
+                            elevation: 5.0,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
                           ),
                         );
                       },
                     ),
-                  ],
-                ),
+                  ),
+
+                  // Descuentos
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: filterDiscount.length,
+                    itemBuilder: (context, index) {
+                      final discount = filterDiscount[index];
+                      return Card(
+                        elevation: 4.0,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15.0)),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            leading: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                image: DecorationImage(
+                                  image: AssetImage(discount.businessLogo),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              discount.name,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'San Francisco'),
+                            ),
+                            subtitle: Text(
+                              discount.description,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontStyle: FontStyle.italic,
+                                  fontFamily: 'San Francisco'),
+                            ),
+                            onTap: () {
+                              openDialog(discount);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
+          ),
 
-            // Bottom Bar
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: CustomBottomBar(
-                selectedIndex: _selectedIndex,
-                onItemTapped: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                  _navigateToPage(index);
-                },
-              ),
+          // Bottom Bar
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: CustomBottomBar(
+              selectedIndex: _selectedIndex,
+              onItemTapped: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+                _navigateToPage(index);
+              },
             ),
-          ],
-        ),
-
+          ),
+        ],
+      ),
     );
   }
 

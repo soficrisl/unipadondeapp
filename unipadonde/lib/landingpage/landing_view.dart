@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/landingpage/landin_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/searchbar/search_mv.dart';
+import 'package:unipadonde/searchbar/Search_view.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 
 class Landing extends StatefulWidget {
@@ -230,10 +230,10 @@ class _LandingState extends State<Landing> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
+                                borderRadius: BorderRadius.circular(45),
                                 image: DecorationImage(
                                   image: AssetImage(discount.businessLogo),
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -324,8 +324,7 @@ class _LandingState extends State<Landing> {
                   child: ClipOval(
                     child: Image.asset(
                       discount.businessLogo,
-                      fit:
-                          BoxFit.contain, // Ajusta la imagen dentro del círculo
+                      fit: BoxFit.cover, // Ajusta la imagen dentro del círculo
                     ),
                   ),
                 ),

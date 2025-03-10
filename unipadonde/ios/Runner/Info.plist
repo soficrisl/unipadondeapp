@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>io.supabase.flutterquickstart</string>
+		</array>
+		</dict>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key> 
+	<string>Need to acess the photo library.</string>
+	<key>NSCameraUsageDescription</key> 
+	<string>Need to acess the mic</string> 
 </dict>
 </plist>
+
