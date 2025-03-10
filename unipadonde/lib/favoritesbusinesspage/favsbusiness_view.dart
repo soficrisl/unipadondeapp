@@ -288,6 +288,7 @@ class _FavspageState extends State<Favsbusinesspage> {
               fontFamily: "San Francisco",
               fontSize: 24,
               color: Colors.black,
+              fontWeight: FontWeight.bold, // Título en negrita
             ),
             textAlign: TextAlign.center,
           ),
@@ -300,37 +301,17 @@ class _FavspageState extends State<Favsbusinesspage> {
               ),
               textAlign: TextAlign.right),
           const SizedBox(height: 10),
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Nombre del negocio:'),
-          ),
+          _buildTextField(controller: _nameController, label: 'Nombre del negocio:'),
           const SizedBox(height: 20),
-          TextField(
-            controller: _descriptionController,
-            decoration: InputDecoration(labelText: 'Descripción del negocio:'),
-          ),
+          _buildTextField(controller: _descriptionController, label: 'Descripción del negocio:'),
           const SizedBox(height: 20),
-          TextField(
-            controller: _instagramController,
-            decoration: InputDecoration(labelText: 'Instagram:'),
-          ),
+          _buildTextField(controller: _instagramController, label: 'Instagram:'),
           const SizedBox(height: 20),
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(labelText: 'Correo electrónico:'),
-          ),
+          _buildTextField(controller: _emailController, label: 'Correo electrónico:'),
           const SizedBox(height: 20),
-          TextField(
-            controller: _tiktokController,
-            decoration: InputDecoration(
-              labelText: 'TikTok:',
-            ),
-          ),
+          _buildTextField(controller: _tiktokController, label: 'TikTok:'),
           const SizedBox(height: 20),
-          TextField(
-            controller: _websiteController,
-            decoration: InputDecoration(labelText: 'Página web:'),
-          ),
+          _buildTextField(controller: _websiteController, label: 'Página web:'),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () async {
@@ -427,4 +408,32 @@ class _FavspageState extends State<Favsbusinesspage> {
     ),
   ),
 );
+
+Widget _buildTextField({
+  required TextEditingController controller,
+  required String label,
+}) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(
+        fontFamily: 'San Francisco',
+        color: Colors.black, // Color del texto en general
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.orange), // Anaranjado cuando se selecciona
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.red), // Rojo cuando hay error
+      ),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey), // Gris cuando no está seleccionado
+      ),
+      floatingLabelStyle: TextStyle(
+        color: Colors.orange, // Color del texto cuando el campo está enfocado
+      ),
+    ),
+  );
+}
 }

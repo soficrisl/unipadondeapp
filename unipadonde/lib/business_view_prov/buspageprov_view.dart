@@ -58,7 +58,6 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
       ),
     );
 
-    // Devuelve `true` para indicar que los datos se han actualizado
     Navigator.of(context).pop(true);
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +102,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF8CB1F1),
+              Colors.white,
               Colors.white,
             ],
             begin: Alignment.topCenter,
@@ -147,6 +146,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
               _buildTextField(
                 controller: descriptionController,
                 label: 'Descripción del negocio',
+                maxLines: 6,
               ),
               SizedBox(height: 16),
               _buildTextField(
@@ -167,7 +167,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
               ElevatedButton(
                 onPressed: _updateBusiness,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF7A9BBF),
+                  backgroundColor: Color(0xFFFFA500),
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   textStyle: TextStyle(
                       fontSize: 18,
@@ -187,24 +187,39 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
+    int maxLines = 1,
   }) {
-    return TextField(
-      controller: controller,
-      style: TextStyle(fontFamily: 'San Francisco', fontSize: 19),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-            fontSize: 18,
-            //fontWeight: FontWeight.bold,
-            color: const Color.fromARGB(255, 75, 75, 75)),
-        border: OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.white,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFFFA500), width: 2.0),
-          //borderRadius: BorderRadius.circular(10)
+    return FocusScope(
+      child: Focus(
+        onFocusChange: (hasFocus) {
+          setState(() {});
+        },
+        child: TextField(
+          controller: controller,
+          style: TextStyle(fontFamily: 'San Francisco', fontSize: 19),
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(
+              fontSize: 23,
+              fontFamily: 'San Francisco',
+              fontWeight: FontWeight.bold,
+              color: controller.text.isNotEmpty || FocusScope.of(context).hasFocus ? const Color(0xFFFFA500) : const Color.fromARGB(255, 75, 75, 75),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.black),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Color(0xFFFFA500), width: 2.0),
+            ),
+          ),
         ),
       ),
     );
   }
 }
+  

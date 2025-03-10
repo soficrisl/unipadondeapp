@@ -359,16 +359,17 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   final confirm = await showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('Eliminar negocio'),
-                      content: Text('¿Estás seguro de que deseas eliminar este negocio?'),
+                      backgroundColor: Colors.white,
+                      title: Text('Eliminar negocio', style: TextStyle(color: Colors.black, fontFamily: "San Francisco",fontWeight: FontWeight.w800 ),),
+                      content: Text('¿Estás seguro de que deseas eliminar este negocio?', style: TextStyle(fontFamily: "San Francisco", fontSize: 18)),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
-                          child: Text('Cancelar'),
+                          child: Text('Cancelar',style: TextStyle(fontFamily: "San Francisco", fontSize: 17)),
                         ),
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(true),
-                          child: Text('Eliminar'),
+                          child: Text('Eliminar', style: TextStyle(fontFamily: "San Francisco", color: Colors.red,fontSize: 17 ),),
                         ),
                       ],
                     ),
