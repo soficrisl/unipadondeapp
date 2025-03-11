@@ -26,7 +26,8 @@ class DataService {
 
   Future<void> fetchDiscounts() async {
     try {
-      final descuentos = await client.from('descuento').select();
+      final descuentos =
+          await client.from('descuento').select().eq('state', true);
       final pertenece = await client.from('pertenece').select();
       final info = await client
           .from('negocio')
