@@ -8,85 +8,91 @@ class DataService {
   DataService(this.client);
 
   Future<void> fetchCategoriasSuscritas(int userId) async {
-  try {
-    final data = await client
-        .from('subscribe')
-        .select('id_categoria, categoria(id, name, description)')
-        .eq('id_usuario', userId)
-        .eq('state', true); // Solo obtener las categorías con state TRUE
+    try {
+      final data = await client
+          .from('subscribe')
+          .select('id_categoria, categoria(id, name, description)')
+          .eq('id_usuario', userId)
+          .eq('state', true); // Solo obtener las categorías con state TRUE
 
-    final List<dynamic> initiallist = data;
+      final List<dynamic> initiallist = data;
 
-    categoriasSuscritas = initiallist.map<Categoria>((item) {
-      return Categoria.fromMap(item['categoria']);
-    }).toList();
-  } catch (e) {
-    throw Exception('Error fetching subscribed categories: $e');
+      categoriasSuscritas = initiallist.map<Categoria>((item) {
+        return Categoria.fromMap(item['categoria']);
+      }).toList();
+    } catch (e) {
+      throw Exception('Error fetching subscribed categories: $e');
+    }
   }
-}
 
   List<Categoria> getCategoriasSuscritas() {
     return categoriasSuscritas;
   }
 
   Future<void> fetchDiscounts() async {
-  try {
-    final List<int> subscribedCategoryIds =
-        getCategoriasSuscritas().map((c) => c.id).toList();
-    final descuentos = await client.from('descuento').select();
-    final pertenece = await client.from('pertenece').select();
-    final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage'); // Añadir campos necesarios
+    try {
+      final List<int> subscribedCategoryIds =
+          getCategoriasSuscritas().map((c) => c.id).toList();
+      final descuentos =
+          await client.from('descuento').select().eq('state', true);
+      final pertenece = await client.from('pertenece').select();
+      final info = await client.from('negocio').select(
+          'id, name, description, picture, tiktok, instagram, webpage'); // Añadir campos necesarios
 
-    List<Map<String, dynamic>> descuentoslistos = [];
-    final negocioMap = {
-      for (var n in info) n['id']: {
-        'name': n['name'],
-        'description': n['description'],
-        'picture': n['picture'],
-        'tiktok': n['tiktok'],
-        'instagram': n['instagram'],
-        'webpage': n['webpage'],
-      }
-    };
-    final perteneceMap = {
-      for (var n in pertenece) n['id_negocio']: n["id_categoria"]
-    };
+      List<Map<String, dynamic>> descuentoslistos = [];
+      final negocioMap = {
+        for (var n in info)
+          n['id']: {
+            'name': n['name'],
+            'description': n['description'],
+            'picture': n['picture'],
+            'tiktok': n['tiktok'],
+            'instagram': n['instagram'],
+            'webpage': n['webpage'],
+          }
+      };
+      final perteneceMap = {
+        for (var n in pertenece) n['id_negocio']: n["id_categoria"]
+      };
 
-    int? idcat;
-    String? imagen;
-    String? tiktok;
-    String? instagram;
-    String? webpage;
-    String? businessName;
-    String? businessDescription;
-    int? idnegocio;
-    for (var descuento in descuentos) {
-      idnegocio = descuento['id_negocio'];
-      idcat = perteneceMap[idnegocio];
-      if (subscribedCategoryIds.contains(idcat)) {
-        businessName = negocioMap[idnegocio]?['name'];
-        businessDescription = negocioMap[idnegocio]?['description'];
-        imagen = negocioMap[idnegocio]?['picture'];
-        tiktok = negocioMap[idnegocio]?['tiktok']; // Puede ser null
-        instagram = negocioMap[idnegocio]?['instagram']; // Puede ser null
-        webpage = negocioMap[idnegocio]?['webpage']; // Puede ser null
-        descuento['businessName'] = businessName;
-        descuento['businessDescription'] = businessDescription;
-        descuento['businessLogo'] = imagen;
-        descuento['idcategory'] = idcat;
-        descuento['tiktok'] = tiktok; // Asignar null si no está presente
-        descuento['instagram'] = instagram; // Asignar null si no está presente
-        descuento['webpage'] = webpage; // Asignar null si no está presente
-        descuentoslistos.add(descuento);
+      int? idcat;
+      String? imagen;
+      String? tiktok;
+      String? instagram;
+      String? webpage;
+      String? businessName;
+      String? businessDescription;
+      int? idnegocio;
+      for (var descuento in descuentos) {
+        idnegocio = descuento['id_negocio'];
+        idcat = perteneceMap[idnegocio];
+        if (subscribedCategoryIds.contains(idcat)) {
+          businessName = negocioMap[idnegocio]?['name'];
+          businessDescription = negocioMap[idnegocio]?['description'];
+          imagen = negocioMap[idnegocio]?['picture'];
+          tiktok = negocioMap[idnegocio]?['tiktok']; // Puede ser null
+          instagram = negocioMap[idnegocio]?['instagram']; // Puede ser null
+          webpage = negocioMap[idnegocio]?['webpage']; // Puede ser null
+          descuento['businessName'] = businessName;
+          descuento['businessDescription'] = businessDescription;
+          descuento['businessLogo'] = imagen;
+          descuento['idcategory'] = idcat;
+          descuento['tiktok'] = tiktok; // Asignar null si no está presente
+          descuento['instagram'] =
+              instagram; // Asignar null si no está presente
+          descuento['webpage'] = webpage; // Asignar null si no está presente
+          descuentoslistos.add(descuento);
+        }
       }
+      listofdiscounts =
+          descuentoslistos.map((json) => Discount.fromJson(json)).toList();
+    } catch (e) {
+      print(
+          'Error fetching discounts: $e'); // Imprimir el error para depuración
+      throw Exception(
+          'Error fetching discounts: $e'); // Lanzar la excepción con el mensaje de error
     }
-    listofdiscounts =
-        descuentoslistos.map((json) => Discount.fromJson(json)).toList();
-  } catch (e) {
-    print('Error fetching discounts: $e'); // Imprimir el error para depuración
-    throw Exception('Error fetching discounts: $e'); // Lanzar la excepción con el mensaje de error
   }
-}
 
   List<Discount>? getDescuentos() {
     return listofdiscounts;

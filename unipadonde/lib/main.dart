@@ -32,6 +32,39 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Discount App',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: Color(0xFF8CB1F1), // Azul claro
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.blue, // Puede representar el azul
+        ).copyWith(
+          primary: Color(0xFF8CB1F1), // Color principal de tu app
+          secondary: Color(0xFFFFA500), // Naranja para detalles secundarios
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          floatingLabelStyle: TextStyle(
+            color: Color(0xFF8CB1F1), // Color del texto flotante
+            fontFamily: 'San Francisco',
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Color(0xFF8CB1F1)), // Borde enfocado en azul
+            borderRadius: BorderRadius.circular(8),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFFFA500), // Fondo del botón en naranja
+            foregroundColor: Colors.white, // Texto blanco en los botones
+            textStyle: TextStyle(fontFamily: 'San Francisco'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ),
       initialRoute: '/start', // Ruta inicial
       // Rutas pasando el userId a las vistas
       onGenerateRoute: (settings) {
@@ -52,32 +85,37 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case '/landing':
             return MaterialPageRoute(
-              builder: (context) => Landing(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => Landing(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/favorites':
             return MaterialPageRoute(
-              builder: (context) => Favspage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => Favspage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/profile':
             return MaterialPageRoute(
-              builder: (context) => ProfilePage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => ProfilePage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/profileprov':
             return MaterialPageRoute(
-              builder: (context) => ProfileProvPage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => ProfileProvPage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/favsbusiness':
             return MaterialPageRoute(
-              builder: (context) => Favsbusinesspage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
-            );
-
-          case '/cdiscount':
-            return MaterialPageRoute(
-              builder: (context) => CDiscountPage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => Favsbusinesspage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           default:

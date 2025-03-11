@@ -66,12 +66,10 @@ class _FavspageState extends State<Favsbusinesspage> {
 
     // Genera un ID aleatorio y verifica que no exista en la tabla
     do {
-      id = random.nextInt(1000000); // Genera un número aleatorio entre 0 y 999999
-      final response = await client
-          .from('negocio')
-          .select('id')
-          .eq('id', id)
-          .maybeSingle();
+      id = random
+          .nextInt(1000000); // Genera un número aleatorio entre 0 y 999999
+      final response =
+          await client.from('negocio').select('id').eq('id', id).maybeSingle();
 
       // Si no hay respuesta, el ID no existe y es válido
       if (response == null) {
@@ -98,10 +96,12 @@ class _FavspageState extends State<Favsbusinesspage> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/favsbusiness', arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/favsbusiness',
+            arguments: widget.userId);
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profileprov', arguments: widget.userId);
+        Navigator.pushReplacementNamed(context, '/profileprov',
+            arguments: widget.userId);
         break;
     }
   }
@@ -172,7 +172,8 @@ class _FavspageState extends State<Favsbusinesspage> {
                         final business = businesses[index];
                         return Card(
                           elevation: 4.0,
-                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
@@ -213,7 +214,8 @@ class _FavspageState extends State<Favsbusinesspage> {
                                   MaterialPageRoute(
                                     builder: (context) => BusinessInfoView(
                                       business: business,
-                                      onBusinessDeleted: fetchBusinesses, // Pasa la función de actualización
+                                      onBusinessDeleted:
+                                          fetchBusinesses, // Pasa la función de actualización
                                     ),
                                   ),
                                 );
@@ -265,166 +267,174 @@ class _FavspageState extends State<Favsbusinesspage> {
   }
 
   Future showAddBusinessDialog() => showDialog(
-  context: context,
-  builder: (context) => Dialog(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: IconButton(
-              icon: Icon(Icons.close, color: Colors.grey),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          Text(
-            "Añadir Negocio",
-            style: TextStyle(
-              fontFamily: "San Francisco",
-              fontSize: 24,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          Text("Ingresa los siguientes datos:",
-              style: TextStyle(
-                fontFamily: "San Francisco",
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.right),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Nombre del negocio:'),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _descriptionController,
-            decoration: InputDecoration(labelText: 'Descripción del negocio:'),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _instagramController,
-            decoration: InputDecoration(labelText: 'Instagram:'),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(labelText: 'Correo electrónico:'),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _tiktokController,
-            decoration: InputDecoration(
-              labelText: 'TikTok:',
-            ),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _websiteController,
-            decoration: InputDecoration(labelText: 'Página web:'),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              final name = _nameController.text;
-              final description = _descriptionController.text;
-              final instagram = _instagramController.text;
-              final email = _emailController.text;
-              final tiktok = _tiktokController.text;
-              final webpage = _websiteController.text;
-
-              if (name.isEmpty || description.isEmpty || instagram.isEmpty || email.isEmpty || tiktok.isEmpty || webpage.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Por favor, completa todos los campos.'),
-                    backgroundColor: Colors.red,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.grey),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-                );
-                return;
-              }
-
-              try {
-                final client = Supabase.instance.client;
-
-                // Genera un ID único para el negocio
-                final id = await generateUniqueId();
-
-                // Inserta el nuevo negocio en la tabla
-                await client.from('negocio').insert({
-                  'id': id, // Usa el ID generado
-                  'name': name,
-                  'picture': 'assets/images/notfound.png', // Valor predeterminado para la imagen
-                  'description': description,
-                  'instagram': instagram,
-                  'mail': email,
-                  'tiktok': tiktok,
-                  'webpage': webpage,
-                  'id_proveedor': widget.userId,
-                  'riftype': 'J', // Valor fijo
-                });
-
-                // Cierra el diálogo antes de mostrar el SnackBar
-                Navigator.of(context).pop();
-
-                // Muestra el SnackBar después de cerrar el diálogo
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Negocio añadido correctamente.'),
-                    backgroundColor: Colors.green,
+                ),
+                Text(
+                  "Añadir Negocio",
+                  style: TextStyle(
+                    fontFamily: "San Francisco",
+                    fontSize: 24,
+                    color: Colors.black,
                   ),
-                );
-
-                // Limpia los controladores
-                _nameController.clear();
-                _descriptionController.clear();
-                _instagramController.clear();
-                _emailController.clear();
-                _tiktokController.clear();
-                _websiteController.clear();
-
-                // Actualiza la lista de negocios
-                fetchBusinesses();
-              } catch (e) {
-                // Cierra el diálogo antes de mostrar el SnackBar de error
-                Navigator.of(context).pop();
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error al añadir el negocio: $e'),
-                    backgroundColor: Colors.red,
+                  textAlign: TextAlign.center,
+                ),
+                Text("Ingresa los siguientes datos:",
+                    style: TextStyle(
+                      fontFamily: "San Francisco",
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.right),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: 'Nombre del negocio:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _descriptionController,
+                  decoration:
+                      InputDecoration(labelText: 'Descripción del negocio:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _instagramController,
+                  decoration: InputDecoration(labelText: 'Instagram:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: 'Correo electrónico:'),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _tiktokController,
+                  decoration: InputDecoration(
+                    labelText: 'TikTok:',
                   ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF8CB1F1),
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              textStyle: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: Text(
-              "Añadir",
-              style: TextStyle(
-                  color: Colors.white, fontFamily: "San Francisco"),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _websiteController,
+                  decoration: InputDecoration(labelText: 'Página web:'),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    final name = _nameController.text;
+                    final description = _descriptionController.text;
+                    final instagram = _instagramController.text;
+                    final email = _emailController.text;
+                    final tiktok = _tiktokController.text;
+                    final webpage = _websiteController.text;
+
+                    if (name.isEmpty ||
+                        description.isEmpty ||
+                        instagram.isEmpty ||
+                        email.isEmpty ||
+                        tiktok.isEmpty ||
+                        webpage.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text('Por favor, completa todos los campos.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    try {
+                      final client = Supabase.instance.client;
+
+                      // Genera un ID único para el negocio
+                      final id = await generateUniqueId();
+
+                      // Inserta el nuevo negocio en la tabla
+                      await client.from('negocio').insert({
+                        'id': id, // Usa el ID generado
+                        'name': name,
+                        'picture':
+                            'assets/images/notfound.png', // Valor predeterminado para la imagen
+                        'description': description,
+                        'instagram': instagram,
+                        'mail': email,
+                        'tiktok': tiktok,
+                        'webpage': webpage,
+                        'id_proveedor': widget.userId,
+                        'riftype': 'J', // Valor fijo
+                      });
+
+                      // Cierra el diálogo antes de mostrar el SnackBar
+                      Navigator.of(context).pop();
+
+                      // Muestra el SnackBar después de cerrar el diálogo
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Negocio añadido correctamente.'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+
+                      // Limpia los controladores
+                      _nameController.clear();
+                      _descriptionController.clear();
+                      _instagramController.clear();
+                      _emailController.clear();
+                      _tiktokController.clear();
+                      _websiteController.clear();
+
+                      // Actualiza la lista de negocios
+                      fetchBusinesses();
+                    } catch (e) {
+                      // Cierra el diálogo antes de mostrar el SnackBar de error
+                      Navigator.of(context).pop();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error al añadir el negocio: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF8CB1F1),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Text(
+                    "Añadir",
+                    style: TextStyle(
+                        color: Colors.white, fontFamily: "San Francisco"),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    ),
-  ),
-);
+        ),
+      );
 }
