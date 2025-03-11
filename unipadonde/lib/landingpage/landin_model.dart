@@ -27,20 +27,24 @@ class DataService {
 
   Future<void> fetchDiscounts() async {
     try {
-      final descuentos = await client.from('descuento').select();
+      final descuentos =
+          await client.from('descuento').select().eq('state', true);
       final pertenece = await client.from('pertenece').select();
-      final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage');
+      final info = await client
+          .from('negocio')
+          .select('id, name, description, picture, tiktok, instagram, webpage');
 
       List<Map<String, dynamic>> descuentoslistos = [];
       final negocioMap = {
-        for (var n in info) n['id']: {
-          'name': n['name'],
-          'description': n['description'],
-          'picture': n['picture'],
-          'tiktok': n['tiktok'],
-          'instagram': n['instagram'],
-          'webpage': n['webpage'],
-        }
+        for (var n in info)
+          n['id']: {
+            'name': n['name'],
+            'description': n['description'],
+            'picture': n['picture'],
+            'tiktok': n['tiktok'],
+            'instagram': n['instagram'],
+            'webpage': n['webpage'],
+          }
       };
       final perteneceMap = {
         for (var n in pertenece) n['id_negocio']: n["id_categoria"]
@@ -85,7 +89,8 @@ class DataService {
 
   Future<void> addSubscription(int userId, String categoryId) async {
     try {
-      print('Attempting to add subscription for user $userId and category $categoryId');
+      print(
+          'Attempting to add subscription for user $userId and category $categoryId');
 
       final response = await client.from('subscribe').insert({
         'id_usuario': userId,
@@ -96,7 +101,8 @@ class DataService {
 
       if (response.error != null) {
         print('Error adding subscription: ${response.error!.message}');
-        throw Exception('Failed to add subscription: ${response.error!.message}');
+        throw Exception(
+            'Failed to add subscription: ${response.error!.message}');
       } else {
         print('Subscription added successfully');
       }

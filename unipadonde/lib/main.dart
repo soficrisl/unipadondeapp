@@ -85,32 +85,37 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case '/landing':
             return MaterialPageRoute(
-              builder: (context) => Landing(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => Landing(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/favorites':
             return MaterialPageRoute(
-              builder: (context) => Favspage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => Favspage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/profile':
             return MaterialPageRoute(
-              builder: (context) => ProfilePage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => ProfilePage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/profileprov':
             return MaterialPageRoute(
-              builder: (context) => ProfileProvPage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => ProfileProvPage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           case '/favsbusiness':
             return MaterialPageRoute(
-              builder: (context) => Favsbusinesspage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
-            );
-
-          case '/cdiscount':
-            return MaterialPageRoute(
-              builder: (context) => CDiscountPage(userId: userId!), // Usamos el operador ! para indicar que userId no es null
+              builder: (context) => Favsbusinesspage(
+                  userId:
+                      userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
           default:

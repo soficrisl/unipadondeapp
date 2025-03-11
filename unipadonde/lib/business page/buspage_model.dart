@@ -8,7 +8,8 @@ class BuspageModel {
       final response = await client
           .from('descuento')
           .select('*')
-          .eq('id_negocio', idNegocio);
+          .eq('id_negocio', idNegocio)
+          .eq('state', true);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       print('Error fetching discounts: $e');
@@ -34,8 +35,8 @@ class BuspageModel {
     try {
       final response = await client
           .from('comenta')
-          .select('''*, estudiante:estudiante(id, usuario:usuario(id, name, lastname))''')
-          .eq('id_negocio', idNegocio);
+          .select('''*, estudiante:estudiante(id, usuario:usuario(id, name, lastname))''').eq(
+              'id_negocio', idNegocio);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       print('Error fetching comments: $e');
@@ -43,7 +44,8 @@ class BuspageModel {
     }
   }
 
-  Future<void> submitComment(int idNegocio, int estudianteId, String content, int rating) async {
+  Future<void> submitComment(
+      int idNegocio, int estudianteId, String content, int rating) async {
     try {
       await client.from('comenta').insert({
         'id_usuario': estudianteId,

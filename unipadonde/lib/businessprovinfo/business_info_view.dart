@@ -69,7 +69,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       final response = await client
           .from('descuento')
           .select('*')
-          .eq('id_negocio', currentBusiness.id);
+          .eq('id_negocio', currentBusiness.id)
+          .eq('state', true);
 
       setState(() {
         discounts = List<Map<String, dynamic>>.from(response);
@@ -370,7 +371,6 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                       icon: Icon(Icons.delete,
                                           color: Colors.white),
                                       onPressed: () async {
-                                        // Muestra un diálogo de confirmación antes de eliminar el descuento
                                         final confirm = await showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
@@ -395,12 +395,9 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                           ),
                                         );
 
-                                        // Si el usuario confirma, realiza la acción de eliminar
                                         if (confirm == true) {
-                                          print(
-                                              "Eliminando: ${discount['name']}");
-                                          // Aquí puedes llamar a tu método para eliminar el descuento
-                                          //await _deleteDiscount(discount['id']); // Reemplaza con tu función de eliminación
+                                          await _deleteDiscountFromDatabase(
+                                              discount['id']);
                                         }
                                       },
                                     ),
@@ -739,15 +736,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         id_negocio: currentBusiness.id,
       );
 
-      bool success =
+      int? idBDD =
           await discountViewModel.updateDiscount(discountId, updatedDiscount);
 
-      if (success) {
+      if (idBDD != null && idBDD != 0) {
         setState(() {
           int index = discounts.indexWhere((d) => d['id'] == discountId);
           if (index != -1) {
             discounts[index] = {
-              'id': discountId,
+              'id': idBDD,
               'name': _nameController.text,
               'description': _descriptionController.text,
               'porcentaje': int.parse(_percentageController.text),
@@ -781,6 +778,47 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
               onPressed: () {
                 Navigator.of(context).pop(); // Cierra el diálogo de éxito
                 Navigator.of(context).pop(); // Cierra el popup de edición
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteDiscountFromDatabase(int discountId) async {
+    try {
+      bool success = await discountViewModel.deleteDiscount(discountId);
+
+      if (success) {
+        setState(() {
+          // Elimina el descuento de la lista local
+          discounts.removeWhere((d) => d['id'] == discountId);
+          print("Descuento eliminado localmente: $discountId");
+        });
+        _showDeleteSuccessPopup();
+      } else {
+        throw Exception('Error al eliminar el descuento');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar el descuento: $e')),
+      );
+    }
+  }
+
+  void _showDeleteSuccessPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("¡Éxito!"),
+          content: Text("El descuento se ha eliminado correctamente."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
               },
               child: Text("OK"),
             ),
@@ -947,9 +985,6 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
   //Metodo para anadir el descuento a Supabase mediante el viewmodel
 
   Future<void> _addDiscountToDatabase() async {
-    /*if (_isLoading) return;
-    setState(() => _isLoading = true);*/
-
     try {
       Discount discount = Discount(
         name: _nameController.text,
@@ -961,9 +996,22 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         id_negocio: currentBusiness.id,
       );
 
-      bool success = await discountViewModel.addDiscount(discount);
+      int? idBDD = await discountViewModel.addDiscount(discount);
 
-      if (success) {
+      if (idBDD != null && idBDD != 0) {
+        setState(() {
+          // Agrega el nuevo descuento a la lista local
+          discounts.add({
+            'id': idBDD,
+            'name': discount.name,
+            'description': discount.description,
+            'porcentaje': discount.porcentaje,
+            'startdate': discount.startdate.toIso8601String(),
+            'enddate': discount.enddate.toIso8601String(),
+            'state': discount.state,
+            'id_negocio': discount.id_negocio,
+          });
+        });
         _showSuccessPopup();
       } else {
         throw Exception('Error al añadir el descuento');
