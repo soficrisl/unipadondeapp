@@ -68,14 +68,15 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _fetchUserData() async {
     final userData = await authService.getUserData(widget.userId);
     final studentData = await authService.getStudentData(widget.userId);
-
+    print(userData);
+    print(studentData);
     setState(() {
       previousName = userData['name'];
       previousLastName = userData['lastname'];
       previousSex = userData['sex'];
       previousEmail = userData['mail'];
       previousUniversity = studentData['universidad'];
-      _imageUrl = userData['image_url'];
+      _imageUrl = userData['image_url'] ?? "";
     });
   }
 
@@ -351,9 +352,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           _imageUrl = imageUrl;
                         });
                         final userId = supabase.auth.currentUser!.id;
-                        await supabase
+                        final response = await supabase
                             .from('usuario')
                             .update({'image_url': imageUrl}).eq('uid', userId);
+                        print(response);
                       }),
                   SizedBox(height: 20),
                   // Mostrar datos del usuario

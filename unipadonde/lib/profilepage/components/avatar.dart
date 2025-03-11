@@ -15,7 +15,7 @@ class Avatar extends StatelessWidget {
       SizedBox(
         width: 150,
         height: 150,
-        child: imageUrl != null
+        child: imageUrl != ""
             ? Container(
                 decoration: BoxDecoration(
                     border: Border.all(color: Color(0xFFFFA500), width: 5),
