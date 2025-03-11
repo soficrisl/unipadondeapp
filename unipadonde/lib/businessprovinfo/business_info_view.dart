@@ -471,73 +471,65 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  // Navega a BusinessPageProv y espera el resultado
-                  final result = await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BusinessPageProv(business: currentBusiness),
-                    ),
-                  );
-
-                  // Si el resultado es `true`, actualiza los datos
-                  if (result == true) {
-                    await _refreshBusinessData();
-                    await fetchDiscounts(); // Actualiza los descuentos
-                    await fetchAddress(); // Actualiza la dirección
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF7A9BBF),
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                FloatingActionButton(
+                  heroTag: "editButton", // HeroTag único
+                  onPressed: () async {
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BusinessPageProv(business: currentBusiness),
+                      ),
+                    );
+                    if (result == true) {
+                      await _refreshBusinessData();
+                      await fetchDiscounts();
+                      await fetchAddress();
+                    }
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(Icons.edit, color: Color(0xFF8CB1F1)),
                 ),
-                child: Text('Editar información del negocio',
-                    style: TextStyle(color: Colors.white)),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  // Muestra un diálogo de confirmación antes de eliminar el negocio
-                  final confirm = await showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Eliminar negocio'),
-                      content: Text(
-                          '¿Estás seguro de que deseas eliminar este negocio?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: Text('Cancelar'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: Text('Eliminar'),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  // Si el usuario confirma, elimina el negocio
-                  if (confirm == true) {
-                    await _deleteBusiness();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                const SizedBox(width: 15),
+                FloatingActionButton(
+                  heroTag: "deleteButton",
+                  onPressed: () async {
+                    final confirm = await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Eliminar negocio'),
+                        content: Text(
+                            '¿Estás seguro de que deseas eliminar este negocio?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: Text('Cancelar'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: Text('Eliminar'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await _deleteBusiness();
+                    }
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.red, width: 2),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(Icons.delete, color: Colors.red),
                 ),
-                child: Text('Eliminar negocio',
-                    style: TextStyle(color: Colors.white)),
-              ),
+              ])
             ],
           ),
         ),
@@ -620,13 +612,11 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       fontFamily: 'San Francisco',
                       color: Color(0xFFFFA500)),
                 ),
-                TextField(
+                const SizedBox(height: 25),
+                _buildTextFieldContainer(
                   controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre:',
-                    errorText: _nameError,
-                  ),
-                  style: const TextStyle(fontFamily: 'San Francisco'),
+                  labelText: 'Nombre:',
+                  errorText: _nameError,
                   onChanged: (_) {
                     setStateDialog(() {
                       _nameError = _nameController.text.isEmpty
@@ -635,14 +625,12 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     });
                   },
                 ),
-                TextField(
+                const SizedBox(height: 20),
+                _buildTextFieldContainer(
                   controller: _descriptionController,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: 'Descripción:',
-                    errorText: _descriptionError,
-                  ),
-                  style: const TextStyle(fontFamily: 'San Francisco'),
+                  maxLines: 6,
+                  labelText: 'Descripción:',
+                  errorText: _descriptionError,
                   onChanged: (_) {
                     setStateDialog(() {
                       _descriptionError = _descriptionController.text.isEmpty
@@ -650,15 +638,13 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                           : null;
                     });
                   },
+                  contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20),
                 ),
-                const SizedBox(height: 16),
-                TextField(
+                const SizedBox(height: 20),
+                _buildTextFieldContainer(
                   controller: _percentageController,
-                  decoration: InputDecoration(
-                    labelText: 'Porcentaje:',
-                    errorText: _percentageError,
-                  ),
-                  style: const TextStyle(fontFamily: 'San Francisco'),
+                  labelText: 'Porcentaje:',
+                  errorText: _percentageError,
                   onChanged: (_) {
                     setStateDialog(() {
                       _percentageError =
@@ -668,8 +654,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
+                const SizedBox(height: 20),
+                OutlinedButton(
                   onPressed: () async {
                     await showDateTimeRangePicker(); // Selección de fechas
                     setStateDialog(() {
@@ -679,14 +665,29 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                           : null;
                     });
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFA500),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white, // Fondo blanco
+                    side: BorderSide(
+                        color: Color(0xFFFFA500), width: 2), // Borde naranja
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(8), // Bordes redondeados
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12, // Más espacio vertical
+                      horizontal: 16, // Espacio horizontal para el texto
+                    ),
                   ),
                   child: Text(
                     _selectedStartDate == null || _selectedEndDate == null
                         ? 'Seleccionar fechas'
                         : 'Desde: ${_startDateController.text}\nHasta: ${_endDateController.text}',
-                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    textAlign: TextAlign.center, // Alineación central del texto
+                    style: TextStyle(
+                      color: Color(0xFFFFA500), // Texto en naranja
+                      fontFamily: 'San Francisco',
+                      fontSize: 16, // Tamaño de fuente adecuado
+                    ),
                   ),
                 ),
                 if (_dateError != null)
@@ -695,7 +696,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     style: TextStyle(
                         color: Colors.red, fontFamily: 'San Francisco'),
                   ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     setStateDialog(() {
@@ -708,6 +709,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA500),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                   child: Text(
                     "Guardar Cambios",
@@ -851,21 +861,18 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       },
                     ),
                   ),
-                  Text(
-                    "Añadir Descuento",
-                    style: TextStyle(
+                  Text("Añadir Descuento",
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'San Francisco',
-                        color: Color(0xFFFFA500)),
-                  ),
-                  TextField(
+                        color: Colors.black,
+                      )),
+                  const SizedBox(height: 25),
+                  _buildTextFieldContainer(
                     controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nombre:',
-                      errorText: _nameError,
-                    ),
-                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    labelText: 'Nombre:',
+                    errorText: _nameError,
                     onChanged: (_) {
                       setStateDialog(() {
                         _nameError = _nameController.text.isEmpty
@@ -874,30 +881,26 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       });
                     },
                   ),
-                  TextField(
-                    controller: _descriptionController,
-                    maxLines: 5,
-                    decoration: InputDecoration(
+                  const SizedBox(height: 20),
+                  _buildTextFieldContainer(
+                      controller: _descriptionController,
+                      maxLines: 6,
                       labelText: 'Descripción:',
                       errorText: _descriptionError,
-                    ),
-                    style: const TextStyle(fontFamily: 'San Francisco'),
-                    onChanged: (_) {
-                      setStateDialog(() {
-                        _descriptionError = _descriptionController.text.isEmpty
-                            ? "La descripción no puede estar vacía"
-                            : null;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
+                      onChanged: (_) {
+                        setStateDialog(() {
+                          _descriptionError =
+                              _descriptionController.text.isEmpty
+                                  ? "La descripción no puede estar vacía"
+                                  : null;
+                        });
+                      },
+                      contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20)),
+                  const SizedBox(height: 20),
+                  _buildTextFieldContainer(
                     controller: _percentageController,
-                    decoration: InputDecoration(
-                      labelText: 'Porcentaje:',
-                      errorText: _percentageError,
-                    ),
-                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    labelText: 'Porcentaje:',
+                    errorText: _percentageError,
                     onChanged: (_) {
                       setStateDialog(() {
                         _percentageError =
@@ -907,8 +910,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       });
                     },
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
+                  const SizedBox(height: 20),
+                  OutlinedButton(
                     onPressed: () async {
                       await showDateTimeRangePicker();
                       setStateDialog(() {
@@ -918,17 +921,27 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                             : null;
                       });
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color(0xFFFFA500), // Cambia aquí a tu color
-                      textStyle: const TextStyle(
-                          fontFamily: 'San Francisco', color: Colors.white),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      side: BorderSide(color: Color(0xFFFFA500), width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                     ),
                     child: Text(
                       _selectedStartDate == null || _selectedEndDate == null
                           ? 'Seleccionar fechas'
                           : 'Desde: ${_startDateController.text}\nHasta: ${_endDateController.text}',
-                      style: const TextStyle(fontFamily: 'San Francisco'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFFFFA500),
+                        fontFamily: 'San Francisco',
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   if (_dateError != null)
@@ -947,6 +960,19 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                         _addDiscountToDatabase();
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFFFA500),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                     child: Text(
                       "Añadir",
                       style: TextStyle(fontFamily: 'San Francisco'),
@@ -1020,9 +1046,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al añadir descuento: $e')),
       );
-    } /* finally {
-      setState(() => _isLoading = false);
-    }*/
+    }
   }
 
   void _showSuccessPopup() {
@@ -1056,5 +1080,42 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       _selectedStartDate = null;
       _selectedEndDate = null;
     });
+  }
+
+  // Widget para la estetica de los textfields
+  Widget _buildTextFieldContainer({
+    required TextEditingController controller,
+    required String labelText,
+    String? errorText,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    required Function(String) onChanged,
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: labelText,
+          errorText: errorText,
+          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: contentPadding,
+        ),
+      ),
+    );
   }
 }
