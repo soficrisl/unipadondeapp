@@ -6,6 +6,7 @@ import 'package:unipadonde/loginprov/loginprov_mv.dart';
 import 'package:unipadonde/register/register_vm.dart';
 //import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:flutter/scheduler.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -20,78 +21,160 @@ class _LoginState extends State<LoginView> {
   //Text Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _recoverController = TextEditingController();
 
   final loginVm _viewModel = loginVm(); // Instanciamos el view model
 
   //Login function
   void login() async {
-    // Esto deberia estar en el view model. Esta modificada para obtener el userID
     final mail = _emailController.text;
     final password = _passwordController.text;
 
     // Validación: Asegúrate de que los campos no estén vacíos
     if (mail.isEmpty || password.isEmpty) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Por favor, ingresa tu correo y contraseña.")),
-        );
-      }
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Por favor, ingresa tu correo y contraseña.")),
+          );
+        }
+      });
       return;
     }
 
-    //Attempt to login
+    // Attempt to login
     try {
       final session = await authService.signIn(mail, password);
       final authUserId = session.user?.id;
 
       if (authUserId != null) {
-        final userId = await _viewModel.fetchUserId(mail); //view model
-        if (mounted) {
-          if (userId != null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Landing(userId: userId)),
-            );
-          } else {
-            if (mounted) {
+        final userId = await _viewModel.fetchUserId(mail); // view model
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (userId != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Landing(userId: userId)),
+              );
+            } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                     content: Text("Error al obtener el ID del usuario.")),
               );
             }
           }
-        }
+        });
       }
     } on AuthException catch (error) {
-      if (mounted) {
-        if (error.code == "invalid_credentials") {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          if (error.code == "invalid_credentials") {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text(
+                      "Verifique que el correo y la contraseña sean correctos.")),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error de autenticación: $error")));
+          }
+        }
+      });
+    } on PostgrestException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error de base de datos: ${error.message}")),
+          );
+        }
+      });
+    } catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
                 content: Text(
                     "Verifique que el correo y la contraseña sean correctos.")),
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error de autenticación: $error")));
         }
-      }
-    } on PostgrestException catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error de base de datos: ${error.message}")),
-        );
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  "Verifique que el correo y la contraseña sean correctos.")),
-        );
-      }
+      });
     }
   }
+
+  Future openInput() => showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.grey),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                Text(
+                  "Ingresa el correo para cambiar tu contraseña",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 5,
+                ),
+                Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Column(children: [
+                      TextField(
+                        controller: _recoverController,
+                        decoration: InputDecoration(
+                            hintText: "Introduce tu correo",
+                            border: OutlineInputBorder()),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                                255, 208, 223, 250), // Background color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            minimumSize: Size(
+                                double.infinity, 50), // Set height and width
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30), // Horizontal padding
+                          ),
+                          child: Text("Recuperar contraseña",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontFamily: 'San Francisco',
+                                  fontWeight: FontWeight.bold))),
+                    ])),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -217,14 +300,18 @@ class _LoginState extends State<LoginView> {
                           fontFamily: 'San Francisco',
                         ),
                       ),
-                      Text(
-                        "RECUPÉRALA",
-                        style: TextStyle(
-                          color: const Color.fromARGB(255, 117, 117, 117),
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'San Francisco',
-                        ),
-                      ),
+                      GestureDetector(
+                          onTap: () {
+                            openInput();
+                          },
+                          child: Text(
+                            "RECUPÉRALA",
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 117, 117, 117),
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco',
+                            ),
+                          )),
                       SizedBox(
                         height: 20,
                       ),

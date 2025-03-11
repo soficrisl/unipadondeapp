@@ -2,7 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/main.dart';
 import 'package:unipadonde/repository/supabase.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:unipadonde/profilepage/components/avatar.dart';
+
+class AuthenticationService {
+  final supabaseClient = supabase;
+  // Método para obtener los datos del usuario desde la tabla "usuario"
+  Future<Map<String, dynamic>> getUserData(int userId) async {
+    final response =
+        await supabaseClient.from('usuario').select().eq('id', userId).single();
+    return response;
+  }
+
+  // Método para obtener los datos del estudiante desde la tabla "estudiante"
+  Future<Map<String, dynamic>> getStudentData(int userId) async {
+    final response = await supabaseClient
+        .from('estudiante')
+        .select()
+        .eq('id', userId)
+        .single();
+    return response;
+  }
+
+  // Método para actualizar los datos del usuario en la tabla "usuario"
+  Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
+    try {
+      await supabaseClient.from('usuario').update(data).eq('id', userId);
+    } catch (e) {
+      throw Exception('Error updating user data: $e');
+    }
+  }
+
+  // Método para cerrar sesión
+  Future<void> singOut() async {
+    await supabaseClient.auth.signOut();
+  }
+}
 
 class ProfilePage extends StatefulWidget {
   final int userId;
@@ -14,23 +49,40 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String? _imageUrl;
-  final authService = AuthenticationService();
-  String previousName =
-      "Juan Pérez"; // Este valor provendría de la base de datos
-  String previousEmail =
-      "juanperez@example.com"; // Este valor provendría de la base de datos
-  String previousPhone =
-      "123456789"; // Este valor provendría de la base de datos
-  String previousAddress =
-      "Calle Ficticia 123"; // Este valor provendría de la base de datos
+  final AuthenticationService authService = AuthenticationService();
 
-  // Cerrar sesión y redirigir a la pantalla de inicio
-  void logout() async {
-    authService.singOut();
+  String previousName = "";
+  String previousLastName = "";
+  String previousSex = "";
+  String previousEmail = "";
+  String previousUniversity = "";
+  String _imageUrl = "";
+  int _selectedIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
   }
 
-  int _selectedIndex = 2;
+  Future<void> _fetchUserData() async {
+    final userData = await authService.getUserData(widget.userId);
+    final studentData = await authService.getStudentData(widget.userId);
+
+    setState(() {
+      previousName = userData['name'];
+      previousLastName = userData['lastname'];
+      previousSex = userData['sex'];
+      previousEmail = userData['mail'];
+      previousUniversity = studentData['universidad'];
+      _imageUrl = userData['image_url'];
+    });
+  }
+
+  void logout() async {
+    await authService.singOut();
+    Navigator.pushReplacementNamed(context, '/landing');
+  }
 
   void _navigateToPage(int index) {
     setState(() {
@@ -55,14 +107,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showEditDialog() {
     TextEditingController nameController = TextEditingController();
+    TextEditingController lastNameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
-    TextEditingController phoneController = TextEditingController();
-    TextEditingController addressController = TextEditingController();
+    TextEditingController universityController = TextEditingController();
+
+    // Lista de opciones para el DropdownMenu
+    List<String> genderOptions = ['Femenino', 'Masculino'];
+
+    // Valor seleccionado en el DropdownMenu
+    String selectedGender = previousSex == 'F' ? 'Femenino' : 'Masculino';
 
     nameController.text = previousName;
+    lastNameController.text = previousLastName;
     emailController.text = previousEmail;
-    phoneController.text = previousPhone;
-    addressController.text = previousAddress;
+    universityController.text = previousUniversity;
 
     showDialog(
       context: context,
@@ -79,66 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Nombre Completo',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu nombre completo',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Correo Electrónico',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu correo electrónico',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Nombre',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu nombre',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Apellido',
-                style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  hintText: 'Introduce tu apellido',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                ),
-              ),
-              SizedBox(height: 10),
+              // Campos del formulario...
             ],
           ),
           actions: [
@@ -153,15 +152,38 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                // Aquí puedes actualizar los valores en la base de datos
+              onPressed: () async {
+                // Convertir la selección del DropdownMenu a "F" o "M"
+                String sex = selectedGender == 'Femenino' ? 'F' : 'M';
+
+                await authService.updateUserData(widget.userId, {
+                  'name': nameController.text,
+                  'lastname': lastNameController.text,
+                  'sex': sex,
+                  'mail': emailController.text,
+                });
                 setState(() {
                   previousName = nameController.text;
+                  previousLastName = lastNameController.text;
+                  previousSex = sex;
                   previousEmail = emailController.text;
-                  previousPhone = phoneController.text;
-                  previousAddress = addressController.text;
+                  previousUniversity = universityController.text;
                 });
+
                 Navigator.of(context).pop();
+
+                // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Información actualizada exitosamente',
+                        style: TextStyle(fontFamily: 'San Francisco'),
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 186, 209, 247),
@@ -316,7 +338,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             height: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey[200], // Fondo gris claro para la página
+              color: Colors.grey[200],
             ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
@@ -334,7 +356,60 @@ class _ProfilePageState extends State<ProfilePage> {
                             .update({'image_url': imageUrl}).eq('uid', userId);
                       }),
                   SizedBox(height: 20),
-                  // Modificar Datos - Nuevo estilo
+                  // Mostrar datos del usuario
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nombre: $previousName',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Apellido: $previousLastName',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Sexo: ${previousSex == 'F' ? 'Femenino' : 'Masculino'}',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Correo: $previousEmail',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Universidad: $previousUniversity',
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Modificar Datos
                   InkWell(
                     onTap: _showEditDialog,
                     child: Container(

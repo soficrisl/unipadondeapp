@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/business%20page/buspage_view.dart'; // Importa BuspageView
 
 class Favspage extends StatefulWidget {
   final int userId;
@@ -13,17 +14,14 @@ class Favspage extends StatefulWidget {
 }
 
 class _FavspageState extends State<Favspage> {
-  //lista de categorias
   List<Categoria> categories = [];
   List<Discount> listofdiscounts = [];
   List<int> selectedCategories = [];
+  bool showUnsubscribeButton = false; // Nuevo estado para mostrar el botón
 
-  final dataService = DataService(Supabase
-      .instance.client); //esto antes estaba dentro de c/funcion y lo saque
+  final dataService = DataService(Supabase.instance.client);
 
-  //Cargar categorias suscritas
   void getcat() async {
-    /// Esto deberia estar en el VM
     await dataService.fetchCategoriasSuscritas(widget.userId);
     setState(() {
       categories = dataService.getCategoriasSuscritas();
@@ -31,9 +29,7 @@ class _FavspageState extends State<Favspage> {
     getdis();
   }
 
-  //Cargar descuentos
   void getdis() async {
-    // Esto deberia estar en el VM
     await dataService.fetchDiscounts();
     setState(() {
       if (mounted) {
@@ -48,7 +44,6 @@ class _FavspageState extends State<Favspage> {
     getcat();
   }
 
-  // Función de logout
   void logout() async {
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
@@ -79,9 +74,23 @@ class _FavspageState extends State<Favspage> {
     }
   }
 
+  // Método para eliminar la suscripción a una categoría
+  void unsubscribeFromCategories() async {
+    final dataService = DataService(Supabase.instance.client);
+    for (int categoryId in selectedCategories) {
+      await dataService.removeSubscription(
+          widget.userId, categoryId.toString());
+    }
+    setState(() {
+      selectedCategories.clear(); // Limpiar las categorías seleccionadas
+      showUnsubscribeButton =
+          false; // Ocultar el botón después de eliminar la suscripción
+    });
+    getcat(); // Recargar las categorías suscritas
+  }
+
   @override
   Widget build(BuildContext context) {
-    //filtrar los descuentos de acuerdo a la categoria seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
       return selectedCategories.isEmpty ||
           selectedCategories.contains(discount.idcategory);
@@ -89,7 +98,6 @@ class _FavspageState extends State<Favspage> {
 
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -121,7 +129,6 @@ class _FavspageState extends State<Favspage> {
       ),
       body: Stack(
         children: [
-          //gradiente de fondo
           Container(
             height: double.infinity,
             decoration: BoxDecoration(
@@ -132,14 +139,12 @@ class _FavspageState extends State<Favspage> {
               ),
             ),
           ),
-
           Positioned.fill(
             top: 0,
             bottom: 60,
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Categorias
                   Container(
                     padding:
                         const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
@@ -168,8 +173,12 @@ class _FavspageState extends State<Favspage> {
                               setState(() {
                                 if (selected) {
                                   selectedCategories.add(category.id);
+                                  showUnsubscribeButton =
+                                      true; // Mostrar el botón
                                 } else {
                                   selectedCategories.remove(category.id);
+                                  showUnsubscribeButton = selectedCategories
+                                      .isNotEmpty; // Ocultar si no hay selecciones
                                 }
                               });
                             },
@@ -196,8 +205,6 @@ class _FavspageState extends State<Favspage> {
                       },
                     ),
                   ),
-
-                  // Descuentos
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -255,8 +262,6 @@ class _FavspageState extends State<Favspage> {
               ),
             ),
           ),
-
-          // Bottom Bar
           Positioned(
             bottom: 0,
             left: 0,
@@ -271,12 +276,36 @@ class _FavspageState extends State<Favspage> {
               },
             ),
           ),
+          if (showUnsubscribeButton) // Mostrar el botón si hay categorías seleccionadas
+            Positioned(
+              bottom: 90.0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed:
+                      unsubscribeFromCategories, // Llamar al método para eliminar suscripción
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFFA500), // Color naranja
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text("Eliminar suscripción"),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
-
-  // Método para mostrar un pop-up con información del descuento
 
   Future openDialog(Discount discount) => showDialog(
         context: context,
@@ -289,7 +318,6 @@ class _FavspageState extends State<Favspage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Botón X para cerrar el diálogo
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
@@ -297,7 +325,6 @@ class _FavspageState extends State<Favspage> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
-                // Imagen  del negocio
                 Container(
                   width: 120,
                   height: 120,
@@ -308,16 +335,13 @@ class _FavspageState extends State<Favspage> {
                   child: ClipOval(
                     child: Image.asset(
                       discount.businessLogo,
-                      fit:
-                          BoxFit.contain, // Ajusta la imagen dentro del círculo
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-                //Titulo / Nombre de descuento
                 Text(
-                  discount.name,
+                  discount.businessName, // Nombre del negocio
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -325,20 +349,26 @@ class _FavspageState extends State<Favspage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
-                const SizedBox(height: 20),
-                //Descripcion del descuento
+                const SizedBox(height: 10),
                 Text(
-                  discount.description,
+                  discount.name, // Nombre del descuento
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  discount.description, // Descripción del descuento
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black54,
                   ),
                   textAlign: TextAlign.center,
                 ),
-
                 const SizedBox(height: 10),
-                //duracion descuento
                 Text(
                   "Duración: ${discount.duration}",
                   style: TextStyle(
@@ -347,16 +377,28 @@ class _FavspageState extends State<Favspage> {
                     color: Colors.red,
                   ),
                 ),
-
                 const SizedBox(height: 30),
-                //boton negocio
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => BuspageView(
+                          businessName:
+                              discount.businessName, // Nombre del negocio
+                          businessDescription: discount
+                              .businessDescription, // Descripción del negocio
+                          businessTiktok: discount.tiktok ?? 'No disponible',
+                          businessInstagram:
+                              discount.instagram ?? 'No disponible',
+                          businessWebsite: discount.webpage ?? 'No disponible',
+                          businessLogo: discount.businessLogo,
+                          idNegocio: discount.idbusiness, // Pasar el idNegocio
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color(0xFFFFA500), // Color de fondo del botón
+                    backgroundColor: Color(0xFFFFA500),
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(

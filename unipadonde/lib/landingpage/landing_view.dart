@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/landingpage/landin_model.dart';
+import 'package:unipadonde/landingpage/landin_model.dart'; // Importar el archivo correcto
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/searchbar/Search_view.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/business page/buspage_view.dart';
 
 class Landing extends StatefulWidget {
   final int userId;
@@ -16,12 +17,11 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  //lista de categorias
   List<List<dynamic>> categories = [];
-  List<Discount> listofdiscounts = [];
+  List<Discount> listofdiscounts = []; // Usar la clase Discount
+  bool showSubscribeButton = false;
 
   void getcat() async {
-    /// Esto deberia estar en el VM
     final dataService = DataService(Supabase.instance.client);
     await dataService.fetchCategorias();
     setState(() {
@@ -30,12 +30,13 @@ class _LandingState extends State<Landing> {
   }
 
   void getdis() async {
-    // Esto deberia estar en el VM
     final dataService = DataService(Supabase.instance.client);
     await dataService.fetchDiscounts();
-    setState(() {
-      listofdiscounts = dataService.getDescuentos() ?? [];
-    });
+    if (mounted) {
+      setState(() {
+        listofdiscounts = dataService.getDescuentos() ?? [];
+      });
+    }
   }
 
   @override
@@ -45,9 +46,7 @@ class _LandingState extends State<Landing> {
     getdis();
   }
 
-  //categorias seleccionadas
   List<int> selectedCategories = [];
-
   int _selectedIndex = 0;
 
   void _navigateToPage(int index) {
@@ -75,17 +74,54 @@ class _LandingState extends State<Landing> {
     }
   }
 
-  // Función de logout
   void logout() async {
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
-      Navigator.pushReplacementNamed(context, '/login'); // Redirige a login
+      Navigator.pushReplacementNamed(context, '/login');
     }
+  }
+
+  void subscribeToCategories() async {
+    final dataService = DataService(Supabase.instance.client);
+    // Crear una copia de la lista para evitar la modificación concurrente
+    final List<int> categoriesToSubscribe = List.from(selectedCategories);
+    for (int categoryId in categoriesToSubscribe) {
+      // Iterar sobre la copia
+      bool isAlreadySubscribed =
+          await dataService.isSubscribed(widget.userId, categoryId);
+      if (!isAlreadySubscribed) {
+        await dataService.addSubscription(widget.userId, categoryId.toString());
+      }
+    }
+    setState(() {
+      showSubscribeButton = false;
+      selectedCategories
+          .clear(); // Limpiar la lista original después de la iteración
+    });
+    Navigator.pushReplacementNamed(context, '/favorites',
+        arguments: widget.userId);
+  }
+
+  void updateSubscribeButtonVisibility() async {
+    final dataService = DataService(Supabase.instance.client);
+    bool hasNewCategories = false;
+
+    for (int categoryId in selectedCategories) {
+      bool isAlreadySubscribed =
+          await dataService.isSubscribed(widget.userId, categoryId);
+      if (!isAlreadySubscribed) {
+        hasNewCategories = true;
+        break;
+      }
+    }
+
+    setState(() {
+      showSubscribeButton = hasNewCategories;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    //filtrar los descuentos de acuerdo a la categoria seleccionada
     final filterDiscount = listofdiscounts.where((discount) {
       return selectedCategories.isEmpty ||
           selectedCategories.contains(discount.idcategory);
@@ -93,7 +129,6 @@ class _LandingState extends State<Landing> {
 
     return Scaffold(
       appBar: AppBar(
-        //appBar con nombre de la app y profile
         toolbarHeight: 90,
         elevation: 0,
         title: ShaderMask(
@@ -145,21 +180,18 @@ class _LandingState extends State<Landing> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Este container muestra los botones de categorías
                 Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                  height: 60, // Ajusta la altura del carrusel
+                  height: 60,
                   child: ListView.builder(
-                    scrollDirection: Axis
-                        .horizontal, // Hacemos que se desplace horizontalmente
+                    scrollDirection: Axis.horizontal,
                     itemCount: categories.length,
                     itemBuilder: (context, index) {
                       final category = categories[index][1];
                       final idcategory = categories[index][0];
                       return Padding(
-                        padding: const EdgeInsets.only(
-                            right: 8.0), // Espaciado entre categorías
+                        padding: const EdgeInsets.only(right: 8.0),
                         child: FilterChip(
                           selected: selectedCategories.contains(idcategory),
                           label: Text(
@@ -173,7 +205,7 @@ class _LandingState extends State<Landing> {
                                   : Colors.black,
                             ),
                           ),
-                          onSelected: (selected) {
+                          onSelected: (selected) async {
                             setState(() {
                               if (selected) {
                                 selectedCategories.add(idcategory);
@@ -181,6 +213,7 @@ class _LandingState extends State<Landing> {
                                 selectedCategories.remove(idcategory);
                               }
                             });
+                            updateSubscribeButtonVisibility();
                           },
                           backgroundColor:
                               selectedCategories.contains(idcategory)
@@ -205,7 +238,6 @@ class _LandingState extends State<Landing> {
                     },
                   ),
                 ),
-                // Aqui se maneja la visualización de los descuentos filtrados
                 Expanded(
                   child: ListView.builder(
                     itemCount: filterDiscount.length,
@@ -253,7 +285,6 @@ class _LandingState extends State<Landing> {
                                 fontFamily: 'San Francisco',
                               ),
                             ),
-                            // Eliminado el ícono de tres puntos (trailing)
                             onTap: () {
                               openDialog(discount);
                             },
@@ -275,24 +306,35 @@ class _LandingState extends State<Landing> {
               ],
             ),
           ),
-          /*Align(
-            alignment: Alignment.bottomCenter,
-            child: CustomBottomBar(
-              selectedIndex: _selectedIndex,
-              onItemTapped: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-                _navigateToPage(index);
-              },
+          if (showSubscribeButton)
+            Positioned(
+              bottom: 90.0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: subscribeToCategories,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF8CB1F1),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text("Suscribirse a categoría"),
+                ),
+              ),
             ),
-          ),*/
         ],
       ),
     );
   }
-
-  // Método para mostrar un pop-up con información del descuento
 
   Future openDialog(Discount discount) => showDialog(
         context: context,
@@ -305,7 +347,6 @@ class _LandingState extends State<Landing> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Botón X para cerrar el diálogo
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
@@ -313,7 +354,6 @@ class _LandingState extends State<Landing> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
-                // Imagen  del negocio
                 Container(
                   width: 120,
                   height: 120,
@@ -324,15 +364,13 @@ class _LandingState extends State<Landing> {
                   child: ClipOval(
                     child: Image.asset(
                       discount.businessLogo,
-                      fit: BoxFit.cover, // Ajusta la imagen dentro del círculo
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-                //Titulo / Nombre de descuento
                 Text(
-                  discount.name,
+                  discount.businessName,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -340,9 +378,17 @@ class _LandingState extends State<Landing> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
+                const SizedBox(height: 10),
+                Text(
+                  discount.name,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 20),
-                //Descripcion del descuento
                 Text(
                   discount.description,
                   style: TextStyle(
@@ -351,9 +397,7 @@ class _LandingState extends State<Landing> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
                 const SizedBox(height: 10),
-                //duracion descuento
                 Text(
                   "Duración: ${discount.duration}",
                   style: TextStyle(
@@ -362,16 +406,26 @@ class _LandingState extends State<Landing> {
                     color: Colors.red,
                   ),
                 ),
-
                 const SizedBox(height: 30),
-                //boton negocio
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => BuspageView(
+                          businessName: discount.businessName,
+                          businessDescription: discount.businessDescription,
+                          businessTiktok: discount.tiktok ?? 'No disponible',
+                          businessInstagram:
+                              discount.instagram ?? 'No disponible',
+                          businessWebsite: discount.webpage ?? 'No disponible',
+                          businessLogo: discount.businessLogo,
+                          idNegocio: discount.idbusiness,
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color(0xFFFFA500), // Color de fondo del botón
+                    backgroundColor: Color(0xFFFFA500),
                     foregroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(

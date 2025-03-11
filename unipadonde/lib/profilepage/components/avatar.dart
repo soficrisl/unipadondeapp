@@ -21,11 +21,11 @@ class Avatar extends StatelessWidget {
                     border: Border.all(color: Color(0xFFFFA500), width: 5),
                     borderRadius: BorderRadius.circular(100)),
                 child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
                   child: Image.network(
                     imageUrl!,
                     fit: BoxFit.cover,
                   ),
-                  borderRadius: BorderRadius.circular(100),
                 ),
               )
             : CircleAvatar(
