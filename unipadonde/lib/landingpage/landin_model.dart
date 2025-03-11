@@ -6,7 +6,6 @@ class DataService {
   List<Discount> listofdiscounts = [];
 
   DataService(this.client);
-
   Future<void> fetchCategorias() async {
     try {
       final data = await client.from('categoria').select();

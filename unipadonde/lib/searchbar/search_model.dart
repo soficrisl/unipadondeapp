@@ -1,23 +1,44 @@
-class Buisness {
-  final String id;
-  final String name;
-  final String buisnessLogo;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-  Buisness({
-    required this.id,
-    required this.name,
-    required this.buisnessLogo,
-  });
+class SearchModel {
+  final SupabaseClient client = Supabase.instance.client;
+  List<Business> business = [];
+
+  Future<void> fetchBusiness() async {
+    try {
+      final data = await client.from('negocio').select('id, name, picture');
+      final List<dynamic> initiallist = data;
+      business = initiallist.map((item) {
+        return Business.fromMap((item));
+      }).toList();
+    } catch (e) {
+      throw Exception('Error fetching business');
+    }
+  }
+
+  Future<List<Business>> getBusiness() async {
+    await fetchBusiness();
+    return business;
+  }
+
+  Future<void> insertSuggestion(String insertdata) async {
+    print(insertdata);
+    await client.from('sugerencia').insert({'suggestion': insertdata});
+  }
 }
 
-final List<Buisness> allBuisness = [
-  Buisness(
-      id: '1', name: 'Coca-Cola', buisnessLogo: 'assets/images/cocacola.jpg'),
-  Buisness(id: '2', name: 'Apple', buisnessLogo: 'assets/images/apple.png'),
-  Buisness(id: '3', name: 'Zara', buisnessLogo: 'assets/images/zara.jpg'),
-  Buisness(id: '4', name: 'Nike', buisnessLogo: 'assets/images/nike.jpg'),
-  Buisness(
-      id: '5',
-      name: 'American Airlines',
-      buisnessLogo: 'assets/images/american.jpg'),
-];
+class Business {
+  final int id;
+  final String name;
+  final String picture;
+
+  Business({
+    required this.id,
+    required this.name,
+    required this.picture,
+  });
+
+  factory Business.fromMap(Map<String, dynamic> map) {
+    return Business(id: map['id'], name: map['name'], picture: map['picture']);
+  }
+}

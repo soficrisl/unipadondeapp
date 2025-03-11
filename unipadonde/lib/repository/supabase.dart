@@ -24,4 +24,8 @@ class AuthenticationService {
   Future<void> singOut() async {
     await _supabase.auth.signOut();
   }
+
+  SupabaseClient getsupabase() {
+    return _supabase;
+  }
 }

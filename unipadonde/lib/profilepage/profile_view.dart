@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/main.dart';
+import 'package:unipadonde/repository/supabase.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:unipadonde/profilepage/components/avatar.dart';
 
 class AuthenticationService {
-  final SupabaseClient supabaseClient;
-
-  AuthenticationService({required this.supabaseClient});
-
+  final supabaseClient = supabase;
   // Método para obtener los datos del usuario desde la tabla "usuario"
   Future<Map<String, dynamic>> getUserData(int userId) async {
-    final response = await supabaseClient
-        .from('usuario')
-        .select()
-        .eq('id', userId)
-        .single();
+    final response =
+        await supabaseClient.from('usuario').select().eq('id', userId).single();
     return response;
   }
 
@@ -30,17 +26,12 @@ class AuthenticationService {
 
   // Método para actualizar los datos del usuario en la tabla "usuario"
   Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
-  try {
-    await supabaseClient
-        .from('usuario')
-        .update(data)
-        .eq('id', userId);
-  } catch (e) {
-    throw Exception('Error updating user data: $e');
+    try {
+      await supabaseClient.from('usuario').update(data).eq('id', userId);
+    } catch (e) {
+      throw Exception('Error updating user data: $e');
+    }
   }
-}
-
-
 
   // Método para cerrar sesión
   Future<void> singOut() async {
@@ -58,19 +49,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final authService = AuthenticationService(
-    supabaseClient: SupabaseClient(
-      'https://atswkwzuztfzaerlpcpc.supabase.co', // Reemplaza con tu URL de Supabase
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c3drd3p1enRmemFlcmxwY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5MjczNTcsImV4cCI6MjA1MzUwMzM1N30.FzMP9I3qs9aVol2njwWYjFPKJAgtBE-RkcQ-UrinA2A', // Reemplaza con tu clave de Supabase
-    ),
-  );
+  final AuthenticationService authService = AuthenticationService();
 
   String previousName = "";
   String previousLastName = "";
   String previousSex = "";
   String previousEmail = "";
   String previousUniversity = "";
-
+  String _imageUrl = "";
   int _selectedIndex = 2;
 
   @override
@@ -89,6 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
       previousSex = userData['sex'];
       previousEmail = userData['mail'];
       previousUniversity = studentData['universidad'];
+      _imageUrl = userData['image_url'];
     });
   }
 
@@ -119,102 +106,104 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showEditDialog() {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController universityController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
+    TextEditingController lastNameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController universityController = TextEditingController();
 
-  // Lista de opciones para el DropdownMenu
-  List<String> genderOptions = ['Femenino', 'Masculino'];
+    // Lista de opciones para el DropdownMenu
+    List<String> genderOptions = ['Femenino', 'Masculino'];
 
-  // Valor seleccionado en el DropdownMenu
-  String selectedGender = previousSex == 'F' ? 'Femenino' : 'Masculino';
+    // Valor seleccionado en el DropdownMenu
+    String selectedGender = previousSex == 'F' ? 'Femenino' : 'Masculino';
 
-  nameController.text = previousName;
-  lastNameController.text = previousLastName;
-  emailController.text = previousEmail;
-  universityController.text = previousUniversity;
+    nameController.text = previousName;
+    lastNameController.text = previousLastName;
+    emailController.text = previousEmail;
+    universityController.text = previousUniversity;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 215, 228, 252),
-        title: Text(
-          'Modificar Datos',
-          style: TextStyle(
-            fontFamily: 'San Francisco',
-          ),
-        ),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Campos del formulario...
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              'Cancelar',
-              style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 215, 228, 252),
+          title: Text(
+            'Modificar Datos',
+            style: TextStyle(
+              fontFamily: 'San Francisco',
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              // Convertir la selección del DropdownMenu a "F" o "M"
-              String sex = selectedGender == 'Femenino' ? 'F' : 'M';
-
-              await authService.updateUserData(widget.userId, {
-                'name': nameController.text,
-                'lastname': lastNameController.text,
-                'sex': sex,
-                'mail': emailController.text,
-              });
-              setState(() {
-                previousName = nameController.text;
-                previousLastName = lastNameController.text;
-                previousSex = sex;
-                previousEmail = emailController.text;
-                previousUniversity = universityController.text;
-              });
-
-              Navigator.of(context).pop();
-
-              // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
-              SchedulerBinding.instance.addPostFrameCallback((_) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Información actualizada exitosamente',
-                      style: TextStyle(fontFamily: 'San Francisco'),
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 186, 209, 247),
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Campos del formulario...
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancelar',
+                style:
+                    TextStyle(fontFamily: 'San Francisco', color: Colors.red),
               ),
             ),
-            child: Text(
-              'Guardar',
-              style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+            ElevatedButton(
+              onPressed: () async {
+                // Convertir la selección del DropdownMenu a "F" o "M"
+                String sex = selectedGender == 'Femenino' ? 'F' : 'M';
+
+                await authService.updateUserData(widget.userId, {
+                  'name': nameController.text,
+                  'lastname': lastNameController.text,
+                  'sex': sex,
+                  'mail': emailController.text,
+                });
+                setState(() {
+                  previousName = nameController.text;
+                  previousLastName = lastNameController.text;
+                  previousSex = sex;
+                  previousEmail = emailController.text;
+                  previousUniversity = universityController.text;
+                });
+
+                Navigator.of(context).pop();
+
+                // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Información actualizada exitosamente',
+                        style: TextStyle(fontFamily: 'San Francisco'),
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 186, 209, 247),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Guardar',
+                style:
+                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+              ),
             ),
-          ),
-        ],
-      );
-    },
-  );
-}
+          ],
+        );
+      },
+    );
+  }
 
   void _showCookiePolicy() {
     showDialog(
@@ -355,40 +344,17 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  GestureDetector(
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Color(0xFF8CB1F1),
-                      child: Icon(
-                        Icons.camera_alt,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Acción para cambiar la foto de perfil
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 207, 207, 207),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle:
-                          TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'Cambiar Foto',
-                      style: TextStyle(
-                          fontFamily: 'San Francisco',
-                          fontSize: 16,
-                          color: Colors.black),
-                    ),
-                  ),
+                  Avatar(
+                      imageUrl: _imageUrl,
+                      onUpload: (imageUrl) async {
+                        setState(() {
+                          _imageUrl = imageUrl;
+                        });
+                        final userId = supabase.auth.currentUser!.id;
+                        await supabase
+                            .from('usuario')
+                            .update({'image_url': imageUrl}).eq('uid', userId);
+                      }),
                   SizedBox(height: 20),
                   // Mostrar datos del usuario
                   Container(

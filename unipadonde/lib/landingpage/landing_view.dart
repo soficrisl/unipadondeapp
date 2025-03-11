@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/landingpage/landin_model.dart'; // Importar el archivo correcto
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/searchbar/search_mv.dart';
+import 'package:unipadonde/searchbar/Search_view.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 import 'package:unipadonde/business page/buspage_view.dart';
 
@@ -262,10 +262,10 @@ class _LandingState extends State<Landing> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
+                                borderRadius: BorderRadius.circular(45),
                                 image: DecorationImage(
                                   image: AssetImage(discount.businessLogo),
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
