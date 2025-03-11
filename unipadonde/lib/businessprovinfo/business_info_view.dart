@@ -162,8 +162,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color.fromARGB(255, 255, 255, 255),
-              Colors.white,
+              const Color.fromARGB(255, 236, 236, 236),
+              const Color.fromARGB(255, 234, 234, 234),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -199,56 +199,62 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'San Francisco',
-                        color: Colors.black87,
+                        color: Colors.black,
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 5,),
               Text(
                 currentBusiness.description,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 20,
                   fontFamily: 'San Francisco',
                 ),
               ),
-              SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoRow('Tiktok', currentBusiness.tiktok, 'assets/icons/tiktok.png'),
-                        _buildInfoRow('Instagram', currentBusiness.instagram, 'assets/icons/instagram.png'),
-                        _buildInfoRow('Página web', currentBusiness.webpage, 'assets/icons/sitio-web.png'),
-                      ],
+             
+              SizedBox(height: 5,),
+              
+              Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildInfoRow('Tiktok', currentBusiness.tiktok, 'assets/icons/tiktok.png'),
+                          _buildInfoRow('Instagram', currentBusiness.instagram, 'assets/icons/instagram.png'),
+                          _buildInfoRow('Página web', currentBusiness.webpage, 'assets/icons/sitio-web.png'),
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (address != null) ...[
-                          _buildInfoRow('Estado', address!['estado'], ''),
-                          _buildInfoRow('Ciudad', address!['ciudad'], ''),
-                          _buildInfoRow('Municipio', address!['municipio'], ''),
-                          _buildInfoRow('Calle', address!['calle'], ''),
-                          if (address!['additional_info'] != null)
-                            _buildInfoRow('Información adicional', address!['additional_info'], ''),
-                        ] else if (isLoading)
-                          Center(child: CircularProgressIndicator())
-                        else
-                          Text('No se encontró la dirección'),
-                      ],
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (address != null) ...[
+                            _buildInfoRow('Estado', address!['estado'], ''),
+                            _buildInfoRow('Ciudad', address!['ciudad'], ''),
+                            _buildInfoRow('Municipio', address!['municipio'], ''),
+                            _buildInfoRow('Calle', address!['calle'], ''),
+                          ] else if (isLoading)
+                            Center(child: CircularProgressIndicator())
+                          else
+                            Text('No se encontró la dirección'),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+
               SizedBox(height: 20),
               if (isLoading)
                 Center(child: CircularProgressIndicator())
