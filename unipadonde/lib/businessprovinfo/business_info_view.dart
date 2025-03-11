@@ -273,13 +273,13 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                         fontFamily: 'San Francisco',
                         color: Colors.black,
                         shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.1), // Sombra sutil
-                          offset: Offset(1, 1),
-                          blurRadius: 2,
-                        ),
-                      ],
-
+                          Shadow(
+                            color:
+                                Colors.black.withOpacity(0.1), // Sombra sutil
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -296,47 +296,46 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   height: 1.5,
                 ),
               ),
-              
               SizedBox(height: 20),
               _buildDetailContainer(
-              'Tiktok',
-              currentBusiness.tiktok,
-              'assets/icons/tiktok.png',
-            ),
-            SizedBox(height: 10),
-            _buildDetailContainer(
-              'Instagram',
-              currentBusiness.instagram,
-              'assets/icons/instagram.png',
-            ),
-            SizedBox(height: 10),
-            _buildDetailContainer(
-              'Página web',
-              currentBusiness.webpage,
-              'assets/icons/sitio-web.png',
-            ),
-            SizedBox(height: 10),
-            if (address != null) ...[
-              _buildDetailContainer('Estado', address!['estado'], ''),
+                'Tiktok',
+                currentBusiness.tiktok,
+                'assets/icons/tiktok.png',
+              ),
               SizedBox(height: 10),
-              _buildDetailContainer('Ciudad', address!['ciudad'], ''),
+              _buildDetailContainer(
+                'Instagram',
+                currentBusiness.instagram,
+                'assets/icons/instagram.png',
+              ),
               SizedBox(height: 10),
-              _buildDetailContainer('Municipio', address!['municipio'], ''),
+              _buildDetailContainer(
+                'Página web',
+                currentBusiness.webpage,
+                'assets/icons/sitio-web.png',
+              ),
               SizedBox(height: 10),
-              _buildDetailContainer('Calle', address!['calle'], ''),
-              if (address!['additional_info'] != null) ...[
+              if (address != null) ...[
+                _buildDetailContainer('Estado', address!['estado'], ''),
                 SizedBox(height: 10),
+                _buildDetailContainer('Ciudad', address!['ciudad'], ''),
+                SizedBox(height: 10),
+                _buildDetailContainer('Municipio', address!['municipio'], ''),
+                SizedBox(height: 10),
+                _buildDetailContainer('Calle', address!['calle'], ''),
+                if (address!['additional_info'] != null) ...[
+                  SizedBox(height: 10),
+                  _buildDetailContainer(
+                    'Información adicional',
+                    address!['additional_info'],
+                    '',
+                  ),
+                ],
+              ] else if (isLoading)
+                Center(child: CircularProgressIndicator())
+              else
                 _buildDetailContainer(
-                  'Información adicional',
-                  address!['additional_info'],
-                  '',
-                ),
-              ],
-            ] else if (isLoading)
-              Center(child: CircularProgressIndicator())
-            else
-              _buildDetailContainer('Dirección', 'No se encontró la dirección', ''),
-              
+                    'Dirección', 'No se encontró la dirección', ''),
               SizedBox(height: 20),
               if (isLoading)
                 Center(child: CircularProgressIndicator())
@@ -345,7 +344,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
               else
                 CarouselSlider(
                   options: CarouselOptions(
-                    height: 250, // Altura reducida para mostrar solo nombre, descripción y botones
+                    height:
+                        250, // Altura reducida para mostrar solo nombre, descripción y botones
                     autoPlay: discounts.length > 1,
                     enlargeCenterPage: true,
                     aspectRatio: 16 / 9,
@@ -363,17 +363,21 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text(discount['name'], 
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontFamily: "San Francisco",
-                                ),
+                                title: Text(
+                                  discount['name'],
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontFamily: "San Francisco",
+                                  ),
                                 ),
                                 content: SingleChildScrollView(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(height: 5,),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
                                       Text(
                                         discount['description'],
                                         style: TextStyle(fontSize: 16),
@@ -393,7 +397,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
                                     child: Text('Cerrar'),
                                   ),
                                 ],
@@ -403,22 +408,21 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Container(
-                              height: 230, // Altura definida para ajustar el contenido
+                              height:
+                                  230, // Altura definida para ajustar el contenido
                               width: MediaQuery.of(context).size.width,
                               margin: EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                 color: Colors.white, // Fondo blanco
                                 borderRadius: BorderRadius.circular(15.0),
                                 border: Border.all(
-                                  color: const Color.fromARGB(255, 102, 150, 232), // Borde azul
+                                  color: const Color.fromARGB(
+                                      255, 102, 150, 232), // Borde azul
                                   width: 5.0,
-                              
                                 ),
-
                               ),
                               padding: EdgeInsets.all(16),
-                              child: 
-                              Stack(
+                              child: Stack(
                                 children: [
                                   // Botones de editar y eliminar
                                   Positioned(
@@ -427,38 +431,88 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                     child: Row(
                                       children: [
                                         IconButton(
-                                          icon: Icon(Icons.edit, color: const Color(0xFF8CB1F1)), // Icono azul
+                                          icon: Icon(Icons.edit,
+                                              color: const Color(
+                                                  0xFF8CB1F1)), // Icono azul
                                           onPressed: () async {
-                                            await showEditDiscountDialog(discount);
+                                            await showEditDiscountDialog(
+                                                discount);
                                           },
                                         ),
                                         IconButton(
-                                          icon: Icon(Icons.delete, color: const Color(0xFF8CB1F1)), // Icono rojo
+                                          icon: Icon(Icons.delete,
+                                              color: const Color(
+                                                  0xFF8CB1F1)), // Icono rojo
                                           onPressed: () async {
                                             final confirm = await showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(
-                                                title: Text('Eliminar descuento'),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                title: Center(
+                                                  child: Text(
+                                                    'Eliminar descuento',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'San Francisco',
+                                                      fontSize: 25,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
                                                 content: Text(
                                                   '¿Estás seguro de que deseas eliminar el descuento "${discount['name']}"?',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontFamily: 'San Francisco',
+                                                    fontSize: 16,
+                                                  ),
                                                 ),
+                                                actionsAlignment:
+                                                    MainAxisAlignment.center,
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>
-                                                        Navigator.of(context).pop(false),
-                                                    child: Text('Cancelar'),
+                                                        Navigator.of(context)
+                                                            .pop(false),
+                                                    child: Text(
+                                                      'Cancelar',
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            'San Francisco',
+                                                        color:
+                                                            Color(0xFF8CB1F1),
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
                                                   ),
                                                   TextButton(
                                                     onPressed: () =>
-                                                        Navigator.of(context).pop(true),
-                                                    child: Text('Eliminar'),
+                                                        Navigator.of(context)
+                                                            .pop(true),
+                                                    child: Text(
+                                                      'Eliminar',
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            'San Francisco',
+                                                        color: Colors.redAccent,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
                                             );
 
                                             if (confirm == true) {
-                                              await _deleteDiscountFromDatabase(discount['id']);
+                                              await _deleteDiscountFromDatabase(
+                                                  discount['id']);
                                             }
                                           },
                                         ),
@@ -467,16 +521,20 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                   ),
                                   // Contenido del descuento (nombre y descripción)
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 40), // Espacio para los botones
+                                    padding: const EdgeInsets.only(
+                                        top: 40), // Espacio para los botones
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
                                         // Nombre del descuento
                                         Text(
                                           discount['name'],
                                           style: TextStyle(
-                                            fontSize: 25, // Tamaño de fuente grande
+                                            fontSize:
+                                                25, // Tamaño de fuente grande
                                             fontWeight: FontWeight.bold,
                                             color: Colors.orange,
                                           ),
@@ -487,7 +545,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                         Text(
                                           discount['description'],
                                           style: TextStyle(
-                                            fontSize: 16, // Tamaño de fuente mediano
+                                            fontSize:
+                                                16, // Tamaño de fuente mediano
                                             color: Colors.black54,
                                           ),
                                           textAlign: TextAlign.center,
@@ -516,80 +575,108 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  // Navega a BusinessPageProv y espera el resultado
-                  final result = await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BusinessPageProv(business: currentBusiness),
-                    ),
-                  );
-
-                  // Si el resultado es `true`, actualiza los datos
-                  if (result == true) {
-                    await _refreshBusinessData();
-                    await fetchDiscounts(); // Actualiza los descuentos
-                    await fetchAddress(); // Actualiza la dirección
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF7A9BBF),
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                FloatingActionButton(
+                  heroTag: "editButton",
+                  onPressed: () async {
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BusinessPageProv(business: currentBusiness),
+                      ),
+                    );
+                    if (result == true) {
+                      await _refreshBusinessData();
+                      await fetchDiscounts();
+                      await fetchAddress();
+                    }
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(Icons.edit, color: Color(0xFF8CB1F1)),
                 ),
-                child: Text('Editar información del negocio',
-                    style: TextStyle(color: Colors.white)),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  // Muestra un diálogo de confirmación antes de eliminar el negocio
-                  final confirm = await showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Eliminar negocio'),
-                      content: Text(
-                          '¿Estás seguro de que deseas eliminar este negocio?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: Text('Cancelar'),
+                const SizedBox(width: 15),
+                FloatingActionButton(
+                  heroTag: "deleteButton",
+                  onPressed: () async {
+                    final confirm = await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: Text('Eliminar'),
+                        title: Center(
+                          child: Text(
+                            'Eliminar negocio',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco',
+                              fontSize: 25,
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  );
+                        content: Text(
+                          '¿Estás seguro de que deseas eliminar el negocio: "${currentBusiness.name}"?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 16,
+                          ),
+                        ),
+                        actionsAlignment: MainAxisAlignment.center,
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(
+                                fontFamily: 'San Francisco',
+                                color: Color(0xFF8CB1F1),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: Text(
+                              'Eliminar',
+                              style: TextStyle(
+                                fontFamily: 'San Francisco',
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
 
-                  // Si el usuario confirma, elimina el negocio
-                  if (confirm == true) {
-                    await _deleteBusiness();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                    if (confirm == true) {
+                      await _deleteBusiness();
+                    }
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.red, width: 2),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(Icons.delete, color: Colors.red),
                 ),
-                child: Text('Eliminar negocio',
-                    style: TextStyle(color: Colors.white)),
-              ),
+              ])
             ],
           ),
         ),
       ),
     );
   }
-   
+
   Widget _buildInfoRow(String label, String value, String iconPath) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -665,13 +752,11 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       fontFamily: 'San Francisco',
                       color: Color(0xFFFFA500)),
                 ),
-                TextField(
+                const SizedBox(height: 25),
+                _buildTextFieldContainer(
                   controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre:',
-                    errorText: _nameError,
-                  ),
-                  style: const TextStyle(fontFamily: 'San Francisco'),
+                  labelText: 'Nombre:',
+                  errorText: _nameError,
                   onChanged: (_) {
                     setStateDialog(() {
                       _nameError = _nameController.text.isEmpty
@@ -680,14 +765,12 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     });
                   },
                 ),
-                TextField(
+                const SizedBox(height: 20),
+                _buildTextFieldContainer(
                   controller: _descriptionController,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: 'Descripción:',
-                    errorText: _descriptionError,
-                  ),
-                  style: const TextStyle(fontFamily: 'San Francisco'),
+                  maxLines: 6,
+                  labelText: 'Descripción:',
+                  errorText: _descriptionError,
                   onChanged: (_) {
                     setStateDialog(() {
                       _descriptionError = _descriptionController.text.isEmpty
@@ -695,15 +778,13 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                           : null;
                     });
                   },
+                  contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20),
                 ),
-                const SizedBox(height: 16),
-                TextField(
+                const SizedBox(height: 20),
+                _buildTextFieldContainer(
                   controller: _percentageController,
-                  decoration: InputDecoration(
-                    labelText: 'Porcentaje:',
-                    errorText: _percentageError,
-                  ),
-                  style: const TextStyle(fontFamily: 'San Francisco'),
+                  labelText: 'Porcentaje:',
+                  errorText: _percentageError,
                   onChanged: (_) {
                     setStateDialog(() {
                       _percentageError =
@@ -713,8 +794,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
+                const SizedBox(height: 20),
+                OutlinedButton(
                   onPressed: () async {
                     await showDateTimeRangePicker(); // Selección de fechas
                     setStateDialog(() {
@@ -724,14 +805,29 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                           : null;
                     });
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFA500),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white, // Fondo blanco
+                    side: BorderSide(
+                        color: Color(0xFFFFA500), width: 2), // Borde naranja
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(8), // Bordes redondeados
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12, // Más espacio vertical
+                      horizontal: 16, // Espacio horizontal para el texto
+                    ),
                   ),
                   child: Text(
                     _selectedStartDate == null || _selectedEndDate == null
                         ? 'Seleccionar fechas'
                         : 'Desde: ${_startDateController.text}\nHasta: ${_endDateController.text}',
-                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    textAlign: TextAlign.center, // Alineación central del texto
+                    style: TextStyle(
+                      color: Color(0xFFFFA500), // Texto en naranja
+                      fontFamily: 'San Francisco',
+                      fontSize: 16, // Tamaño de fuente adecuado
+                    ),
                   ),
                 ),
                 if (_dateError != null)
@@ -740,7 +836,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     style: TextStyle(
                         color: Colors.red, fontFamily: 'San Francisco'),
                   ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     setStateDialog(() {
@@ -753,6 +849,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA500),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                   child: Text(
                     "Guardar Cambios",
@@ -816,16 +921,45 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¡Éxito!"),
-          content: Text("El descuento se ha actualizado correctamente."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Éxito!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "El descuento se ha actualizado correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo de éxito
-                Navigator.of(context).pop(); // Cierra el popup de edición
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
-              child: Text("OK"),
-            ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
           ],
         );
       },
@@ -858,15 +992,44 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¡Éxito!"),
-          content: Text("El descuento se ha eliminado correctamente."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Éxito!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "El descuento se ha eliminado correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
-            ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
           ],
         );
       },
@@ -917,6 +1080,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       ),
     );
   }
+
   // Método para mostrar el formulario de añadir descuento
   Future showAddDiscountDialog() => showDialog(
         context: context,
@@ -940,21 +1104,18 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       },
                     ),
                   ),
-                  Text(
-                    "Añadir Descuento",
-                    style: TextStyle(
+                  Text("Añadir Descuento",
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'San Francisco',
-                        color: Color(0xFFFFA500)),
-                  ),
-                  TextField(
+                        color: Colors.black,
+                      )),
+                  const SizedBox(height: 25),
+                  _buildTextFieldContainer(
                     controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nombre:',
-                      errorText: _nameError,
-                    ),
-                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    labelText: 'Nombre:',
+                    errorText: _nameError,
                     onChanged: (_) {
                       setStateDialog(() {
                         _nameError = _nameController.text.isEmpty
@@ -963,30 +1124,26 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       });
                     },
                   ),
-                  TextField(
-                    controller: _descriptionController,
-                    maxLines: 5,
-                    decoration: InputDecoration(
+                  const SizedBox(height: 20),
+                  _buildTextFieldContainer(
+                      controller: _descriptionController,
+                      maxLines: 6,
                       labelText: 'Descripción:',
                       errorText: _descriptionError,
-                    ),
-                    style: const TextStyle(fontFamily: 'San Francisco'),
-                    onChanged: (_) {
-                      setStateDialog(() {
-                        _descriptionError = _descriptionController.text.isEmpty
-                            ? "La descripción no puede estar vacía"
-                            : null;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
+                      onChanged: (_) {
+                        setStateDialog(() {
+                          _descriptionError =
+                              _descriptionController.text.isEmpty
+                                  ? "La descripción no puede estar vacía"
+                                  : null;
+                        });
+                      },
+                      contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20)),
+                  const SizedBox(height: 20),
+                  _buildTextFieldContainer(
                     controller: _percentageController,
-                    decoration: InputDecoration(
-                      labelText: 'Porcentaje:',
-                      errorText: _percentageError,
-                    ),
-                    style: const TextStyle(fontFamily: 'San Francisco'),
+                    labelText: 'Porcentaje:',
+                    errorText: _percentageError,
                     onChanged: (_) {
                       setStateDialog(() {
                         _percentageError =
@@ -996,8 +1153,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       });
                     },
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
+                  const SizedBox(height: 20),
+                  OutlinedButton(
                     onPressed: () async {
                       await showDateTimeRangePicker();
                       setStateDialog(() {
@@ -1007,17 +1164,27 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                             : null;
                       });
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color(0xFFFFA500), // Cambia aquí a tu color
-                      textStyle: const TextStyle(
-                          fontFamily: 'San Francisco', color: Colors.white),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      side: BorderSide(color: Color(0xFFFFA500), width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                     ),
                     child: Text(
                       _selectedStartDate == null || _selectedEndDate == null
                           ? 'Seleccionar fechas'
                           : 'Desde: ${_startDateController.text}\nHasta: ${_endDateController.text}',
-                      style: const TextStyle(fontFamily: 'San Francisco'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFFFFA500),
+                        fontFamily: 'San Francisco',
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   if (_dateError != null)
@@ -1036,6 +1203,19 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                         _addDiscountToDatabase();
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFFFA500),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                     child: Text(
                       "Añadir",
                       style: TextStyle(fontFamily: 'San Francisco'),
@@ -1101,7 +1281,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
             'id_negocio': discount.id_negocio,
           });
         });
-        _showSuccessPopup();
+        _showAddSuccessPopup();
       } else {
         throw Exception('Error al añadir el descuento');
       }
@@ -1109,27 +1289,53 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al añadir descuento: $e')),
       );
-    } /* finally {
-      setState(() => _isLoading = false);
-    }*/
+    }
   }
 
-  void _showSuccessPopup() {
+  void _showAddSuccessPopup() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¡Éxito!"),
-          content: Text("El descuento se ha añadido correctamente."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Éxito!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "El descuento se ha creado  correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-                _clearForm();
               },
-              child: Text("OK"),
-            ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
           ],
         );
       },
@@ -1145,5 +1351,42 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       _selectedStartDate = null;
       _selectedEndDate = null;
     });
+  }
+
+  // Widget para la estetica de los textfields
+  Widget _buildTextFieldContainer({
+    required TextEditingController controller,
+    required String labelText,
+    String? errorText,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    required Function(String) onChanged,
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: labelText,
+          errorText: errorText,
+          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: contentPadding,
+        ),
+      ),
+    );
   }
 }

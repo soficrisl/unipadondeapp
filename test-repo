@@ -1,0 +1,169 @@
+* [33ma4fcae1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m correccion de errores en vscode
+*   [33mb7d70d5[m Merge pull request #37 from soficrisl/business-info
+[32m|[m[33m\[m  
+[32m|[m *   [33m209022d[m Merge branch 'develop' into business-info
+[32m|[m [34m|[m[32m\[m  
+[32m|[m [34m|[m[32m/[m  
+[32m|[m[32m/[m[34m|[m   
+* [34m|[m   [33mdf9350e[m Merge pull request #34 from soficrisl/33-bug-fix-register
+[36m|[m[1;31m\[m [34m\[m  
+[36m|[m * [34m|[m [33mc90d944[m Fix register
+[36m|[m[36m/[m [34m/[m  
+* [34m|[m [33m1d9deb0[m solucionado bottom bar
+* [34m|[m   [33mffc9b3d[m merge conflict resuelto con create-discount
+[1;32m|[m[1;33m\[m [34m\[m  
+[1;32m|[m * [34m|[m [33m7c76090[m[33m ([m[1;31morigin/create-discount[m[33m, [m[1;32mcreate-discount[m[33m)[m intento fallido de validaciones
+[1;32m|[m * [34m|[m [33m4a53073[m se guarda el descuento en la base de datos
+[1;32m|[m * [34m|[m [33me1b9249[m create discount esqueleto
+[1;32m|[m * [34m|[m   [33m580053b[m Merge pull request #30 from soficrisl/develop
+[1;32m|[m [1;34m|[m[1;35m\[m [34m\[m  
+* [1;34m|[m [1;35m\[m [34m\[m   [33m23cdc43[m Merge pull request #31 from soficrisl/design-fix
+[1;35m|[m[31m\[m [1;34m\[m [1;35m\[m [34m\[m  
+[1;35m|[m [31m|[m[1;35m_[m[1;34m|[m[1;35m/[m [34m/[m  
+[1;35m|[m[1;35m/[m[31m|[m [1;34m|[m [34m|[m   
+[1;35m|[m * [1;34m|[m [34m|[m [33m20a7957[m detalle diseno
+* [31m|[m [1;34m|[m [34m|[m [33m205242e[m Merge pull request #29 from soficrisl/design-fix
+[32m|[m[31m\[m[31m|[m [1;34m|[m [34m|[m 
+[32m|[m * [1;34m|[m [34m|[m [33m00d1d83[m arreglo bug favspage
+[32m|[m * [1;34m|[m [34m|[m [33m2807e65[m[33m ([m[1;31morigin/design-fix[m[33m, [m[1;32mdesign-fix[m[33m)[m arreglo diseno y detalles
+[32m|[m[32m/[m [1;34m/[m [34m/[m  
+* [1;34m|[m [34m|[m   [33m673b0ce[m Merge con search-bar
+[34m|[m[35m\[m [1;34m\[m [34m\[m  
+[34m|[m * [1;34m|[m [34m|[m [33mc19b4e2[m[33m ([m[1;31morigin/search-bar[m[33m, [m[1;32msearch-bar[m[33m)[m negocio no encontrado
+[34m|[m * [1;34m|[m [34m|[m [33m8ce59ce[m limpieza de codigo en login y register viewmodel
+[34m|[m * [1;34m|[m [34m|[m [33m78717e8[m search bar dentro del app bar
+* [35m|[m [1;34m|[m [34m|[m   [33m25b4f33[m Merge pull request #27 from soficrisl/diseno-landing-suscripciones
+[36m|[m[1;31m\[m [35m\[m [1;34m\[m [34m\[m  
+[36m|[m * [35m|[m [1;34m|[m [34m|[m [33mbcf3ae8[m[33m ([m[1;31morigin/diseno-landing-suscripciones[m[33m)[m usuario-favsbusinesspage-bugs-design
+[36m|[m[36m/[m [35m/[m [1;34m/[m [34m/[m  
+[36m|[m [35m|[m [1;34m|[m * [33md5a8b8a[m Update main.dart
+[36m|[m [35m|[m [1;34m|[m * [33mfff18a5[m agregar cosas
+[36m|[m [35m|[m [1;34m|[m * [33mc952925[m prueba
+[36m|[m [35m|[m [1;34m|[m * [33m8571107[m Update buspageprov_view.dart
+[36m|[m [35m|[m [1;34m|[m * [33m42adc51[m resolucion de problemas
+[36m|[m [35m|[m [1;34m|[m * [33m8c96146[m info de negocios basica y boton de suscribirse
+[36m|[m [35m|[m [1;34m|[m * [33m40098dc[m subiendo develop
+[36m|[m [35m|[m[36m_[m[1;34m|[m[36m/[m  
+[36m|[m[36m/[m[35m|[m [1;34m|[m   
+* [35m|[m [1;34m|[m [33m03be0e6[m Merge pull request #25 from soficrisl/search-bar
+[1;32m|[m[35m\[m[35m|[m [1;34m|[m 
+[1;32m|[m * [1;34m|[m   [33m9f732bb[m conflicto resuelto
+[1;32m|[m [1;34m|[m[1;32m\[m [1;34m\[m  
+[1;32m|[m [1;34m|[m[1;32m/[m [1;34m/[m  
+[1;32m|[m[1;32m/[m[1;34m|[m [1;34m|[m   
+* [1;34m|[m [1;34m|[m   [33m7bd53b0[m Merge realizado
+[1;36m|[m[31m\[m [1;34m\[m [1;34m\[m  
+* [31m\[m [1;34m\[m [1;34m\[m   [33m15a63ce[m Merge pull request #23 from soficrisl/revert-22-8-finish-conection-with-data-base-for-register-and-log-in
+[32m|[m[33m\[m [31m\[m [1;34m\[m [1;34m\[m  
+[32m|[m * [31m|[m [1;34m|[m [1;34m|[m [33m52f33c5[m Revert "8 finish conection with data base for register and log in"
+[32m|[m[32m/[m [31m/[m [1;34m/[m [1;34m/[m  
+* [31m|[m [1;34m|[m [1;34m|[m   [33mb801a9c[m Merge pull request #22 from soficrisl/8-finish-conection-with-data-base-for-register-and-log-in
+[34m|[m[35m\[m [31m\[m [1;34m\[m [1;34m\[m  
+[34m|[m [35m|[m [31m|[m * [1;34m|[m [33mc28eab7[m search y mis categorias
+[34m|[m [35m|[m [31m|[m * [1;34m|[m   [33m3723ed5[m Merge pull request #18 from soficrisl/create-favorites-page
+[34m|[m [35m|[m [31m|[m [1;34m|[m[1;31m\[m [1;34m\[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;31m|[m[1;34m/[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m[1;34m/[m[1;31m|[m   
+[34m|[m [35m|[m [31m|[m [1;34m|[m * [33mcdef7ed[m[33m ([m[1;31morigin/create-favorites-page[m[33m, [m[1;32mcreate-favorites-page[m[33m)[m se muestran las categorias propias del usuario
+[34m|[m [35m|[m [31m|[m [1;34m|[m * [33m5e03cd2[m solucionado merge problem con register
+[34m|[m [35m|[m [31m|[m [1;34m|[m *   [33m40a6070[m Merge pull request #17 from soficrisl/develop
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;32m|[m[1;33m\[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;32m|[m *   [33md0b9112[m Merge branch 'create-favorites-page' into develop
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;32m|[m [1;34m|[m[1;32m\[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;32m|[m [1;34m|[m[1;32m/[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;32m|[m[1;32m/[m[1;34m|[m   
+[34m|[m [35m|[m [31m|[m [1;34m|[m * [1;34m|[m   [33md912cdb[m Resolved merge conflicts
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;36m|[m[31m\[m [1;34m\[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;36m|[m * [1;34m|[m [33m892e06c[m Merge pull request #16 from soficrisl/crear-landing-page
+[34m|[m [35m|[m [31m|[m [1;34m|[m [1;36m|[m[1;34m/[m[31m|[m [1;34m|[m 
+[34m|[m [35m|[m [31m|[m [1;34m|[m[1;34m/[m[1;36m|[m[31m/[m [1;34m/[m  
+[34m|[m [35m|[m [31m|[m [1;34m|[m[31m/[m[1;36m|[m [1;34m|[m   
+[34m|[m [35m|[m [31m|[m[31m/[m[1;34m|[m [1;36m|[m [1;34m|[m   
+[34m|[m [35m|[m [31m|[m [1;34m|[m * [1;34m|[m [33m8e2e42d[m esqueleto de favorites page
+[34m|[m [35m|[m [31m|[m [1;34m|[m[31m/[m [1;34m/[m  
+[34m|[m [35m|[m [31m|[m[31m/[m[1;34m|[m [1;34m|[m   
+[34m|[m [35m|[m * [1;34m|[m [1;34m|[m [33m35c7d66[m[33m ([m[1;31morigin/crear-landing-page[m[33m, [m[1;32mcrear-landing-page[m[33m)[m ultimos cambios del diseno en pop up
+[34m|[m [35m|[m * [1;34m|[m [1;34m|[m [33mb1edb33[m mejoras en el diseno
+[34m|[m [35m|[m * [1;34m|[m [1;34m|[m [33m5faf3cf[m logout icon
+[34m|[m [35m|[m * [1;34m|[m [1;34m|[m   [33m64abbe6[m Merge pull request #13 from soficrisl/11-conection-data-base-with-landing-page
+[34m|[m [35m|[m [34m|[m[35m\[m [1;34m\[m [1;34m\[m  
+[34m|[m [35m|[m [34m|[m * [1;34m|[m [1;34m|[m [33me63c56b[m Conexion BDD y Landing page
+[34m|[m [35m|[m [34m|[m * [1;34m|[m [1;34m|[m [33mc1adbb2[m Merge branch 'develop' of https://github.com/soficrisl/unipadondeapp into 11-conection-data-base-with-landing-page
+[34m|[m [35m|[m [34m|[m[34m/[m[1;31m|[m [1;34m|[m [1;34m|[m 
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33m8af83f8[m carrusel categorias y cambios del diseno
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m   [33me14a4eb[m Merge pull request #10 from soficrisl/mostrardescuentos
+[34m|[m [35m|[m [1;32m|[m[1;33m\[m [1;31m\[m [1;34m\[m [1;34m\[m  
+[34m|[m [35m|[m [1;32m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33m775c79b[m[33m ([m[1;31morigin/mostrardescuentos[m[33m)[m detalle
+[34m|[m [35m|[m [1;32m|[m[1;32m/[m [1;31m/[m [1;34m/[m [1;34m/[m  
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m   [33maec7c41[m Merge pull request #9 from soficrisl/mostrardescuentos
+[34m|[m [35m|[m [1;34m|[m[1;35m\[m [1;31m\[m [1;34m\[m [1;34m\[m  
+[34m|[m [35m|[m [1;34m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33m07a14db[m diseno mostrar descuentos
+[34m|[m [35m|[m [1;34m|[m[1;34m/[m [1;31m/[m [1;34m/[m [1;34m/[m  
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33mb0363b2[m base del pop up
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33mbc2ff7a[m redondeo de los descuentos
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33m15564cf[m comentarios en el codigo
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33m7624154[m filtrar descuentos super basico
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m [33m44e3fd3[m esqueleto y plantilla del LP
+[34m|[m [35m|[m * [1;31m|[m [1;34m|[m [1;34m|[m   [33mca993ef[m Merge pull request #3 from soficrisl/develop
+[34m|[m [35m|[m [1;34m|[m[31m\[m [1;31m\[m [1;34m\[m [1;34m\[m  
+[34m|[m [35m|[m [1;34m|[m [31m|[m[1;34m_[m[1;31m|[m[1;34m/[m [1;34m/[m  
+[34m|[m [35m|[m [1;34m|[m[1;34m/[m[31m|[m [1;31m|[m [1;34m|[m   
+[34m|[m [35m|[m [1;34m|[m [31m|[m [1;31m|[m *   [33mad56ab8[m Merge pull request #14 from soficrisl/8-finish-conection-with-data-base-for-register-and-log-in
+[34m|[m [35m|[m [1;34m|[m [31m|[m [1;31m|[m [32m|[m[35m\[m  
+[34m|[m [35m|[m [1;34m|[m[35m_[m[31m|[m[35m_[m[1;31m|[m[35m_[m[32m|[m[35m/[m  
+[34m|[m [35m|[m[35m/[m[1;34m|[m [31m|[m [1;31m|[m [32m|[m   
+[34m|[m * [1;34m|[m [31m|[m [1;31m|[m [32m|[m   [33m256bc14[m[33m ([m[1;31morigin/8-finish-conection-with-data-base-for-register-and-log-in[m[33m)[m validaciones universidad y correo prov
+[34m|[m [34m|[m[34m\[m [1;34m\[m [31m\[m [1;31m\[m [32m\[m  
+[34m|[m [34m|[m[34m/[m [1;34m/[m [31m/[m [1;31m/[m [32m/[m  
+[34m|[m[34m/[m[34m|[m [1;34m|[m [31m|[m [1;31m|[m [32m|[m   
+* [34m|[m [1;34m|[m [31m|[m [1;31m|[m [32m|[m [33m27fe45c[m Register and log in with data base
+* [34m|[m [1;34m|[m [31m|[m [1;31m|[m [32m|[m   [33m58c5fca[m Merge branch '8-finish-conection-with-data-base-for-register-and-log-in' of https://github.com/soficrisl/unipadondeapp into 8-finish-conection-with-data-base-for-register-and-log-in
+[36m|[m[1;31m\[m [34m\[m [1;34m\[m [31m\[m [1;31m\[m [32m\[m  
+* [1;31m\[m [34m\[m [1;34m\[m [31m\[m [1;31m\[m [32m\[m   [33m3c4dd64[m Merge branch 'develop' of https://github.com/soficrisl/unipadondeapp into 8-finish-conection-with-data-base-for-register-and-log-in
+[1;32m|[m[32m\[m [1;31m\[m [34m\[m [1;34m\[m [31m\[m [1;31m\[m [32m\[m  
+[1;32m|[m [32m|[m [1;31m|[m[32m_[m[34m|[m[32m_[m[1;34m|[m[32m_[m[31m|[m[32m_[m[1;31m|[m[32m/[m  
+[1;32m|[m [32m|[m[32m/[m[1;31m|[m [34m|[m [1;34m|[m [31m|[m [1;31m|[m   
+[1;32m|[m * [1;31m|[m [34m|[m [1;34m|[m [31m|[m [1;31m|[m   [33me9b2d2e[m Merge pull request #12 from soficrisl/login
+[1;32m|[m [1;31m|[m[1;35m\[m [1;31m\[m [34m\[m [1;34m\[m [31m\[m [1;31m\[m  
+[1;32m|[m [1;31m|[m [1;35m|[m[1;31m_[m[1;31m|[m[1;31m_[m[34m|[m[1;31m_[m[1;34m|[m[1;31m_[m[31m|[m[1;31m/[m  
+[1;32m|[m [1;31m|[m[1;31m/[m[1;35m|[m [1;31m|[m [34m|[m [1;34m|[m [31m|[m   
+[1;32m|[m [1;31m|[m * [1;31m|[m [34m|[m [1;34m|[m [31m|[m [33md915cf1[m fixed bug login
+[1;32m|[m [1;31m|[m[1;31m/[m [1;31m/[m [34m/[m [1;34m/[m [31m/[m  
+[1;32m|[m [1;31m|[m [1;31m|[m * [1;34m/[m [31m/[m [33m149b8b5[m validaciones universidad y correo prov
+[1;32m|[m [1;31m|[m [1;31m|[m[1;31m/[m [1;34m/[m [31m/[m  
+[1;32m|[m [1;31m|[m * [1;34m|[m [31m|[m [33m4c0fe5a[m validaciones
+[1;32m|[m [1;31m|[m * [1;34m|[m [31m|[m [33m23635a2[m solcuion de error con los campos
+[1;32m|[m [1;31m|[m * [1;34m|[m [31m|[m [33m72f958e[m cambio de campos de Text a Form
+[1;32m|[m [1;31m|[m[1;32m/[m [1;34m/[m [31m/[m  
+[1;32m|[m[1;32m/[m[1;31m|[m [1;34m|[m [31m|[m   
+* [1;31m|[m [1;34m|[m [31m|[m [33ma759507[m Algunos cambios previos a terminar la conexion
+[1;31m|[m[1;31m/[m [1;34m/[m [31m/[m  
+* [1;34m|[m [31m|[m   [33m5f55111[m Merge pull request #7 from soficrisl/register
+[1;36m|[m[31m\[m [1;34m\[m [31m\[m  
+[1;36m|[m * [1;34m\[m [31m\[m   [33m0fa8a6c[m[33m ([m[1;31morigin/register[m[33m)[m Merge branch 'develop' into register
+[1;36m|[m [32m|[m[1;36m\[m [1;34m\[m [31m\[m  
+[1;36m|[m [32m|[m[1;36m/[m [1;34m/[m [31m/[m  
+[1;36m|[m[1;36m/[m[32m|[m [1;34m|[m [31m|[m   
+* [32m|[m [1;34m|[m [31m|[m   [33m1472249[m Merge pull request #4 from soficrisl/login
+[31m|[m[35m\[m [32m\[m [1;34m\[m [31m\[m  
+[31m|[m [35m|[m[31m_[m[32m|[m[31m_[m[1;34m|[m[31m/[m  
+[31m|[m[31m/[m[35m|[m [32m|[m [1;34m|[m   
+[31m|[m * [32m|[m [1;34m|[m   [33m95b8b39[m[33m ([m[1;31morigin/login[m[33m)[m Merge pull request #6 from soficrisl/5-making-login-functional-with-data-base
+[31m|[m [36m|[m[1;31m\[m [32m\[m [1;34m\[m  
+[31m|[m [36m|[m * [32m|[m [1;34m|[m [33m33e7f3b[m[33m ([m[1;31morigin/5-making-login-functional-with-data-base[m[33m)[m First part of conection with data base
+[31m|[m [36m|[m[36m/[m [32m/[m [1;34m/[m  
+[31m|[m [36m|[m * [1;34m|[m [33mb857111[m se arreglo el campo sexo con un dropdownmenu
+[31m|[m [36m|[m * [1;34m|[m [33m5641a1d[m adicion de campos
+[31m|[m [36m|[m * [1;34m|[m [33m3ba560c[m creacion de pantallas de registro
+[31m|[m [36m|[m[36m/[m [1;34m/[m  
+[31m|[m * [1;34m/[m [33m73df17e[m loginbase
+[31m|[m[31m/[m [1;34m/[m  
+* [1;34m|[m   [33m282d490[m[33m ([m[1;32mmostrardescuentos[m[33m)[m Merge pull request #2 from soficrisl/1-connection-to-supabase
+[1;34m|[m[1;33m\[m [1;34m\[m  
+[1;34m|[m [1;33m|[m[1;34m/[m  
+[1;34m|[m[1;34m/[m[1;33m|[m   
+[1;34m|[m * [33m52b6cda[m[33m ([m[1;31morigin/1-connection-to-supabase[m[33m, [m[1;32m1-connection-to-supabase[m[33m)[m cambio version
+[1;34m|[m * [33md43992a[m conexion parte 2
+[1;34m|[m * [33me86678e[m connection
+[1;34m|[m[1;34m/[m  
+* [33mcca16b1[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Initial commit
