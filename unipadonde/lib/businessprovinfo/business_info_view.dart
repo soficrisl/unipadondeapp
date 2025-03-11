@@ -374,22 +374,58 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                         final confirm = await showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
-                                            title: Text('Eliminar descuento'),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            title: Center(
+                                              child: Text(
+                                                'Eliminar descuento',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'San Francisco',
+                                                  fontSize: 25,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
                                             content: Text(
                                               '¿Estás seguro de que deseas eliminar el descuento "${discount['name']}"?',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontFamily: 'San Francisco',
+                                                fontSize: 16,
+                                              ),
                                             ),
+                                            actionsAlignment:
+                                                MainAxisAlignment.center,
                                             actions: [
                                               TextButton(
                                                 onPressed: () =>
                                                     Navigator.of(context)
                                                         .pop(false),
-                                                child: Text('Cancelar'),
+                                                child: Text(
+                                                  'Cancelar',
+                                                  style: TextStyle(
+                                                    fontFamily: 'San Francisco',
+                                                    color: Color(0xFF8CB1F1),
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
                                               ),
                                               TextButton(
                                                 onPressed: () =>
                                                     Navigator.of(context)
                                                         .pop(true),
-                                                child: Text('Eliminar'),
+                                                child: Text(
+                                                  'Eliminar',
+                                                  style: TextStyle(
+                                                    fontFamily: 'San Francisco',
+                                                    color: Colors.redAccent,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -473,7 +509,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
               SizedBox(height: 20),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 FloatingActionButton(
-                  heroTag: "editButton", // HeroTag único
+                  heroTag: "editButton",
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
@@ -502,21 +538,57 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     final confirm = await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text('Eliminar negocio'),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: Center(
+                          child: Text(
+                            'Eliminar negocio',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'San Francisco',
+                              fontSize: 25,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                         content: Text(
-                            '¿Estás seguro de que deseas eliminar este negocio?'),
+                          '¿Estás seguro de que deseas eliminar el negocio: "${currentBusiness.name}"?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'San Francisco',
+                            fontSize: 16,
+                          ),
+                        ),
+                        actionsAlignment: MainAxisAlignment.center,
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
-                            child: Text('Cancelar'),
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(
+                                fontFamily: 'San Francisco',
+                                color: Color(0xFF8CB1F1),
+                                fontSize: 16,
+                              ),
+                            ),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(true),
-                            child: Text('Eliminar'),
+                            child: Text(
+                              'Eliminar',
+                              style: TextStyle(
+                                fontFamily: 'San Francisco',
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     );
+
                     if (confirm == true) {
                       await _deleteBusiness();
                     }
@@ -781,16 +853,45 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¡Éxito!"),
-          content: Text("El descuento se ha actualizado correctamente."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Éxito!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "El descuento se ha actualizado correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo de éxito
-                Navigator.of(context).pop(); // Cierra el popup de edición
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
-              child: Text("OK"),
-            ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
           ],
         );
       },
@@ -823,15 +924,44 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¡Éxito!"),
-          content: Text("El descuento se ha eliminado correctamente."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Éxito!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "El descuento se ha eliminado correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
-            ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
           ],
         );
       },
@@ -1038,7 +1168,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
             'id_negocio': discount.id_negocio,
           });
         });
-        _showSuccessPopup();
+        _showAddSuccessPopup();
       } else {
         throw Exception('Error al añadir el descuento');
       }
@@ -1049,22 +1179,50 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
     }
   }
 
-  void _showSuccessPopup() {
+  void _showAddSuccessPopup() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¡Éxito!"),
-          content: Text("El descuento se ha añadido correctamente."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Éxito!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "El descuento se ha creado  correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-                _clearForm();
               },
-              child: Text("OK"),
-            ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
           ],
         );
       },
