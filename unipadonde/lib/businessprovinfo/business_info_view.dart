@@ -233,8 +233,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color.fromARGB(255, 255, 255, 255),
-              Colors.white,
+              const Color.fromARGB(255, 231, 231, 231),
+              const Color.fromARGB(255, 235, 234, 234),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -268,10 +268,18 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     child: Text(
                       currentBusiness.name,
                       style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 27,
+                        fontWeight: FontWeight.w800,
                         fontFamily: 'San Francisco',
-                        color: Colors.black87,
+                        color: Colors.black,
+                        shadows: [
+                          Shadow(
+                            color:
+                                Colors.black.withOpacity(0.1), // Sombra sutil
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -281,50 +289,53 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
               Text(
                 currentBusiness.description,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 17,
                   fontFamily: 'San Francisco',
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                  height: 1.5,
                 ),
               ),
               SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoRow('Tiktok', currentBusiness.tiktok,
-                            'assets/icons/tiktok.png'),
-                        _buildInfoRow('Instagram', currentBusiness.instagram,
-                            'assets/icons/instagram.png'),
-                        _buildInfoRow('Página web', currentBusiness.webpage,
-                            'assets/icons/sitio-web.png'),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (address != null) ...[
-                          _buildInfoRow('Estado', address!['estado'], ''),
-                          _buildInfoRow('Ciudad', address!['ciudad'], ''),
-                          _buildInfoRow('Municipio', address!['municipio'], ''),
-                          _buildInfoRow('Calle', address!['calle'], ''),
-                          if (address!['additional_info'] != null)
-                            _buildInfoRow('Información adicional',
-                                address!['additional_info'], ''),
-                        ] else if (isLoading)
-                          Center(child: CircularProgressIndicator())
-                        else
-                          Text('No se encontró la dirección'),
-                      ],
-                    ),
+              _buildDetailContainer(
+                'Tiktok',
+                currentBusiness.tiktok,
+                'assets/icons/tiktok.png',
+              ),
+              SizedBox(height: 10),
+              _buildDetailContainer(
+                'Instagram',
+                currentBusiness.instagram,
+                'assets/icons/instagram.png',
+              ),
+              SizedBox(height: 10),
+              _buildDetailContainer(
+                'Página web',
+                currentBusiness.webpage,
+                'assets/icons/sitio-web.png',
+              ),
+              SizedBox(height: 10),
+              if (address != null) ...[
+                _buildDetailContainer('Estado', address!['estado'], ''),
+                SizedBox(height: 10),
+                _buildDetailContainer('Ciudad', address!['ciudad'], ''),
+                SizedBox(height: 10),
+                _buildDetailContainer('Municipio', address!['municipio'], ''),
+                SizedBox(height: 10),
+                _buildDetailContainer('Calle', address!['calle'], ''),
+                if (address!['additional_info'] != null) ...[
+                  SizedBox(height: 10),
+                  _buildDetailContainer(
+                    'Información adicional',
+                    address!['additional_info'],
+                    '',
                   ),
                 ],
-              ),
+              ] else if (isLoading)
+                Center(child: CircularProgressIndicator())
+              else
+                _buildDetailContainer(
+                    'Dirección', 'No se encontró la dirección', ''),
               SizedBox(height: 20),
               if (isLoading)
                 Center(child: CircularProgressIndicator())
@@ -333,7 +344,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
               else
                 CarouselSlider(
                   options: CarouselOptions(
-                    height: 250,
+                    height:
+                        250, // Altura reducida para mostrar solo nombre, descripción y botones
                     autoPlay: discounts.length > 1,
                     enlargeCenterPage: true,
                     aspectRatio: 16 / 9,
@@ -345,150 +357,206 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   items: discounts.map((discount) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.orange,
+                        return GestureDetector(
+                          onTap: () {
+                            // Mostrar diálogo con la información completa del descuento
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                  discount['name'],
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontFamily: "San Francisco",
+                                  ),
+                                ),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        discount['description'],
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        "Descuento: ${discount['porcentaje']}%",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        "Válido desde: ${discount['startdate']} hasta ${discount['enddate']}",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: Text('Cerrar'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                      icon:
-                                          Icon(Icons.edit, color: Colors.white),
-                                      onPressed: () async {
-                                        await showEditDiscountDialog(discount);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete,
-                                          color: Colors.white),
-                                      onPressed: () async {
-                                        final confirm = await showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            title: Center(
-                                              child: Text(
-                                                'Eliminar descuento',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: 'San Francisco',
-                                                  fontSize: 25,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                            content: Text(
-                                              '¿Estás seguro de que deseas eliminar el descuento "${discount['name']}"?',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontFamily: 'San Francisco',
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            actionsAlignment:
-                                                MainAxisAlignment.center,
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(context)
-                                                        .pop(false),
-                                                child: Text(
-                                                  'Cancelar',
-                                                  style: TextStyle(
-                                                    fontFamily: 'San Francisco',
-                                                    color: Color(0xFF8CB1F1),
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(context)
-                                                        .pop(true),
-                                                child: Text(
-                                                  'Eliminar',
-                                                  style: TextStyle(
-                                                    fontFamily: 'San Francisco',
-                                                    color: Colors.redAccent,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-
-                                        if (confirm == true) {
-                                          await _deleteDiscountFromDatabase(
-                                              discount['id']);
-                                        }
-                                      },
-                                    ),
-                                  ],
+                            child: Container(
+                              height:
+                                  230, // Altura definida para ajustar el contenido
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white, // Fondo blanco
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                  color: const Color.fromARGB(
+                                      255, 102, 150, 232), // Borde azul
+                                  width: 5.0,
                                 ),
                               ),
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 32),
-                                  child: SingleChildScrollView(
+                              padding: EdgeInsets.all(16),
+                              child: Stack(
+                                children: [
+                                  // Botones de editar y eliminar
+                                  Positioned(
+                                    top: 3,
+                                    right: 8,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit,
+                                              color: const Color(
+                                                  0xFF8CB1F1)), // Icono azul
+                                          onPressed: () async {
+                                            await showEditDiscountDialog(
+                                                discount);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete,
+                                              color: const Color(
+                                                  0xFF8CB1F1)), // Icono rojo
+                                          onPressed: () async {
+                                            final confirm = await showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                title: Center(
+                                                  child: Text(
+                                                    'Eliminar descuento',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'San Francisco',
+                                                      fontSize: 25,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                                content: Text(
+                                                  '¿Estás seguro de que deseas eliminar el descuento "${discount['name']}"?',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontFamily: 'San Francisco',
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                actionsAlignment:
+                                                    MainAxisAlignment.center,
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(false),
+                                                    child: Text(
+                                                      'Cancelar',
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            'San Francisco',
+                                                        color:
+                                                            Color(0xFF8CB1F1),
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(true),
+                                                    child: Text(
+                                                      'Eliminar',
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            'San Francisco',
+                                                        color: Colors.redAccent,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+
+                                            if (confirm == true) {
+                                              await _deleteDiscountFromDatabase(
+                                                  discount['id']);
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Contenido del descuento (nombre y descripción)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 40), // Espacio para los botones
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
+                                        // Nombre del descuento
                                         Text(
                                           discount['name'],
-                                          style: const TextStyle(
-                                            fontSize: 20,
+                                          style: TextStyle(
+                                            fontSize:
+                                                25, // Tamaño de fuente grande
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                            color: Colors.orange,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
-                                        const SizedBox(height: 10),
+                                        SizedBox(height: 8), // Espaciado
+                                        // Descripción del descuento
                                         Text(
                                           discount['description'],
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          "Descuento: ${discount['porcentaje']}%",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          "Válido desde: ${discount['startdate']} hasta ${discount['enddate']}",
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.white,
+                                          style: TextStyle(
+                                            fontSize:
+                                                16, // Tamaño de fuente mediano
+                                            color: Colors.black54,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
                                       ],
                                     ),
-                                  ))
-                            ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -965,6 +1033,51 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
           ],
         );
       },
+    );
+  }
+
+  // Método para construir un Container con detalles
+  Widget _buildDetailContainer(String title, String value, String iconPath) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          if (iconPath.isNotEmpty)
+            Image.asset(
+              iconPath,
+              width: 24,
+              height: 24,
+            ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

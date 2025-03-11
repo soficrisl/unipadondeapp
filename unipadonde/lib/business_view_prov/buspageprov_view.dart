@@ -41,34 +41,33 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
   }
 
   Future<void> _updateBusiness() async {
-  try {
-    final client = Supabase.instance.client;
-    await client.from('negocio').update({
-      'name': nameController.text,
-      'description': descriptionController.text,
-      'tiktok': tiktokController.text,
-      'instagram': instagramController.text,
-      'webpage': websiteController.text,
-    }).eq('id', widget.business.id);
+    try {
+      final client = Supabase.instance.client;
+      await client.from('negocio').update({
+        'name': nameController.text,
+        'description': descriptionController.text,
+        'tiktok': tiktokController.text,
+        'instagram': instagramController.text,
+        'webpage': websiteController.text,
+      }).eq('id', widget.business.id);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Información actualizada correctamente'),
-        backgroundColor: Colors.green,
-      ),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Información actualizada correctamente'),
+          backgroundColor: Colors.green,
+        ),
+      );
 
-    // Devuelve `true` para indicar que los datos se han actualizado
-    Navigator.of(context).pop(true);
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error al actualizar la información: $e'),
-        backgroundColor: Colors.red,
-      ),
-    );
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al actualizar la información: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +102,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF8CB1F1),
+              Colors.white,
               Colors.white,
             ],
             begin: Alignment.topCenter,
@@ -147,6 +146,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
               _buildTextField(
                 controller: descriptionController,
                 label: 'Descripción del negocio',
+                maxLines: 6,
               ),
               SizedBox(height: 16),
               _buildTextField(
@@ -167,7 +167,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
               ElevatedButton(
                 onPressed: _updateBusiness,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF7A9BBF),
+                  backgroundColor: Color(0xFFFFA500),
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   textStyle: TextStyle(
                       fontSize: 18,
@@ -185,26 +185,41 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
   }
 
   Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-  }) {
-    return TextField(
-      controller: controller,
-      style: TextStyle(fontFamily: 'San Francisco', fontSize: 19),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-            fontSize: 18,
-            //fontWeight: FontWeight.bold,
-            color: const Color.fromARGB(255, 75, 75, 75)),
-        border: OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.white,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFFFA500), width: 2.0),
-          //borderRadius: BorderRadius.circular(10)
+  required TextEditingController controller,
+  required String label,
+  int maxLines = 1,
+}) {
+  return FocusScope(
+    child: Focus(
+      onFocusChange: (hasFocus) {
+        setState(() {});
+      },
+      child: TextField(
+        controller: controller,
+        style: TextStyle(fontFamily: 'San Francisco', fontSize: 19),
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          floatingLabelStyle: TextStyle(
+            fontSize: 20, // Aumenta el tamaño de la fuente
+            fontFamily: 'San Francisco',
+            fontWeight: FontWeight.bold,
+            color: Color(0xFFFFA500), // Naranja para la etiqueta
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(color: Colors.black),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 2.0),
+          ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

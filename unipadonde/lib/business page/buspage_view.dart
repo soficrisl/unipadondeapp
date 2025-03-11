@@ -142,8 +142,8 @@ class _BuspageViewState extends State<BuspageView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color.fromARGB(255, 255, 255, 255),
-              Colors.white,
+              const Color.fromARGB(255, 200, 200, 200), // Gris claro
+              const Color.fromARGB(255, 150, 150, 150),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -161,7 +161,7 @@ class _BuspageViewState extends State<BuspageView> {
                     height: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 226, 226, 226),
                       border: Border.all(color: const Color(0xFFFFA500), width: 4.0),
                     ),
                     child: ClipOval(
