@@ -135,15 +135,6 @@ class _FavspageState extends State<Favsbusinesspage> {
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 3;
-              });
-              _navigateToPage(3);
-            },
-          ),
-          IconButton(
               onPressed: logout,
               icon: const Icon(Icons.logout, color: Colors.black)),
         ],
@@ -228,26 +219,14 @@ class _FavspageState extends State<Favsbusinesspage> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  showAddBusinessDialog();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFA500),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text(
-                  "Añadir Negocio",
-                  style: TextStyle(
-                      color: Colors.white, fontFamily: "San Francisco"),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: FloatingActionButton(
+                  backgroundColor: Colors.orange,
+                  onPressed: () {
+                    showAddBusinessDialog();
+                  },
+                  child: Icon(Icons.add, color: Colors.white),
                 ),
               ),
             )
@@ -287,53 +266,40 @@ class _FavspageState extends State<Favsbusinesspage> {
                 Text(
                   "Añadir Negocio",
                   style: TextStyle(
-                    fontFamily: "San Francisco",
-                    fontSize: 24,
-                    color: Colors.black,
-                  ),
+                      fontFamily: "San Francisco",
+                      fontSize: 24,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-                Text("Ingresa los siguientes datos:",
-                    style: TextStyle(
-                      fontFamily: "San Francisco",
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.right),
-                const SizedBox(height: 10),
-                TextField(
+                const SizedBox(height: 25),
+                _buildTextFieldContainer(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Nombre del negocio:'),
+                  labelText: 'Nombre del negocio:',
                 ),
                 const SizedBox(height: 20),
-                TextField(
+                _buildTextFieldContainer(
                   controller: _descriptionController,
-                  decoration:
-                      InputDecoration(labelText: 'Descripción del negocio:'),
+                  maxLines: 6, // Permite múltiples líneas
+                  labelText: 'Descripción:',
+
+                  contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20),
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _instagramController,
-                  decoration: InputDecoration(labelText: 'Instagram:'),
-                ),
+                _buildTextFieldContainer(
+                    controller: _instagramController, labelText: 'Instagram:'),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Correo electrónico:'),
-                ),
+                _buildTextFieldContainer(
+                    controller: _emailController,
+                    labelText: 'Correo electrónico:'),
                 const SizedBox(height: 20),
-                TextField(
+                _buildTextFieldContainer(
                   controller: _tiktokController,
-                  decoration: InputDecoration(
-                    labelText: 'TikTok:',
-                  ),
+                  labelText: 'TikTok:',
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _websiteController,
-                  decoration: InputDecoration(labelText: 'Página web:'),
-                ),
+                _buildTextFieldContainer(
+                    controller: _websiteController, labelText: 'Página web:'),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
@@ -415,7 +381,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF8CB1F1),
+                    backgroundColor: Color(0xFFFFA500),
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(
                       color: Colors.white,
@@ -437,4 +403,36 @@ class _FavspageState extends State<Favsbusinesspage> {
           ),
         ),
       );
+
+  // Widget para la estetica de los textfields
+  // OJOOOO falta adaptarlo a las validaciones bien
+  Widget _buildTextFieldContainer({
+    required TextEditingController controller,
+    required String labelText,
+    int maxLines = 1,
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: labelText,
+          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: contentPadding,
+        ),
+      ),
+    );
+  }
 }

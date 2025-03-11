@@ -10,22 +10,15 @@ class AuthenticationService {
 
   // Método para obtener los datos del usuario desde la tabla "usuario"
   Future<Map<String, dynamic>> getUserData(int userId) async {
-    final response = await supabaseClient
-        .from('usuario')
-        .select()
-        .eq('id', userId)
-        .single();
+    final response =
+        await supabaseClient.from('usuario').select().eq('id', userId).single();
     return response;
   }
-
 
   // Método para actualizar los datos del usuario en la tabla "usuario"
   Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
     try {
-      await supabaseClient
-          .from('usuario')
-          .update(data)
-          .eq('id', userId);
+      await supabaseClient.from('usuario').update(data).eq('id', userId);
     } catch (e) {
       throw Exception('Error updating user data: $e');
     }
@@ -73,7 +66,6 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
     setState(() {
       previousName = userData['name'];
       previousEmail = userData['mail'];
-
     });
   }
 
@@ -100,150 +92,112 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
   }
 
   void _showEditDialog() {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController phoneController = TextEditingController();
+    TextEditingController addressController = TextEditingController();
 
-  nameController.text = previousName;
-  emailController.text = previousEmail;
-  phoneController.text = previousPhone;
-  addressController.text = previousAddress;
+    nameController.text = previousName;
+    emailController.text = previousEmail;
+    phoneController.text = previousPhone;
+    addressController.text = previousAddress;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 215, 228, 252),
-        title: Text(
-          'Modificar Datos',
-          style: TextStyle(
-            fontFamily: 'San Francisco',
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            'Modificar Datos',
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+            ),
           ),
-        ),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Nombre',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: 'Introduce tu nombre',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTextFieldContainer(
+                controller: nameController,
+                labelText: 'Nombre',
+              ),
+              SizedBox(height: 10),
+              _buildTextFieldContainer(
+                controller: emailController,
+                labelText: 'Correo Electrónico',
+              ),
+              SizedBox(height: 10),
+              _buildTextFieldContainer(
+                controller: phoneController,
+                labelText: 'Teléfono',
+              ),
+              SizedBox(height: 10),
+              _buildTextFieldContainer(
+                controller: addressController,
+                labelText: 'Dirección',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancelar',
+                style:
+                    TextStyle(fontFamily: 'San Francisco', color: Colors.red),
               ),
             ),
-            SizedBox(height: 10),
-            Text(
-              'Correo Electrónico',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: 'Introduce tu correo electrónico',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+            ElevatedButton(
+              onPressed: () async {
+                // Actualizar los datos en Supabase
+                await authService.updateUserData(widget.userId, {
+                  'name': nameController.text,
+                  'mail': emailController.text,
+                });
+
+                setState(() {
+                  previousName = nameController.text;
+                  previousEmail = emailController.text;
+                  previousPhone = phoneController.text;
+                  previousAddress = addressController.text;
+                });
+
+                Navigator.of(context).pop();
+
+                // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Información actualizada exitosamente',
+                        style: TextStyle(fontFamily: 'San Francisco'),
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 186, 209, 247),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Teléfono',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            TextField(
-              controller: phoneController,
-              decoration: InputDecoration(
-                hintText: 'Introduce tu teléfono',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Dirección',
-              style: TextStyle(fontFamily: 'San Francisco', fontSize: 16),
-            ),
-            TextField(
-              controller: addressController,
-              decoration: InputDecoration(
-                hintText: 'Introduce tu dirección',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
+              child: Text(
+                'Guardar',
+                style:
+                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
               ),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              'Cancelar',
-              style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              // Actualizar los datos en Supabase
-              await authService.updateUserData(widget.userId, {
-                'name': nameController.text,
-                'mail': emailController.text,
-              });
-
-              setState(() {
-                previousName = nameController.text;
-                previousEmail = emailController.text;
-                previousPhone = phoneController.text;
-                previousAddress = addressController.text;
-              });
-
-              Navigator.of(context).pop();
-
-              // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
-              SchedulerBinding.instance.addPostFrameCallback((_) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Información actualizada exitosamente',
-                      style: TextStyle(fontFamily: 'San Francisco'),
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 186, 209, 247),
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              'Guardar',
-              style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
-            ),
-          ),
-        ],
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   void _showCookiePolicy() {
     showDialog(
@@ -402,8 +356,10 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 207, 207, 207),
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      textStyle:
+                          TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -586,6 +542,43 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  //Widget para la estetica de TextFields
+  Widget _buildTextFieldContainer({
+    required TextEditingController controller,
+    required String labelText,
+    String? errorText,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    //required Function(String) onChanged,
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        //onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: labelText,
+          errorText: errorText,
+          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: contentPadding,
+        ),
       ),
     );
   }
