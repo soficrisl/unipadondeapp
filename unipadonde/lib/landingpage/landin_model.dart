@@ -6,6 +6,7 @@ class DataService {
   List<Discount> listofdiscounts = [];
 
   DataService(this.client);
+
   Future<void> fetchCategorias() async {
     try {
       final data = await client.from('categoria').select();
@@ -26,12 +27,9 @@ class DataService {
 
   Future<void> fetchDiscounts() async {
     try {
-      final descuentos =
-          await client.from('descuento').select().eq('state', true);
+      final descuentos = await client.from('descuento').select().eq('state', true);
       final pertenece = await client.from('pertenece').select();
-      final info = await client
-          .from('negocio')
-          .select('id, name, description, picture, tiktok, instagram, webpage');
+      final info = await client.from('negocio').select('id, name, description, picture, tiktok, instagram, webpage');
 
       List<Map<String, dynamic>> descuentoslistos = [];
       final negocioMap = {
@@ -57,15 +55,19 @@ class DataService {
       String? businessName;
       String? businessDescription;
       int? idnegocio;
+
       for (var descuento in descuentos) {
         idnegocio = descuento['id_negocio'];
-        idcat = perteneceMap[idnegocio];
-        businessName = negocioMap[idnegocio]?['name'];
-        businessDescription = negocioMap[idnegocio]?['description'];
-        imagen = negocioMap[idnegocio]?['picture'];
+
+        // Asegúrate de que id_negocio y id_categoria no sean null antes de usarlos
+        idcat = perteneceMap[idnegocio] ?? -1;  // Si es null, asigna un valor predeterminado (-1 en este caso)
+        businessName = negocioMap[idnegocio]?['name'] ?? 'Sin nombre';  // Si es null, asigna un nombre por defecto
+        businessDescription = negocioMap[idnegocio]?['description'] ?? 'Sin descripción';  // Si es null, asigna una descripción por defecto
+        imagen = negocioMap[idnegocio]?['picture'] ?? '';  // Si es null, asigna una cadena vacía
         tiktok = negocioMap[idnegocio]?['tiktok'];
         instagram = negocioMap[idnegocio]?['instagram'];
         webpage = negocioMap[idnegocio]?['webpage'];
+
         descuento['businessName'] = businessName;
         descuento['businessDescription'] = businessDescription;
         descuento['businessLogo'] = imagen;
@@ -75,8 +77,8 @@ class DataService {
         descuento['webpage'] = webpage;
         descuentoslistos.add(descuento);
       }
-      listofdiscounts =
-          descuentoslistos.map((json) => Discount.fromJson(json)).toList();
+
+      listofdiscounts = descuentoslistos.map((json) => Discount.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Error fetching discounts: $e');
     }
@@ -167,7 +169,7 @@ class Discount {
       description: json['description'],
       porcentaje: json['porcentaje'],
       businessLogo: json['businessLogo'],
-      duration: "Dos dias",
+      duration: "Dos dias",  // Si tienes lógica diferente para duración, cámbiala aquí
       idcategory: json['idcategory'],
       idbusiness: json['id_negocio'],
       tiktok: json['tiktok'],
