@@ -110,6 +110,14 @@ class _BuspageViewState extends State<BuspageView> {
     }
   }
 
+  String formatDate(String timestamp) {
+  // Convierte el timestamp en un objeto DateTime
+  DateTime dateTime = DateTime.parse(timestamp);
+  // Define el formato que deseas
+  DateFormat dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+  // Devuelve la fecha formateada
+  return dateFormat.format(dateTime);
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,8 +150,8 @@ class _BuspageViewState extends State<BuspageView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color.fromARGB(255, 200, 200, 200), // Gris claro
-              const Color.fromARGB(255, 150, 150, 150),
+              const Color.fromARGB(255, 231, 231, 231),
+              const Color.fromARGB(255, 235, 234, 234),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -176,10 +184,18 @@ class _BuspageViewState extends State<BuspageView> {
                     child: Text(
                       widget.businessName,
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 27,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'San Francisco',
                         color: Colors.black87,
+                        shadows: [
+                          Shadow(
+                            color:
+                                Colors.black.withOpacity(0.1), // Sombra sutil
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                          ],
                       ),
                     ),
                   ),
@@ -189,46 +205,194 @@ class _BuspageViewState extends State<BuspageView> {
               Text(
                 widget.businessDescription,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 17,
                   fontFamily: 'San Francisco',
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                  height: 1.5,
                 ),
               ),
               SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoRow('Tiktok', widget.businessTiktok, 'assets/icons/tiktok.png'),
-                        _buildInfoRow('Instagram', widget.businessInstagram, 'assets/icons/instagram.png'),
-                        _buildInfoRow('Página web', widget.businessWebsite, 'assets/icons/sitio-web.png'),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (_viewModel.address != null) ...[
-                          _buildInfoRow('Estado', _viewModel.address!['estado'], ''),
-                          _buildInfoRow('Ciudad', _viewModel.address!['ciudad'], ''),
-                          _buildInfoRow('Municipio', _viewModel.address!['municipio'], ''),
-                          _buildInfoRow('Calle', _viewModel.address!['calle'], ''),
-                          if (_viewModel.address!['additional_info'] != null)
-                            _buildInfoRow('Información adicional', _viewModel.address!['additional_info'], ''),
-                        ] else if (_viewModel.isLoading)
-                          Center(child: CircularProgressIndicator())
-                        else
-                          Text('No se encontró la dirección'),
-                      ],
-                    ),
-                  ),
-                ],
+              _buildDetailContainer(
+                'Tiktok',
+                widget.businessTiktok,
+                'assets/icons/tiktok.png',
               ),
+              SizedBox(height: 10),
+              _buildDetailContainer(
+                'Instagram',
+                widget.businessInstagram,
+                'assets/icons/instagram.png',
+              ),
+              SizedBox(height: 10),
+              _buildDetailContainer(
+                'Página web',
+                widget.businessWebsite,
+                'assets/icons/sitio-web.png',
+              ),
+              SizedBox(height: 10,),
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Direccion:",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          if (_viewModel.address != null) ...[
+                            Row(
+                              children: [
+                                Text(
+                                  'Estado:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _viewModel.address!['estado'] ?? 'No disponible',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Ciudad:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _viewModel.address!['ciudad'] ?? 'No disponible',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Municipio:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _viewModel.address!['municipio'] ?? 'No disponible',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Calle:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _viewModel.address!['calle'] ?? 'No disponible',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_viewModel.address!['additional_info'] != null) 
+                              Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Información adicional:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  _viewModel.address!['additional_info'] ?? 'No disponible',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ] else if (_viewModel.isLoading)
+                            Center(child: CircularProgressIndicator())
+                          else
+                            Text(
+                              'No se encontró la dirección',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          Text(
+                            "value",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
               SizedBox(height: 20),
               if (_viewModel.isLoading)
                 Center(child: CircularProgressIndicator())
@@ -249,54 +413,168 @@ class _BuspageViewState extends State<BuspageView> {
                   items: _viewModel.discounts.map((discount) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 5.0),
-                          decoration: BoxDecoration(
-                            color: Colors.orange,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
+                        return GestureDetector(
+                          onTap: () {
+                            // Mostrar diálogo con la información completa del descuento
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
                                   discount['name'],
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
                                   textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  discount['description'],
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Descuento: ${discount['porcentaje']}%",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
+                                    color: Colors.orange,
+                                    fontFamily: "San Francisco",
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 27,
                                   ),
                                 ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Válido desde: ${discount['startdate']} hasta ${discount['enddate']}",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        discount['description'],
+                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: "San Francisco",
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Center(
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              "${discount['porcentaje']}%",
+                                              style: TextStyle(
+                                                color: Colors.orange,
+                                                fontFamily: "San Francisco",
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 64,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                              "Válido desde: ",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontFamily: "San Francisco",
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            Text(
+                                              " ${formatDate(discount['startdate'])}",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "San Francisco",
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color.fromARGB(255, 97, 97, 97),
+                                              ),
+                                            ),
+                                            Text(
+                                              "hasta: ",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontFamily: "San Francisco",
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            Text(
+                                              " ${formatDate(discount['enddate'])}",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "San Francisco",
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color.fromARGB(255, 95, 95, 95),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
-                              ],
+                                actions: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1), // Reduces the top padding
+                                    child: TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text(
+                                        'Cerrar',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontFamily: "San Francisco",
+                                          color: Color.fromARGB(255, 102, 150, 232),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+
+
+
+
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Container(
+                              height:
+                                  230, // Altura definida para ajustar el contenido
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white, // Fondo blanco
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                  color: const Color.fromARGB(
+                                      255, 102, 150, 232), // Borde azul
+                                  width: 5.0,
+                                ),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Stack(
+                                children: [
+                                  // Contenido del descuento (nombre y descripción)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 2), // Espacio para los botones
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        // Nombre del descuento
+                                        Text(
+                                          discount['name'],
+                                          style: TextStyle(
+                                            fontSize:
+                                                25, // Tamaño de fuente grande
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.orange,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 8), // Espaciado
+                                        // Descripción del descuento
+                                        Text(
+                                          discount['description'],
+                                          style: TextStyle(
+                                            fontSize:
+                                                16, // Tamaño de fuente mediano
+                                            color: Colors.black54,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -391,6 +669,52 @@ class _BuspageViewState extends State<BuspageView> {
       ),
     );
   }
+
+  // Método para construir un Container con detalles
+  Widget _buildDetailContainer(String title, String value, String iconPath) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          if (iconPath.isNotEmpty)
+            Image.asset(
+              iconPath,
+              width: 24,
+              height: 24,
+            ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
 
   Widget _buildInfoRow(String label, String value, String iconPath) {
     return Column(
