@@ -42,10 +42,10 @@ class StartView extends StatelessWidget {
                 SizedBox(height: 120),
                 // Texto "Eres:" centrado
                 Text(
-                  'Eres:',
+                  '¿Quién eres?',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
@@ -77,7 +77,7 @@ class StartView extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 16),
                 // Botón de Proveedor
                 ElevatedButton(
                   onPressed: () {
