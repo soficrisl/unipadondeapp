@@ -63,8 +63,8 @@ class Avatar extends StatelessWidget {
           onUpload(imageUrl);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 207, 207, 207),
-          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+          backgroundColor: Color(0xFFFFA500),
+          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
           textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -73,7 +73,10 @@ class Avatar extends StatelessWidget {
         child: Text(
           'Cambiar Foto',
           style: TextStyle(
-              fontFamily: 'San Francisco', fontSize: 16, color: Colors.black),
+              fontFamily: 'San Francisco',
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold),
         ),
       )
     ]);
