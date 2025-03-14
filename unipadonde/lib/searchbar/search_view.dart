@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/business%20page/buspage_view.dart';
+import 'package:unipadonde/businessprovinfo/business_info_view.dart';
 import 'package:unipadonde/searchbar/search_model.dart';
 import 'package:unipadonde/searchbar/serch_vm.dart';
+import 'package:unipadonde/main.dart';
 
 //handle search
 class CustomSearchDelegate extends SearchDelegate {
@@ -89,6 +93,20 @@ class CustomSearchDelegate extends SearchDelegate {
                               width: 50, height: 50, fit: BoxFit.cover),
                         ),
                         title: Text(business.name),
+                        onTap: () {
+                          print('Tapped on ${business.name}');
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => BuspageView(
+                                    idNegocio: business.id,
+                                    businessName: business.name,
+                                    businessDescription: business.description,
+                                    businessInstagram: business.instagram,
+                                    businessLogo: business.picture,
+                                    businessTiktok: business.tiktok,
+                                    businessWebsite: business.webpage)),
+                          );
+                        },
                       );
                     },
                   ),
@@ -162,6 +180,13 @@ class CustomSearchDelegate extends SearchDelegate {
                       ),
                     );
                     suggestionController.clear();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Ingresa datos, por favor."),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
