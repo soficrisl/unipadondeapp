@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:unipadonde/validations.dart';
 
 class AuthenticationService {
   final SupabaseClient supabaseClient;
@@ -92,112 +93,178 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
   }
 
   void _showEditDialog() {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController phoneController = TextEditingController();
-    TextEditingController addressController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
-    nameController.text = previousName;
-    emailController.text = previousEmail;
-    phoneController.text = previousPhone;
-    addressController.text = previousAddress;
+  nameController.text = previousName;
+  emailController.text = previousEmail;
+  phoneController.text = previousPhone;
+  addressController.text = previousAddress;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text(
-            'Modificar Datos',
-            style: TextStyle(
-              fontFamily: 'San Francisco',
-            ),
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildTextFieldContainer(
-                controller: nameController,
-                labelText: 'Nombre',
-              ),
-              SizedBox(height: 10),
-              _buildTextFieldContainer(
-                controller: emailController,
-                labelText: 'Correo Electrónico',
-              ),
-              SizedBox(height: 10),
-              _buildTextFieldContainer(
-                controller: phoneController,
-                labelText: 'Teléfono',
-              ),
-              SizedBox(height: 10),
-              _buildTextFieldContainer(
-                controller: addressController,
-                labelText: 'Dirección',
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Cancelar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.red),
+  // Variables para manejar los errores de validación
+  String? nameError;
+  String? emailError;
+  String? phoneError;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text(
+              'Modificar Datos',
+              style: TextStyle(
+                fontFamily: 'San Francisco',
               ),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                // Actualizar los datos en Supabase
-                await authService.updateUserData(widget.userId, {
-                  'name': nameController.text,
-                  'mail': emailController.text,
-                });
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTextFieldContainer(
+                  controller: nameController,
+                  labelText: 'Nombre',
+                  errorText: nameError,
+                  onChanged: (_) {
+                    setStateDialog(() {
+                      nameError = Validations.validateName(nameController.text);
+                    });
+                  },
+                ),
+                SizedBox(height: 10),
+                _buildTextFieldContainer(
+                  controller: emailController,
+                  labelText: 'Correo Electrónico',
+                  errorText: emailError,
+                  onChanged: (_) {
+                    setStateDialog(() {
+                      emailError = Validations.validateEmail(emailController.text);
+                    });
+                  },
+                ),
 
-                setState(() {
-                  previousName = nameController.text;
-                  previousEmail = emailController.text;
-                  previousPhone = phoneController.text;
-                  previousAddress = addressController.text;
-                });
-
-                Navigator.of(context).pop();
-
-                // Usar SchedulerBinding para mostrar el SnackBar después del frame actual
-                SchedulerBinding.instance.addPostFrameCallback((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Información actualizada exitosamente',
-                        style: TextStyle(fontFamily: 'San Francisco'),
-                      ),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 186, 209, 247),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 10),
+                _buildTextFieldContainer(
+                  controller: addressController,
+                  labelText: 'Dirección',
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Cancelar',
+                  style: TextStyle(fontFamily: 'San Francisco', color: Colors.red),
                 ),
               ),
-              child: Text(
-                'Guardar',
-                style:
-                    TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+              ElevatedButton(
+                onPressed: () async {
+                  // Validar los campos antes de proceder
+                  setStateDialog(() {
+                    nameError = Validations.validateName(nameController.text);
+                    emailError = Validations.validateEmail(emailController.text);
+                    phoneError = Validations.validatePhone(phoneController.text);
+                  });
+
+                  if (nameError == null && emailError == null && phoneError == null) {
+                    // Actualizar los datos en Supabase
+                    await authService.updateUserData(widget.userId, {
+                      'name': nameController.text,
+                      'mail': emailController.text,
+                      'phone': phoneController.text,
+                      'address': addressController.text,
+                    });
+
+                    // Actualizar el estado en la pantalla principal
+                    setState(() {
+                      previousName = nameController.text;
+                      previousEmail = emailController.text;
+                      previousPhone = phoneController.text;
+                      previousAddress = addressController.text;
+                    });
+
+                    Navigator.of(context).pop(); // Cerrar el diálogo de edición
+
+                    // Mostrar el popup de éxito
+                    _showSuccessPopup();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 186, 209, 247),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  'Guardar',
+                  style: TextStyle(fontFamily: 'San Francisco', color: Colors.black),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+void _showSuccessPopup() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Center(
+          child: Text(
+            "¡Éxito!",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'San Francisco',
+              fontSize: 25,
+              color: Color(0xFF8CB1F1),
+            ),
+          ),
+        ),
+        content: Text(
+          "La información se ha actualizado correctamente.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'San Francisco',
+            fontSize: 16,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el popup de éxito
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(
+                fontFamily: 'San Francisco',
+                color: Color(0xFF8CB1F1),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   void _showCookiePolicy() {
     showDialog(
@@ -398,14 +465,7 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                             fontSize: 18,
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Teléfono: $previousPhone',
-                          style: TextStyle(
-                            fontFamily: 'San Francisco',
-                            fontSize: 18,
-                          ),
-                        ),
+                        
                         SizedBox(height: 10),
                         Text(
                           'Dirección: $previousAddress',
@@ -548,38 +608,38 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
 
   //Widget para la estetica de TextFields
   Widget _buildTextFieldContainer({
-    required TextEditingController controller,
-    required String labelText,
-    String? errorText,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-    //required Function(String) onChanged,
-    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        //onChanged: onChanged,
-        decoration: InputDecoration(
-          labelText: labelText,
-          errorText: errorText,
-          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          contentPadding: contentPadding,
+  required TextEditingController controller,
+  required String labelText,
+  String? errorText,
+  int maxLines = 1,
+  TextInputType keyboardType = TextInputType.text,
+  Function(String)? onChanged,
+  EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: labelText,
+        errorText: errorText,
+        floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+          borderRadius: BorderRadius.circular(8),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        contentPadding: contentPadding,
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -122,35 +122,24 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
 
   // Método para eliminar el negocio
   Future<void> _deleteBusiness() async {
-    try {
-      final client = Supabase.instance.client;
+  try {
+    final client = Supabase.instance.client;
 
-      // Elimina el negocio de la base de datos
-      await client.from('negocio').delete().eq('id', currentBusiness.id);
+    // Elimina el negocio de la base de datos
+    await client.from('negocio').delete().eq('id', currentBusiness.id);
 
-      // Muestra un mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Negocio eliminado correctamente.'),
-          backgroundColor: Colors.green,
-        ),
-      );
+    // Muestra el popup de éxito y espera a que el usuario lo cierre
+    await _showSuccessPopup('Negocio eliminado correctamente.');
 
-      // Llama a la función de actualización
-      widget.onBusinessDeleted();
+    // Llama a la función de actualización
+    widget.onBusinessDeleted();
 
-      // Navega de regreso a la pantalla anterior
-      Navigator.of(context).pop();
-    } catch (e) {
-      // Muestra un mensaje de error si algo sale mal
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al eliminar el negocio: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    // Navega de regreso a la pantalla anterior (Favsbusinesspage)
+    Navigator.of(context).pop(); // Vuelve a la vista anterior
+  } catch (e) {
+    print('Negocio no eliminado');
   }
+}
 
   Future<void> showDateTimeRangePicker() async {
     List<DateTime>? dateTimeList = await showOmniDateTimeRangePicker(
@@ -581,14 +570,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            BusinessPageProv(business: currentBusiness),
+                        builder: (context) => BusinessPageProv(business: currentBusiness),
                       ),
                     );
+
+                    // Si el resultado es true, actualiza los datos del negocio
                     if (result == true) {
-                      await _refreshBusinessData();
-                      await fetchDiscounts();
-                      await fetchAddress();
+                      await _refreshBusinessData(); // Actualiza los datos del negocio
+                      await fetchDiscounts(); // Actualiza los descuentos
+                      await fetchAddress(); // Actualiza la dirección
                     }
                   },
                   backgroundColor: Colors.white,
@@ -910,9 +900,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         throw Exception('Error al actualizar el descuento');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar cambios: $e')),
-      );
+      print('Error');
     }
   }
 
@@ -981,9 +969,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         throw Exception('Error al eliminar el descuento');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al eliminar el descuento: $e')),
-      );
+      print('Error');
     }
   }
 
@@ -1286,9 +1272,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         throw Exception('Error al añadir el descuento');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al añadir descuento: $e')),
-      );
+      print('Error');
     }
   }
 
@@ -1353,6 +1337,55 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
     });
   }
 
+  // ! POP UP DE ÉXITO
+Future<void> _showSuccessPopup(String message) async {
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Center(
+          child: Text(
+            "¡Éxito!",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'San Francisco',
+              fontSize: 25,
+              color: Color(0xFF8CB1F1),
+            ),
+          ),
+        ),
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'San Francisco',
+            fontSize: 16,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cierra el popup
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(
+                fontFamily: 'San Francisco',
+                color: Color(0xFF8CB1F1),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
   // Widget para la estetica de los textfields
   Widget _buildTextFieldContainer({
     required TextEditingController controller,
