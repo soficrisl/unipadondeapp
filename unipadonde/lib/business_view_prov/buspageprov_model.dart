@@ -1,12 +1,11 @@
-// business_model.dart
 class Business {
-  final int id;
-  final String name;
-  final String description;
-  final String picture;
-  final String tiktok;
-  final String instagram;
-  final String webpage;
+  int id;
+  String name;
+  String description;
+  String picture;
+  String tiktok;
+  String instagram;
+  String webpage;
 
   Business({
     required this.id,

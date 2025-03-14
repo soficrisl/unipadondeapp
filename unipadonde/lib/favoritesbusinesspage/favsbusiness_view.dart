@@ -6,6 +6,7 @@ import 'package:unipadonde/widgets/bottom_barProv.dart';
 import 'package:unipadonde/business_view_prov/buspageprov_model.dart';
 import 'package:unipadonde/businessprovinfo/business_info_view.dart';
 import 'dart:math'; // Importa la clase Random
+import 'package:unipadonde/validations.dart'; // Importa el archivo de validaciones
 
 class Favsbusinesspage extends StatefulWidget {
   final int userId;
@@ -30,10 +31,87 @@ class _FavspageState extends State<Favsbusinesspage> {
   final TextEditingController _tiktokController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
 
+  // Variables para las validaciones
+  String? _nameError;
+  String? _descriptionError;
+  String? _instagramError;
+  String? _emailError;
+  String? _tiktokError;
+  String? _websiteError;
+
   @override
   void initState() {
     super.initState();
     fetchBusinesses();
+
+    // Agregar listeners a los controladores para validar en tiempo real
+    _nameController.addListener(() {
+      _validateName(_nameController.text);
+    });
+    _descriptionController.addListener(() {
+      _validateDescription(_descriptionController.text);
+    });
+    _instagramController.addListener(() {
+      _validateInstagram(_instagramController.text);
+    });
+    _emailController.addListener(() {
+      _validateEmail(_emailController.text);
+    });
+    _tiktokController.addListener(() {
+      _validateTikTok(_tiktokController.text);
+    });
+    _websiteController.addListener(() {
+      _validateWebsite(_websiteController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    // Limpiar los controladores cuando el widget se destruya
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _instagramController.dispose();
+    _emailController.dispose();
+    _tiktokController.dispose();
+    _websiteController.dispose();
+    super.dispose();
+  }
+
+  // Métodos para validar los campos en tiempo real
+  void _validateName(String value) {
+    setState(() {
+      _nameError = Validations.validateNotEmpty(value, "Nombre del negocio");
+    });
+  }
+
+  void _validateDescription(String value) {
+    setState(() {
+      _descriptionError = Validations.validateNotEmpty(value, "Descripción");
+    });
+  }
+
+  void _validateInstagram(String value) {
+    setState(() {
+      _instagramError = Validations.validateNotEmpty(value, "Instagram");
+    });
+  }
+
+  void _validateEmail(String value) {
+    setState(() {
+      _emailError = Validations.validateEmail(value);
+    });
+  }
+
+  void _validateTikTok(String value) {
+    setState(() {
+      _tiktokError = Validations.validateNotEmpty(value, "TikTok");
+    });
+  }
+
+  void _validateWebsite(String value) {
+    setState(() {
+      _websiteError = Validations.validateNotEmpty(value, "Página web");
+    });
   }
 
   Future<void> fetchBusinesses() async {
@@ -66,8 +144,7 @@ class _FavspageState extends State<Favsbusinesspage> {
 
     // Genera un ID aleatorio y verifica que no exista en la tabla
     do {
-      id = random
-          .nextInt(1000000); // Genera un número aleatorio entre 0 y 999999
+      id = random.nextInt(1000000); // Genera un número aleatorio entre 0 y 999999
       final response =
           await client.from('negocio').select('id').eq('id', id).maybeSingle();
 
@@ -246,171 +323,215 @@ class _FavspageState extends State<Favsbusinesspage> {
   }
 
   Future showAddBusinessDialog() => showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ),
-                Text(
-                  "Añadir Negocio",
-                  style: TextStyle(
-                      fontFamily: "San Francisco",
-                      fontSize: 24,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 25),
-                _buildTextFieldContainer(
-                  controller: _nameController,
-                  labelText: 'Nombre del negocio:',
-                ),
-                const SizedBox(height: 20),
-                _buildTextFieldContainer(
-                  controller: _descriptionController,
-                  maxLines: 6, // Permite múltiples líneas
-                  labelText: 'Descripción:',
-
-                  contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-                ),
-                const SizedBox(height: 20),
-                _buildTextFieldContainer(
-                    controller: _instagramController, labelText: 'Instagram:'),
-                const SizedBox(height: 20),
-                _buildTextFieldContainer(
-                    controller: _emailController,
-                    labelText: 'Correo electrónico:'),
-                const SizedBox(height: 20),
-                _buildTextFieldContainer(
-                  controller: _tiktokController,
-                  labelText: 'TikTok:',
-                ),
-                const SizedBox(height: 20),
-                _buildTextFieldContainer(
-                    controller: _websiteController, labelText: 'Página web:'),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    final name = _nameController.text;
-                    final description = _descriptionController.text;
-                    final instagram = _instagramController.text;
-                    final email = _emailController.text;
-                    final tiktok = _tiktokController.text;
-                    final webpage = _websiteController.text;
-
-                    if (name.isEmpty ||
-                        description.isEmpty ||
-                        instagram.isEmpty ||
-                        email.isEmpty ||
-                        tiktok.isEmpty ||
-                        webpage.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text('Por favor, completa todos los campos.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
-                    try {
-                      final client = Supabase.instance.client;
-
-                      // Genera un ID único para el negocio
-                      final id = await generateUniqueId();
-
-                      // Inserta el nuevo negocio en la tabla
-                      await client.from('negocio').insert({
-                        'id': id, // Usa el ID generado
-                        'name': name,
-                        'picture':
-                            'assets/images/notfound.png', // Valor predeterminado para la imagen
-                        'description': description,
-                        'instagram': instagram,
-                        'mail': email,
-                        'tiktok': tiktok,
-                        'webpage': webpage,
-                        'id_proveedor': widget.userId,
-                        'riftype': 'J', // Valor fijo
-                      });
-
-                      // Cierra el diálogo antes de mostrar el SnackBar
-                      Navigator.of(context).pop();
-
-                      // Muestra el SnackBar después de cerrar el diálogo
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Negocio añadido correctamente.'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-
-                      // Limpia los controladores
-                      _nameController.clear();
-                      _descriptionController.clear();
-                      _instagramController.clear();
-                      _emailController.clear();
-                      _tiktokController.clear();
-                      _websiteController.clear();
-
-                      // Actualiza la lista de negocios
-                      fetchBusinesses();
-                    } catch (e) {
-                      // Cierra el diálogo antes de mostrar el SnackBar de error
-                      Navigator.of(context).pop();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error al añadir el negocio: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFA500),
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        icon: Icon(Icons.close, color: Colors.grey),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                    Text(
+                      "Añadir Negocio",
+                      style: TextStyle(
+                          fontFamily: "San Francisco",
+                          fontSize: 24,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  child: Text(
-                    "Añadir",
-                    style: TextStyle(
-                        color: Colors.white, fontFamily: "San Francisco"),
-                  ),
+                    const SizedBox(height: 25),
+                    _buildTextFieldContainer(
+                      controller: _nameController,
+                      labelText: 'Nombre del negocio:',
+                      errorText: _nameError,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextFieldContainer(
+                      controller: _descriptionController,
+                      maxLines: 6,
+                      labelText: 'Descripción:',
+                      errorText: _descriptionError,
+                      contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextFieldContainer(
+                      controller: _instagramController,
+                      labelText: 'Instagram:',
+                      errorText: _instagramError,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextFieldContainer(
+                      controller: _emailController,
+                      labelText: 'Correo electrónico:',
+                      errorText: _emailError,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextFieldContainer(
+                      controller: _tiktokController,
+                      labelText: 'TikTok:',
+                      errorText: _tiktokError,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextFieldContainer(
+                      controller: _websiteController,
+                      labelText: 'Página web:',
+                      errorText: _websiteError,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Validar los campos antes de proceder
+                        setStateDialog(() {
+                          _nameError = Validations.validateNotEmpty(_nameController.text, "Nombre del negocio");
+                          _descriptionError = Validations.validateNotEmpty(_descriptionController.text, "Descripción");
+                          _instagramError = Validations.validateNotEmpty(_instagramController.text, "Instagram");
+                          _emailError = Validations.validateEmail(_emailController.text);
+                          _tiktokError = Validations.validateNotEmpty(_tiktokController.text, "TikTok");
+                          _websiteError = Validations.validateNotEmpty(_websiteController.text, "Página web");
+                        });
+
+                        // Si no hay errores, proceder con la inserción
+                        if (_nameError == null &&
+                            _descriptionError == null &&
+                            _instagramError == null &&
+                            _emailError == null &&
+                            _tiktokError == null &&
+                            _websiteError == null) {
+                          try {
+                            final client = Supabase.instance.client;
+
+                            // Genera un ID único para el negocio
+                            final id = await generateUniqueId();
+
+                            // Inserta el nuevo negocio en la tabla
+                            await client.from('negocio').insert({
+                              'id': id,
+                              'name': _nameController.text,
+                              'picture': 'assets/images/notfound.png',
+                              'description': _descriptionController.text,
+                              'instagram': _instagramController.text,
+                              'mail': _emailController.text,
+                              'tiktok': _tiktokController.text,
+                              'webpage': _websiteController.text,
+                              'id_proveedor': widget.userId,
+                              'riftype': 'J',
+                            });
+
+                            Navigator.of(context).pop();
+                            _showSuccessPopup('Negocio añadido correctamente.');
+
+                            // Limpia los controladores
+                            _nameController.clear();
+                            _descriptionController.clear();
+                            _instagramController.clear();
+                            _emailController.clear();
+                            _tiktokController.clear();
+                            _websiteController.clear();
+
+                            // Actualiza la lista de negocios
+                            fetchBusinesses();
+                          } catch (e) {
+                            Navigator.of(context).pop();
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFFA500),
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        textStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        "Añadir",
+                        style: TextStyle(
+                            color: Colors.white, fontFamily: "San Francisco"),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+//! POP UP DE ÉXITO
+void _showSuccessPopup(String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Center(
+          child: Text(
+            "¡Éxito!",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'San Francisco',
+              fontSize: 25,
+              color: Color(0xFF8CB1F1),
             ),
           ),
         ),
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'San Francisco',
+            fontSize: 16,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cierra el popup
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(
+                fontFamily: 'San Francisco',
+                color: Color(0xFF8CB1F1),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
       );
+    },
+  );
+}
 
-  // Widget para la estetica de los textfields
-  // OJOOOO falta adaptarlo a las validaciones bien
+  // Widget para la estética de los textfields con validaciones
   Widget _buildTextFieldContainer({
     required TextEditingController controller,
     required String labelText,
     int maxLines = 1,
     EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+    String? errorText,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -431,6 +552,7 @@ class _FavspageState extends State<Favsbusinesspage> {
             borderRadius: BorderRadius.circular(8),
           ),
           contentPadding: contentPadding,
+          errorText: errorText,
         ),
       ),
     );

@@ -80,7 +80,7 @@ class DataService {
 
       listofdiscounts = descuentoslistos.map((json) => Discount.fromJson(json)).toList();
     } catch (e) {
-      throw Exception('Error fetching discounts: $e');
+      //throw Exception('Error fetching discounts: $e');
     }
   }
 

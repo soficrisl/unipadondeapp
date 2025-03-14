@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:unipadonde/validations.dart';
 
 class AuthenticationService {
   final SupabaseClient supabaseClient;
@@ -625,6 +626,7 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                             ],
                           ),
                         ),
+
                         SizedBox(height: 10),
                         Text.rich(
                           TextSpan(
@@ -651,6 +653,7 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                             ],
                           ),
                         ),
+
                         SizedBox(height: 10),
                         Text.rich(
                           TextSpan(
@@ -846,38 +849,38 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
 
   //Widget para la estetica de TextFields
   Widget _buildTextFieldContainer({
-    required TextEditingController controller,
-    required String labelText,
-    String? errorText,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-    //required Function(String) onChanged,
-    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        //onChanged: onChanged,
-        decoration: InputDecoration(
-          labelText: labelText,
-          errorText: errorText,
-          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          contentPadding: contentPadding,
+  required TextEditingController controller,
+  required String labelText,
+  String? errorText,
+  int maxLines = 1,
+  TextInputType keyboardType = TextInputType.text,
+  Function(String)? onChanged,
+  EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: labelText,
+        errorText: errorText,
+        floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+          borderRadius: BorderRadius.circular(8),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        contentPadding: contentPadding,
       ),
-    );
-  }
+    ),
+  );
+}
 }
