@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:unipadonde/creatediscountpage/cdiscount_model.dart';
 import 'package:unipadonde/creatediscountpage/cdiscount_vm.dart';
+import 'package:intl/intl.dart';
 
 class BusinessInfoView extends StatefulWidget {
   final Business business;
@@ -190,6 +191,16 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
     }
   }
 
+  String formatDate(String timestamp) {
+  // Convierte el timestamp en un objeto DateTime
+  DateTime dateTime = DateTime.parse(timestamp);
+  // Define el formato que deseas
+  DateFormat dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+  // Devuelve la fecha formateada
+  return dateFormat.format(dateTime);
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -354,44 +365,102 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                               builder: (context) => AlertDialog(
                                 title: Text(
                                   discount['name'],
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.orange,
                                     fontFamily: "San Francisco",
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 27,
                                   ),
                                 ),
                                 content: SingleChildScrollView(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        height: 5,
-                                      ),
                                       Text(
                                         discount['description'],
-                                        style: TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: "San Francisco",
+                                          fontSize: 16,
+                                        ),
                                       ),
                                       SizedBox(height: 10),
-                                      Text(
-                                        "Descuento: ${discount['porcentaje']}%",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        "Válido desde: ${discount['startdate']} hasta ${discount['enddate']}",
-                                        style: TextStyle(fontSize: 16),
+                                      Center(
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              "${discount['porcentaje']}%",
+                                              style: TextStyle(
+                                                color: Colors.orange,
+                                                fontFamily: "San Francisco",
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 64,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                              "Válido desde: ",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontFamily: "San Francisco",
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            Text(
+                                              " ${formatDate(discount['startdate'])}",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "San Francisco",
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color.fromARGB(255, 97, 97, 97),
+                                              ),
+                                            ),
+                                            Text(
+                                              "hasta: ",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontFamily: "San Francisco",
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            Text(
+                                              " ${formatDate(discount['enddate'])}",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "San Francisco",
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color.fromARGB(255, 95, 95, 95),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
                                 actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    child: Text('Cerrar'),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1), // Reduces the top padding
+                                    child: TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text(
+                                        'Cerrar',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontFamily: "San Francisco",
+                                          color: Color.fromARGB(255, 102, 150, 232),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
-                              ),
+                              )
+
+
+
+
                             );
                           },
                           child: ClipRRect(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/loginprov/loginprov_mv.dart';
-
 import 'package:unipadonde/login/login_vm.dart';
 
 class StartView extends StatelessWidget {
@@ -13,23 +12,46 @@ class StartView extends StatelessWidget {
       home: Scaffold(
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(5.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Título UniPaDonde con degradado
+                ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: [
+                      const Color(0xFFFFA500), // Naranja
+                      const Color(0xFF7A9BBF), // Azul
+                      const Color(0xFF8CB1F1), // Azul claro
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: Text(
+                    'UniPaDonde', // Título
+                    style: TextStyle(
+                      color: Colors.white, // El color del texto debe ser blanco
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'San Francisco',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: 120),
+                // Texto "Eres:" centrado
                 Text(
-                  '¿Eres Proveedor o Estudiante?',
+                  '¿Quién eres?',
                   style: TextStyle(
-                    fontFamily: 'San Francisco',
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 50),
-                // ! Botón de Estudiante
+                SizedBox(height: 5),
+                // Botón de Estudiante
                 ElevatedButton(
                   onPressed: () {
                     // Navega a la pantalla LoginView
@@ -40,7 +62,7 @@ class StartView extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA500),
-                    padding: EdgeInsets.symmetric(vertical: 25, horizontal: 60),
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 125),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
@@ -49,14 +71,14 @@ class StartView extends StatelessWidget {
                     'Estudiante',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'San Francisco',
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                // ! Botón de Proveedor
+                SizedBox(height: 16),
+                // Botón de Proveedor
                 ElevatedButton(
                   onPressed: () {
                     // Navega a la pantalla LoginProvView
@@ -67,7 +89,7 @@ class StartView extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF8CB1F1),
-                    padding: EdgeInsets.symmetric(vertical: 25, horizontal: 60),
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 125),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
@@ -76,7 +98,7 @@ class StartView extends StatelessWidget {
                     'Proveedor',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'San Francisco',
                     ),
