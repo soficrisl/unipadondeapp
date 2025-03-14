@@ -104,122 +104,142 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
   }
 
   void _showEditDialog() {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController lastNameController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
 
-    nameController.text = previousName;
-    lastNameController.text = previousLastName;
-    String selectedSex = previousSex;
+  nameController.text = previousName;
+  lastNameController.text = previousLastName;
+  String selectedSex = previousSex;
 
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: StatefulBuilder(
-          builder: (context, setStateDialog) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                Text(
-                  'Modificar Datos',
-                  style: TextStyle(
-                    fontFamily: 'San Francisco',
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 25),
-                _buildTextFieldContainer(
-                  controller: nameController,
-                  labelText: 'Nombre',
-                ),
-                SizedBox(height: 20),
-                _buildTextFieldContainer(
-                  controller: lastNameController,
-                  labelText: 'Apellido',
-                ),
-                SizedBox(height: 20),
-                _buildDropdownContainer(
-                  labelText: 'Sexo',
-                  selectedItem: selectedSex,
-                  items: [
-                    DropdownMenuItem(
-                      value: 'M',
-                      child: Text('Masculino',
-                          style: TextStyle(fontFamily: 'San Francisco')),
-                    ),
-                    DropdownMenuItem(
-                      value: 'F',
-                      child: Text('Femenino',
-                          style: TextStyle(fontFamily: 'San Francisco')),
-                    ),
-                  ],
-                  onChanged: (newSex) {
-                    setStateDialog(() {
-                      selectedSex = newSex!;
-                    });
+  // Variables para manejar los errores de validación
+  String? nameError;
+  String? lastNameError;
+
+  showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: StatefulBuilder(
+        builder: (context, setStateDialog) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(Icons.close, color: Colors.grey),
+                  onPressed: () {
+                    Navigator.of(context).pop();
                   },
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Actualizar los datos en Supabase
-                        await authService.updateUserData(widget.userId, {
-                          'name': nameController.text,
-                          'lastname': lastNameController.text,
-                          'sex': selectedSex,
-                        });
-
-                        setState(() {
-                          previousName = nameController.text;
-                          previousEmail = lastNameController.text;
-                          previousSex = selectedSex;
-                        });
-                        _showEditSuccessPopup;
-                        Navigator.of(context).pop();
-                        _showEditSuccessPopup();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFFFA500),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                        textStyle: TextStyle(
-                            fontSize: 16, fontFamily: 'San Francisco'),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'Guardar',
-                        style: TextStyle(
-                            fontFamily: 'San Francisco', color: Colors.white),
-                      ),
-                    ),
-                  ],
+              ),
+              Text(
+                'Modificar Datos',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 25),
+              _buildTextFieldContainer(
+                controller: nameController,
+                labelText: 'Nombre',
+                errorText: nameError,
+                onChanged: (_) {
+                  setStateDialog(() {
+                    nameError = Validations.validateNameOrLastName(
+                        nameController.text, "Nombre");
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              _buildTextFieldContainer(
+                controller: lastNameController,
+                labelText: 'Apellido',
+                errorText: lastNameError,
+                onChanged: (_) {
+                  setStateDialog(() {
+                    lastNameError = Validations.validateNameOrLastName(
+                        lastNameController.text, "Apellido");
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              _buildDropdownContainer(
+                labelText: 'Sexo',
+                selectedItem: selectedSex,
+                items: [
+                  DropdownMenuItem(
+                    value: 'M',
+                    child: Text('Masculino',
+                        style: TextStyle(fontFamily: 'San Francisco')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'F',
+                    child: Text('Femenino',
+                        style: TextStyle(fontFamily: 'San Francisco')),
+                  ),
+                ],
+                onChanged: (newSex) {
+                  setStateDialog(() {
+                    selectedSex = newSex!;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  // Validar los campos antes de proceder
+                  setStateDialog(() {
+                    nameError = Validations.validateNameOrLastName(
+                        nameController.text, "Nombre");
+                    lastNameError = Validations.validateNameOrLastName(
+                        lastNameController.text, "Apellido");
+                  });
+
+                  // Si no hay errores, proceder con la actualización
+                  if (nameError == null && lastNameError == null) {
+                    await authService.updateUserData(widget.userId, {
+                      'name': nameController.text,
+                      'lastname': lastNameController.text,
+                      'sex': selectedSex,
+                    });
+
+                    setState(() {
+                      previousName = nameController.text;
+                      previousLastName = lastNameController.text;
+                      previousSex = selectedSex;
+                    });
+
+                    Navigator.of(context).pop(); // Cerrar el diálogo de edición
+                    _showEditSuccessPopup(); // Mostrar el popup de éxito
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFFA500),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  textStyle: TextStyle(fontSize: 16, fontFamily: 'San Francisco'),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  'Guardar',
+                  style: TextStyle(fontFamily: 'San Francisco', color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _showEditSuccessPopup() {
     showDialog(

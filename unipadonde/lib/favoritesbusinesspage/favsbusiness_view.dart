@@ -30,6 +30,7 @@ class _FavspageState extends State<Favsbusinesspage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _tiktokController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
+  final TextEditingController _rifnumberController = TextEditingController();
 
   // Variables para las validaciones
   String? _nameError;
@@ -38,6 +39,10 @@ class _FavspageState extends State<Favsbusinesspage> {
   String? _emailError;
   String? _tiktokError;
   String? _websiteError;
+  String? _rifnumberError;
+
+  // Variable para el tipo de RIF
+  String _riftype = 'J'; // Valor por defecto
 
   @override
   void initState() {
@@ -63,6 +68,9 @@ class _FavspageState extends State<Favsbusinesspage> {
     _websiteController.addListener(() {
       _validateWebsite(_websiteController.text);
     });
+    _rifnumberController.addListener(() {
+      _validateRifNumber(_rifnumberController.text);
+    });
   }
 
   @override
@@ -74,6 +82,7 @@ class _FavspageState extends State<Favsbusinesspage> {
     _emailController.dispose();
     _tiktokController.dispose();
     _websiteController.dispose();
+    _rifnumberController.dispose();
     super.dispose();
   }
 
@@ -111,6 +120,12 @@ class _FavspageState extends State<Favsbusinesspage> {
   void _validateWebsite(String value) {
     setState(() {
       _websiteError = Validations.validateNotEmpty(value, "Página web");
+    });
+  }
+
+  void _validateRifNumber(String value) {
+    setState(() {
+      _rifnumberError = Validations.validateRIFNumber(value);
     });
   }
 
@@ -391,6 +406,44 @@ class _FavspageState extends State<Favsbusinesspage> {
                       errorText: _websiteError,
                     ),
                     const SizedBox(height: 20),
+                    // Dropdown para riftype
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _riftype == null ? Colors.red : Color(0xFFFFA500),
+                          width: 1,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: DropdownButton<String>(
+                          value: _riftype,
+                          onChanged: (String? newValue) {
+                            setStateDialog(() {
+                              _riftype = newValue!;
+                            });
+                          },
+                          items: <String>['J', 'G']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          isExpanded: true,
+                          underline: SizedBox(), // Elimina la línea inferior
+                          hint: Text('Seleccione el tipo de RIF'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextFieldContainer(
+                      controller: _rifnumberController,
+                      labelText: 'Número de RIF:',
+                      errorText: _rifnumberError,
+                    ),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () async {
                         // Validar los campos antes de proceder
@@ -401,6 +454,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                           _emailError = Validations.validateEmail(_emailController.text);
                           _tiktokError = Validations.validateNotEmpty(_tiktokController.text, "TikTok");
                           _websiteError = Validations.validateNotEmpty(_websiteController.text, "Página web");
+                          _rifnumberError = Validations.validateRIFNumber(_rifnumberController.text);
                         });
 
                         // Si no hay errores, proceder con la inserción
@@ -409,7 +463,8 @@ class _FavspageState extends State<Favsbusinesspage> {
                             _instagramError == null &&
                             _emailError == null &&
                             _tiktokError == null &&
-                            _websiteError == null) {
+                            _websiteError == null &&
+                            _rifnumberError == null) {
                           try {
                             final client = Supabase.instance.client;
 
@@ -427,7 +482,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                               'tiktok': _tiktokController.text,
                               'webpage': _websiteController.text,
                               'id_proveedor': widget.userId,
-                              'riftype': 'J',
+                              'riftype': _riftype, // Guarda el tipo de RIF
                             });
 
                             Navigator.of(context).pop();
@@ -440,6 +495,7 @@ class _FavspageState extends State<Favsbusinesspage> {
                             _emailController.clear();
                             _tiktokController.clear();
                             _websiteController.clear();
+                            _rifnumberController.clear();
 
                             // Actualiza la lista de negocios
                             fetchBusinesses();

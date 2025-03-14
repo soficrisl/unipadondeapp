@@ -18,10 +18,13 @@ class Validations {
     return null;
   }
 
-  // Validación para el campo de nombre
-  static String? validateName(String? value) {
+  // Validación para el campo de nombre y apellido (sin números)
+  static String? validateNameOrLastName(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return "El nombre no puede estar vacío";
+      return "$fieldName no puede estar vacío";
+    }
+    if (RegExp(r'[0-9]').hasMatch(value)) {
+      return "$fieldName no puede contener números";
     }
     return null;
   }
@@ -57,15 +60,29 @@ class Validations {
   }
 
   // Validación para el campo de teléfono
-static String? validatePhone(String? value) {
-  if (value == null || value.isEmpty) {
-    return "El teléfono no puede estar vacío";
+  static String? validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return "El teléfono no puede estar vacío";
+    }
+    if (!RegExp(r"^[0-9]{10}$").hasMatch(value)) {
+      return "Ingrese un número de teléfono válido (10 dígitos)";
+    }
+    return null;
   }
-  if (!RegExp(r"^[0-9]{10}$").hasMatch(value)) {
-    return "Ingrese un número de teléfono válido (10 dígitos)";
-  }
-  return null;
-}
+
+  // Validación para el campo de RIF
+  static String? validateRIFNumber(String? value) {
+      if (value == null || value.isEmpty) {
+        return 'El número de RIF es requerido';
+      }
+      if (value.length != 9 && value.length != 10) {
+        return 'El número de RIF debe tener 9 o 10 dígitos';
+      }
+      if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+        return 'Solo se permiten números';
+      }
+      return null;
+    }
 
 
 }
