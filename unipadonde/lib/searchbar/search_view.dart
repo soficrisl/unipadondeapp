@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/business%20page/buspage_view.dart';
-import 'package:unipadonde/businessprovinfo/business_info_view.dart';
-import 'package:unipadonde/searchbar/search_model.dart';
-import 'package:unipadonde/searchbar/serch_vm.dart';
-import 'package:unipadonde/main.dart';
+import 'package:unipadonde/modeldata/business_model.dart';
+import 'package:unipadonde/searchbar/search_viewmodel.dart';
+
+import '../businesspageClient/buspage_view.dart';
 
 //handle search
 class CustomSearchDelegate extends SearchDelegate {
-  final SearchVm vm = SearchVm();
+  final SearchViewModel _viewModel = SearchViewModel();
+  bool _isDataFetched = false;
 
   //campo busqueda
   @override
@@ -56,68 +55,96 @@ class CustomSearchDelegate extends SearchDelegate {
     return _buildSearchResults(context);
   }
 
-  Future<void> manageSuggestion(String suggestion) async {
-    print('2');
-    await vm.suggestion(suggestion);
+  Future<String> manageSuggestion(
+      String suggestion, SearchViewModel viewModel) async {
+    try {
+      final response = viewModel.submitSuggestion(suggestion);
+      return response;
+    } catch (e) {
+      return "Error Managing suggestion: $e";
+    }
   }
 
   //handle results
   Widget _buildSearchResults(BuildContext context) {
-    return FutureBuilder(
-      future: vm.fetch(), // Wait for data to be fetched
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          List<Business> allBusiness = vm.getList();
-          print('view');
-          print(allBusiness);
-          List<Business> matchQuery = allBusiness
-              .where((b) => b.name.toLowerCase().contains(query.toLowerCase()))
-              .toList();
-          print(matchQuery);
-          return Container(
-            color: Colors.white,
-            child: matchQuery.isEmpty
-                ? _buildNoResults(context)
-                : ListView.builder(
-                    itemCount: matchQuery.length,
-                    itemBuilder: (context, index) {
-                      final business = matchQuery[index];
-                      return ListTile(
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(business.picture,
-                              width: 50, height: 50, fit: BoxFit.cover),
-                        ),
-                        title: Text(business.name),
-                        onTap: () {
-                          print('Tapped on ${business.name}');
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => BuspageView(
-                                    idNegocio: business.id,
-                                    businessName: business.name,
-                                    businessDescription: business.description,
-                                    businessInstagram: business.instagram,
-                                    businessLogo: business.picture,
-                                    businessTiktok: business.tiktok,
-                                    businessWebsite: business.webpage)),
-                          );
-                        },
-                      );
-                    },
-                  ),
-          );
-        }
-      },
-    );
+    if (!_isDataFetched) {
+      _viewModel.fechtBusiness();
+      _isDataFetched = true;
+    }
+    if (query.isEmpty) {
+      return Container(
+          color: Colors.white,
+          child: Center(
+            child: ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [
+                  const Color(0xFFFFA500), // Naranja
+                  const Color(0xFF7A9BBF), // Azul
+                  const Color(0xFF8CB1F1), // Azul claro
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: Text(
+                'UniPaDonde', // Título
+                style: TextStyle(
+                  color: Colors.white, // El color del texto debe ser blanco
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'San Francisco',
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ));
+    } else {
+      List<Business> matchQuery = _viewModel.businessList
+          .where((b) => b.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+      return Container(
+          color: Colors.white,
+          child: matchQuery.isEmpty
+              ? _buildNoResults(context, _viewModel)
+              : ListView.builder(
+                  itemCount: matchQuery.length,
+                  itemBuilder: (context, index) {
+                    final bus = matchQuery[index];
+                    return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: bus.imageurl.isNotEmpty
+                            ? Image.network(
+                                bus.imageurl,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit
+                                    .cover, // Ensures the image covers the space fully
+                              )
+                            : Image.asset(
+                                bus.picture,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit
+                                    .cover, // Keeps the same scaling behavior
+                              ),
+                      ),
+                      title: Text(bus.name),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => BuspageView(
+                            idNegocio: bus.id,
+                            business: bus,
+                          ),
+                        ));
+                      },
+                    );
+                  },
+                ));
+    }
   }
 
   //No results
-  Widget _buildNoResults(BuildContext context) {
+  Widget _buildNoResults(BuildContext context, SearchViewModel viewModel) {
     final TextEditingController suggestionController = TextEditingController();
 
     return Container(
@@ -172,14 +199,13 @@ class CustomSearchDelegate extends SearchDelegate {
                 onPressed: () async {
                   final suggestion = suggestionController.text.trim();
                   if (suggestion.isNotEmpty) {
-                    await manageSuggestion(suggestion);
+                    await manageSuggestion(suggestion, viewModel);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("¡Gracias por tu sugerencia!"),
                         duration: Duration(seconds: 3),
                       ),
                     );
-                    suggestionController.clear();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

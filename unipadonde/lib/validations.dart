@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Validations {
   // Validación para campos no vacíos
   static String? validateNotEmpty(String? value, String fieldName) {
@@ -12,7 +14,9 @@ class Validations {
     if (value == null || value.isEmpty) {
       return "El correo electrónico no puede estar vacío";
     }
-    if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+    if (!RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(value)) {
       return "Ingrese un correo electrónico válido";
     }
     return null;
@@ -57,15 +61,21 @@ class Validations {
   }
 
   // Validación para el campo de teléfono
-static String? validatePhone(String? value) {
-  if (value == null || value.isEmpty) {
-    return "El teléfono no puede estar vacío";
+  static String? validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return "El teléfono no puede estar vacío";
+    }
+    if (!RegExp(r"^[0-9]{10}$").hasMatch(value)) {
+      return "Ingrese un número de teléfono válido (10 dígitos)";
+    }
+    return null;
   }
-  if (!RegExp(r"^[0-9]{10}$").hasMatch(value)) {
-    return "Ingrese un número de teléfono válido (10 dígitos)";
+
+  static String formatDate(String timestamp) {
+    DateTime dateTime = DateTime.parse(timestamp);
+
+    DateFormat dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+
+    return dateFormat.format(dateTime);
   }
-  return null;
-}
-
-
 }

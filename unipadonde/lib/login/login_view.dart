@@ -49,14 +49,21 @@ class _LoginState extends State<LoginView> {
       final authUserId = session.user?.id;
 
       if (authUserId != null) {
-        final userId = await _viewModel.fetchUserId(mail); // view model
+        final data = await _viewModel.fetchUserId(mail);
+        final userId = data![0];
+        final type = data[1];
+        // view model
         SchedulerBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            if (userId != null) {
+            if (userId != null && type == 'S') {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (context) => Landing(userId: userId)),
+              );
+            } else if (type == "B") {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Debe ingresar como proveedor.")),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(

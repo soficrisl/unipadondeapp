@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/favoritespage/favspage_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/widgets/bottom_bar.dart';
-import 'package:unipadonde/business%20page/buspage_view.dart'; // Importa BuspageView
+import 'package:unipadonde/favoritespage/favspage_vm.dart';
+import 'package:unipadonde/modeldata/categoria_model.dart';
+import 'package:unipadonde/modeldata/discount_model.dart';
+import 'package:unipadonde/widgets/bottom_bar.dart'; // Importa BuspageView
 
 class Favspage extends StatefulWidget {
   final int userId;
-
   const Favspage({required this.userId, super.key});
 
   @override
@@ -18,22 +18,22 @@ class _FavspageState extends State<Favspage> {
   List<Discount> listofdiscounts = [];
   List<int> selectedCategories = [];
   bool showUnsubscribeButton = false; // Nuevo estado para mostrar el botón
-
-  final dataService = DataService(Supabase.instance.client);
+  int _selectedIndex = 1;
+  final _viewmodel = FavspageViewModel();
 
   void getcat() async {
-    await dataService.fetchCategoriasSuscritas(widget.userId);
+    await _viewmodel.fetchCategoriasSuscritas();
     setState(() {
-      categories = dataService.getCategoriasSuscritas();
+      categories = _viewmodel.getCategoriasSuscritas();
     });
     getdis();
   }
 
   void getdis() async {
-    await dataService.fetchDiscounts();
+    await _viewmodel.fetchDiscounts();
     setState(() {
       if (mounted) {
-        listofdiscounts = dataService.getDescuentos() ?? [];
+        listofdiscounts = _viewmodel.getDescuentos() ?? [];
       }
     });
   }
@@ -50,8 +50,6 @@ class _FavspageState extends State<Favspage> {
       Navigator.pushReplacementNamed(context, '/start');
     }
   }
-
-  int _selectedIndex = 1;
 
   void _navigateToPage(int index) {
     setState(() {
@@ -76,10 +74,8 @@ class _FavspageState extends State<Favspage> {
 
   // Método para eliminar la suscripción a una categoría
   void unsubscribeFromCategories() async {
-    final dataService = DataService(Supabase.instance.client);
     for (int categoryId in selectedCategories) {
-      await dataService.removeSubscription(
-          widget.userId, categoryId.toString());
+      await _viewmodel.removeSubscription(categoryId, categories);
     }
     setState(() {
       selectedCategories.clear(); // Limpiar las categorías seleccionadas
@@ -231,7 +227,11 @@ class _FavspageState extends State<Favspage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(50),
                                 image: DecorationImage(
-                                  image: AssetImage(discount.businessLogo),
+                                  image: discount.business.imageurl.isNotEmpty
+                                      ? NetworkImage(discount.business
+                                          .imageurl) // Network image if URL is available
+                                      : AssetImage(discount.business.picture)
+                                          as ImageProvider, // Local asset as fallback,
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -332,16 +332,24 @@ class _FavspageState extends State<Favspage> {
                     shape: BoxShape.circle,
                     color: Colors.white,
                   ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      discount.businessLogo,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                  child: discount.business.imageurl.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(
+                            discount.business.imageurl,
+                            fit: BoxFit
+                                .contain, // Matches the behavior of Image.asset
+                          ),
+                        )
+                      : ClipOval(
+                          child: Image.asset(
+                            discount.business.picture,
+                            fit: BoxFit.contain, // Keeps the style consistent
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  discount.businessName, // Nombre del negocio
+                  discount.business.name, // Nombre del negocio
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -370,7 +378,7 @@ class _FavspageState extends State<Favspage> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Duración: ${discount.duration}",
+                  "Duración: ARREGLAR",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -380,22 +388,16 @@ class _FavspageState extends State<Favspage> {
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
+                    /*
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => BuspageView(
-                          businessName:
-                              discount.businessName, // Nombre del negocio
-                          businessDescription: discount
-                              .businessDescription, // Descripción del negocio
-                          businessTiktok: discount.tiktok ?? 'No disponible',
-                          businessInstagram:
-                              discount.instagram ?? 'No disponible',
-                          businessWebsite: discount.webpage ?? 'No disponible',
-                          businessLogo: discount.businessLogo,
-                          idNegocio: discount.idbusiness, // Pasar el idNegocio
-                        ),
+                        builder: (context) =>
+                            BuspageViewWrapper(id: discount.idbusiness)
+                        // Pasar el idNegocio
+                        ,
                       ),
                     );
+                  */
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA500),

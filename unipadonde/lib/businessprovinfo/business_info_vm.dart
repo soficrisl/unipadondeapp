@@ -1,102 +1,91 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'business_info_model.dart';
+import 'package:unipadonde/businessprovinfo/business_info_repo.dart';
+import 'package:unipadonde/modeldata/adress_model.dart';
+import 'package:unipadonde/modeldata/business_model.dart';
+import 'package:unipadonde/modeldata/discount_model.dart';
 
-class BusinessInfoViewModel {
-  final SupabaseClient client = Supabase.instance.client;
+class BusinessInfoViewModel extends ChangeNotifier {
+  final BusinessInfoRepo _repo = BusinessInfoRepo();
+  List<Discount> discounts = [];
+  Address address = Address(
+      id: 0,
+      id_negocio: 0,
+      estado: "",
+      ciudad: "",
+      municipio: "",
+      calle: "",
+      additional_info: "");
+  final int idNegocio;
+  Business business;
+  bool _loading = true;
+  BusinessInfoViewModel({required this.idNegocio, required this.business});
 
-  Future<List<Map<String, dynamic>>> fetchDiscounts(int businessId) async {
-    try {
-      final response = await client
-          .from('descuento')
-          .select('*')
-          .eq('id_negocio', businessId)
-          .eq('state', true);
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
-      print('Error fetching discounts: $e');
-      return [];
+  bool isLoading() {
+    return _loading;
+  }
+
+  void setLoading(bool set) {
+    _loading = set;
+  }
+
+  Future<void> fetchDiscounts() async {
+    final response = await _repo.fetchDiscounts(idNegocio, business);
+    discounts = response;
+    notifyListeners();
+  }
+
+  Future<void> getUpdatedBusiness() async {
+    final response = await _repo.getUpdatedBusiness(idNegocio);
+    if (response != null) {
+      business = response;
     }
   }
 
-  Future<Map<String, dynamic>?> fetchAddress(int businessId) async {
-    try {
-      final response = await client
-          .from('direccion')
-          .select('*')
-          .eq('id_negocio', businessId)
-          .single();
-      return response;
-    } catch (e) {
-      print('Error fetching address: $e');
-      return null;
+  Future<void> fetchAddress() async {
+    final response = await _repo.fetchAddress(business.id);
+    if (response != null) {
+      address = response;
     }
+    notifyListeners();
   }
 
-  Future<Business> fetchBusiness(int businessId) async {
-    try {
-      final response = await client
-          .from('negocio')
-          .select('*')
-          .eq('id', businessId)
-          .single();
-      return Business.fromJson(response);
-    } catch (e) {
-      print('Error fetching business: $e');
-      return Business(
-        id: 0,
-        name: '',
-        description: '',
-        picture: '',
-        tiktok: '',
-        instagram: '',
-        webpage: '',
-      );
-    }
+  Future<bool> deleteBusiness() async {
+    final response = await _repo.deleteBusiness(business.id);
+    return response;
   }
 
-  Future<bool> deleteBusiness(int businessId) async {
-    try {
-      await client.from('negocio').delete().eq('id', businessId);
+  Future<bool> addDiscount(Map<String, dynamic> discount) async {
+    final newDiscount = await _repo.addDiscount(discount);
+    if (newDiscount != null) {
+      discounts.add(newDiscount);
       return true;
-    } catch (e) {
-      print('Error deleting business: $e');
+    }
+    return false;
+  }
+
+  Future<bool> updateDiscount(
+      int discountId, Map<String, dynamic> discount) async {
+    final newDiscount = await _repo.updateDiscount(discountId, discount);
+    if (newDiscount != null) {
+      int index = discounts.indexWhere((d) => d.id == discountId);
+      discounts[index] = newDiscount;
+      return true;
+    } else {
       return false;
-    }
-  }
-
-  Future<int?> addDiscount(Discount discount) async {
-    try {
-      final response = await client.from('descuento').insert(discount.toJson()).select('id').single();
-      return response['id'];
-    } catch (e) {
-      print('Error adding discount: $e');
-      return null;
-    }
-  }
-
-  Future<int?> updateDiscount(int discountId, Discount discount) async {
-    try {
-      final response = await client
-          .from('descuento')
-          .update(discount.toJson())
-          .eq('id', discountId)
-          .select('id')
-          .single();
-      return response['id'];
-    } catch (e) {
-      print('Error updating discount: $e');
-      return null;
     }
   }
 
   Future<bool> deleteDiscount(int discountId) async {
+    final response = await _repo.deleteDiscount(discountId);
     try {
-      await client.from('descuento').delete().eq('id', discountId);
-      return true;
+      if (response) {
+        discounts.removeWhere((d) => d.id == discountId);
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
-      print('Error deleting discount: $e');
-      return false;
+      throw Exception('Error deleting discount $e');
     }
   }
 }

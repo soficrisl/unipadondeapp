@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/landingprovpage/landingprov_view.dart';
 import 'package:unipadonde/login/login_view.dart';
+import 'package:unipadonde/loginprov/loginprov_mv.dart';
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
 import 'package:flutter/scheduler.dart';
@@ -14,41 +17,95 @@ class LoginProvView extends StatefulWidget {
 class _LoginProvState extends State<LoginProvView> {
   //Servicio de autentificacion
   final authService = AuthenticationService();
-
+  final loginVmProv _viewModel = loginVmProv();
   //Text Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   //Login function
   void login() async {
-  final email = _emailController.text;
-  final password = _passwordController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-  // Validación: Asegúrate de que los campos no estén vacíos
-  if (email.isEmpty || password.isEmpty) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Por favor, ingresa tu correo y contraseña.")),
-        );
-      }
-    });
-    return;
-  }
+    // Validación: Asegúrate de que los campos no estén vacíos
+    if (email.isEmpty || password.isEmpty) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Por favor, ingresa tu correo y contraseña.")),
+          );
+        }
+      });
+      return;
+    }
 
-  // Attempt to login
-  try {
-    await authService.signIn(email, password);
-  } catch (e) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+    // Attempt to login
+    try {
+      final session = await authService.signIn(email, password);
+      final authUserId = session.user?.id;
+
+      if (authUserId != null) {
+        final data = await _viewModel.fetchUserId(email);
+        final userId = data![0];
+        final type = data[1];
+        // view model
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (userId != null && type == 'S') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => LandingProv(userId: userId)),
+              );
+            } else if (type != "S") {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Debe ingresar como proveedor.")),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text("Error al obtener el ID del usuario.")),
+              );
+            }
+          }
+        });
       }
-    });
+    } on AuthException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          if (error.code == "invalid_credentials") {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text(
+                      "Verifique que el correo y la contraseña sean correctos.")),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error de autenticación: $error")));
+          }
+        }
+      });
+    } on PostgrestException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error de base de datos: ${error.message}")),
+          );
+        }
+      });
+    } catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    "Verifique que el correo y la contraseña sean correctos.")),
+          );
+        }
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

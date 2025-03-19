@@ -1,43 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/main.dart';
-import 'package:unipadonde/repository/supabase.dart';
+import 'package:unipadonde/profilepage/profile_vm.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:unipadonde/profilepage/components/avatar.dart';
+import 'package:unipadonde/widgets/avatar_components/avatar_view.dart';
 
-class AuthenticationService {
-  final supabaseClient = supabase;
-  // Método para obtener los datos del usuario desde la tabla "usuario"
-  Future<Map<String, dynamic>> getUserData(int userId) async {
-    final response =
-        await supabaseClient.from('usuario').select().eq('id', userId).single();
-    return response;
-  }
-
-  // Método para obtener los datos del estudiante desde la tabla "estudiante"
-  Future<Map<String, dynamic>> getStudentData(int userId) async {
-    final response = await supabaseClient
-        .from('estudiante')
-        .select()
-        .eq('id', userId)
-        .single();
-    return response;
-  }
-
-  // Método para actualizar los datos del usuario en la tabla "usuario"
-  Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
-    try {
-      await supabaseClient.from('usuario').update(data).eq('id', userId);
-    } catch (e) {
-      throw Exception('Error updating user data: $e');
-    }
-  }
-
-  // Método para cerrar sesión
-  Future<void> singOut() async {
-    await supabaseClient.auth.signOut();
-  }
-}
+import '../repository/supabase.dart';
 
 class ProfilePage extends StatefulWidget {
   final int userId;
@@ -50,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final AuthenticationService authService = AuthenticationService();
+  late ProfileViewModel _viewModel;
 
   String previousName = "";
   String previousLastName = "";
@@ -61,28 +28,52 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    super.initState();
-    _fetchUserData();
+    if (mounted) {
+      super.initState();
+      _viewModel = ProfileViewModel(userId: widget.userId);
+      _fetchUserData();
+    }
+    _viewModel.addListener(_onViewModelChange);
+  }
+
+  void _onViewModelChange() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelChange);
+    super.dispose();
   }
 
   Future<void> _fetchUserData() async {
-    final userData = await authService.getUserData(widget.userId);
-    final studentData = await authService.getStudentData(widget.userId);
-    print(userData);
-    print(studentData);
-    setState(() {
-      previousName = userData['name'];
-      previousLastName = userData['lastname'];
-      previousSex = userData['sex'];
-      previousEmail = userData['mail'];
-      previousUniversity = studentData['universidad'];
-      _imageUrl = userData['image_url'] ?? "";
-    });
+    if (_viewModel.user != null) {
+      setState(() {
+        previousName = _viewModel.user!.name;
+        previousLastName = _viewModel.user!.lastname;
+        previousSex = _viewModel.user!.sex;
+        previousEmail = _viewModel.user!.mail;
+        previousUniversity = _viewModel.user!.universidad!;
+        _imageUrl = _viewModel.user!.imageUrl;
+      });
+    }
+  }
+
+  Future<void> _updateData(Map<String, dynamic> data) async {
+    final response = await _viewModel.updateUserData(widget.userId, data);
+    if (response) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showEditSuccessPopup();
+      }
+    }
   }
 
   void logout() async {
     await authService.singOut();
-    Navigator.pushReplacementNamed(context, '/landing');
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/landing');
+    }
   }
 
   void _navigateToPage(int index) {
@@ -179,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    await authService.updateUserData(widget.userId, {
+                    await _updateData({
                       'name': nameController.text,
                       'lastname': lastNameController.text,
                       'sex': selectedSex,
@@ -190,9 +181,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       previousLastName = lastNameController.text;
                       previousSex = selectedSex;
                     });
-
-                    Navigator.of(context).pop();
-                    _showEditSuccessPopup();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA500),
@@ -529,18 +517,14 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  Avatar(
+                  AvatarView(
                       imageUrl: _imageUrl,
                       onUpload: (imageUrl) async {
                         setState(() {
                           _imageUrl = imageUrl;
                         });
-                        final userId = supabase.auth.currentUser!.id;
-                        final response = await supabase
-                            .from('usuario')
-                            .update({'image_url': imageUrl}).eq('uid', userId);
-                        print(response);
-                      }),
+                      },
+                      type: 'u'),
                   SizedBox(height: 20),
                   // Mostrar datos del usuario
                   Container(

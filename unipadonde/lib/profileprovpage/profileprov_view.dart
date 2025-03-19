@@ -1,44 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/profileprovpage/profileprov_vm.dart';
+import 'package:unipadonde/repository/supabase.dart';
+import 'package:unipadonde/widgets/avatar_components/avatar_view.dart';
 import 'package:unipadonde/widgets/bottom_barProv.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:unipadonde/validations.dart';
-
-class AuthenticationService {
-  final SupabaseClient supabaseClient;
-
-  AuthenticationService({required this.supabaseClient});
-
-  // Método para obtener los datos del usuario desde la tabla "usuario"
-  Future<Map<String, dynamic>> getUserData(int userId) async {
-    final response =
-        await supabaseClient.from('usuario').select().eq('id', userId).single();
-    return response;
-  }
-
-  // Método para actualizar los datos del usuario en la tabla "usuario"
-  Future<void> updateUserData(int userId, Map<String, dynamic> data) async {
-    try {
-      await supabaseClient.from('usuario').update(data).eq('id', userId);
-    } catch (e) {
-      throw Exception('Error updating user data: $e');
-    }
-  }
-
-// Método para actualizar la dirección en la tabla "direccion"
-  Future<void> updateAddress(int userId, Map<String, dynamic> data) async {
-    try {
-      await supabaseClient.from('direccion').update(data).eq('user_id', userId);
-    } catch (e) {
-      throw Exception('Error updating address: $e');
-    }
-  }
-
-  // Método para cerrar sesión
-  Future<void> singOut() async {
-    await supabaseClient.auth.signOut();
-  }
-}
 
 class ProfileProvPage extends StatefulWidget {
   final int userId;
@@ -50,40 +14,62 @@ class ProfileProvPage extends StatefulWidget {
 }
 
 class _ProfileProvPageState extends State<ProfileProvPage> {
-  final authService = AuthenticationService(
-    supabaseClient: SupabaseClient(
-      'https://atswkwzuztfzaerlpcpc.supabase.co', // Reemplaza con tu URL de Supabase
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c3drd3p1enRmemFlcmxwY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5MjczNTcsImV4cCI6MjA1MzUwMzM1N30.FzMP9I3qs9aVol2njwWYjFPKJAgtBE-RkcQ-UrinA2A', // Reemplaza con tu clave de Supabase
-    ),
-  );
-
+  final AuthenticationService authService = AuthenticationService();
+  late ProfileProvViewModel _viewModel;
   String previousName = "";
   String previousEmail = "";
   String previousSex = "";
   String previousLastName = "";
+  String _imageUrl = "";
 
   int _selectedIndex = 1;
 
   @override
   void initState() {
     super.initState();
+    _viewModel = ProfileProvViewModel(userId: widget.userId);
     _fetchUserData();
+    _viewModel.addListener(_onViewModelChange);
+  }
+
+  void _onViewModelChange() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelChange);
+    super.dispose();
   }
 
   Future<void> _fetchUserData() async {
-    final userData = await authService.getUserData(widget.userId);
+    await _viewModel.getUserData(widget.userId);
+    if (_viewModel.user != null) {
+      setState(() {
+        previousName = _viewModel.user!.name;
+        previousLastName = _viewModel.user!.lastname;
+        previousEmail = _viewModel.user!.mail;
+        previousSex = _viewModel.user!.sex;
+        _imageUrl = _viewModel.user!.imageUrl;
+      });
+    }
+  }
 
-    setState(() {
-      previousName = userData['name'];
-      previousLastName = userData['lastname'];
-      previousEmail = userData['mail'];
-      previousSex = userData['sex'];
-    });
+  Future<void> _updateData(Map<String, dynamic> data) async {
+    final response = await _viewModel.updateUserData(widget.userId, data);
+    if (response) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showEditSuccessPopup();
+      }
+    }
   }
 
   void logout() async {
     await authService.singOut();
-    Navigator.pushReplacementNamed(context, '/landing');
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/landing');
+    }
   }
 
   void _navigateToPage(int index) {
@@ -180,7 +166,7 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                     ElevatedButton(
                       onPressed: () async {
                         // Actualizar los datos en Supabase
-                        await authService.updateUserData(widget.userId, {
+                        await _updateData({
                           'name': nameController.text,
                           'lastname': lastNameController.text,
                           'sex': selectedSex,
@@ -191,9 +177,6 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                           previousEmail = lastNameController.text;
                           previousSex = selectedSex;
                         });
-                        _showEditSuccessPopup;
-                        Navigator.of(context).pop();
-                        _showEditSuccessPopup();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFFFA500),
@@ -533,40 +516,14 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  GestureDetector(
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Color(0xFF8CB1F1),
-                      child: Icon(
-                        Icons.camera_alt,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Acción para cambiar la foto de perfil
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFFFA500),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                        textStyle: TextStyle(
-                            fontSize: 16, fontFamily: 'San Francisco'),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                    child: Text(
-                      'Cambiar Foto',
-                      style: TextStyle(
-                          fontFamily: 'San Francisco',
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                  AvatarView(
+                      imageUrl: _imageUrl,
+                      onUpload: (imageUrl) async {
+                        setState(() {
+                          _imageUrl = imageUrl;
+                        });
+                      },
+                      type: 'u'),
                   SizedBox(height: 20),
                   // Mostrar datos del usuario - Proveedor
                   Container(
@@ -626,7 +583,6 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                             ],
                           ),
                         ),
-
                         SizedBox(height: 10),
                         Text.rich(
                           TextSpan(
@@ -653,7 +609,6 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
                             ],
                           ),
                         ),
-
                         SizedBox(height: 10),
                         Text.rich(
                           TextSpan(
@@ -849,38 +804,38 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
 
   //Widget para la estetica de TextFields
   Widget _buildTextFieldContainer({
-  required TextEditingController controller,
-  required String labelText,
-  String? errorText,
-  int maxLines = 1,
-  TextInputType keyboardType = TextInputType.text,
-  Function(String)? onChanged,
-  EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: TextField(
-      controller: controller,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: labelText,
-        errorText: errorText,
-        floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        contentPadding: contentPadding,
+    required TextEditingController controller,
+    required String labelText,
+    String? errorText,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    Function(String)? onChanged,
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
       ),
-    ),
-  );
-}
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: labelText,
+          errorText: errorText,
+          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: contentPadding,
+        ),
+      ),
+    );
+  }
 }
