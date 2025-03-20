@@ -67,7 +67,8 @@ class BusinessInfoRepo {
     }
   }
 
-  Future<Discount?> addDiscount(Map<String, dynamic> discount) async {
+  Future<Discount?> addDiscount(
+      Map<String, dynamic> discount, Business business) async {
     try {
       await supabase.from('descuento').insert(discount);
       final json = await supabase
@@ -77,7 +78,17 @@ class BusinessInfoRepo {
           .limit(1);
 
       final jsonDiscount = json[0];
+      final idNegocio = jsonDiscount['id_negocio'];
+      final pertenece = await supabase
+          .from('pertenece')
+          .select()
+          .eq('id_negocio', idNegocio)
+          .single();
+
+      jsonDiscount['business'] = business;
+      jsonDiscount['idcategory'] = pertenece['id_categoria'];
       final newdiscount = Discount.fromMap(jsonDiscount);
+
       return newdiscount;
     } catch (e) {
       throw Exception("Error inesperado: $e");
@@ -97,12 +108,21 @@ class BusinessInfoRepo {
   }
 
   Future<Discount?> updateDiscount(
-      int id, Map<String, dynamic> updatedDiscount) async {
+      int id, Map<String, dynamic> updatedDiscount, Business business) async {
     try {
       await supabase.from('descuento').update(updatedDiscount).eq('id', id);
       final json = await supabase.from('descuento').select().eq('id', id);
       final jsonDiscount = json[0];
+      final idNegocio = jsonDiscount['id_negocio'];
+      final pertenece = await supabase
+          .from('pertenece')
+          .select()
+          .eq('id_negocio', idNegocio)
+          .single();
+      jsonDiscount['business'] = business;
+      jsonDiscount['idcategory'] = pertenece['id_categoria'];
       final newdiscount = Discount.fromMap(jsonDiscount);
+
       return newdiscount;
     } catch (e) {
       throw Exception("Error al actualizar el descuento: $e");

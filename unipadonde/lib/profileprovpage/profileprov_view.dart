@@ -478,6 +478,7 @@ class _ProfileProvPageState extends State<ProfileProvPage> {
       appBar: AppBar(
         toolbarHeight: 90,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [

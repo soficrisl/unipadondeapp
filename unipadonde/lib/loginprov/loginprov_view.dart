@@ -58,9 +58,9 @@ class _LoginProvState extends State<LoginProvView> {
                 MaterialPageRoute(
                     builder: (context) => LandingProv(userId: userId)),
               );
-            } else if (type != "S") {
+            } else if (type != "B") {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Debe ingresar como proveedor.")),
+                const SnackBar(content: Text("Debe ingresar como estudiante.")),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(

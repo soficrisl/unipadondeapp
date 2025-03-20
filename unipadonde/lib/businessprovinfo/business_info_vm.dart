@@ -39,6 +39,7 @@ class BusinessInfoViewModel extends ChangeNotifier {
     if (response != null) {
       business = response;
     }
+    notifyListeners();
   }
 
   Future<void> fetchAddress() async {
@@ -55,9 +56,10 @@ class BusinessInfoViewModel extends ChangeNotifier {
   }
 
   Future<bool> addDiscount(Map<String, dynamic> discount) async {
-    final newDiscount = await _repo.addDiscount(discount);
+    final newDiscount = await _repo.addDiscount(discount, business);
     if (newDiscount != null) {
       discounts.add(newDiscount);
+      notifyListeners();
       return true;
     }
     return false;
@@ -65,10 +67,12 @@ class BusinessInfoViewModel extends ChangeNotifier {
 
   Future<bool> updateDiscount(
       int discountId, Map<String, dynamic> discount) async {
-    final newDiscount = await _repo.updateDiscount(discountId, discount);
+    final newDiscount =
+        await _repo.updateDiscount(discountId, discount, business);
     if (newDiscount != null) {
       int index = discounts.indexWhere((d) => d.id == discountId);
       discounts[index] = newDiscount;
+      notifyListeners();
       return true;
     } else {
       return false;
@@ -80,6 +84,7 @@ class BusinessInfoViewModel extends ChangeNotifier {
     try {
       if (response) {
         discounts.removeWhere((d) => d.id == discountId);
+        notifyListeners();
         return true;
       } else {
         return false;
