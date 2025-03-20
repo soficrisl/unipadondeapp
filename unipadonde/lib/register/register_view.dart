@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unipadonde/login/login_vm.dart';
+import 'package:unipadonde/loginprov/loginprov_mv.dart';
 import 'package:unipadonde/register/register_vm.dart';
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
@@ -33,12 +34,13 @@ class _RegisterViewState extends State<RegisterView> {
     final password = _passwordController.text;
     final name = _nameController.text;
     final lastname = _lastnameController.text;
-     if (_ciController.text.isEmpty || !RegExp(r'^[0-9]+$').hasMatch(_ciController.text)) {
-    // Nose
-    return; // Detener la ejecución si la cédula no es válida
-  }
+    if (_ciController.text.isEmpty ||
+        !RegExp(r'^[0-9]+$').hasMatch(_ciController.text)) {
+      // Nose
+      return; // Detener la ejecución si la cédula no es válida
+    }
 
-  final ci = int.parse(_ciController.text);
+    final ci = int.parse(_ciController.text);
     String? sex;
     if (selectedValue == "Masculino") {
       sex = "M";
@@ -176,7 +178,8 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: Validations.validatePassword,
+                                          validator:
+                                              Validations.validatePassword,
                                         ),
                                       ),
 
@@ -222,7 +225,8 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: Validations.validateLastName,
+                                          validator:
+                                              Validations.validateLastName,
                                         ),
                                       ),
 
@@ -318,6 +322,81 @@ class _RegisterViewState extends State<RegisterView> {
                                     ],
                                   ),
                                 ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "-------------------------------------------------------------",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "¿Ya tienes  una cuenta?",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontFamily: 'San Francisco',
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+
+                              // ! Boton Login
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => loginVm()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(
+                                        0xFFFAAF90), // Background color
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    minimumSize: Size(double.infinity,
+                                        50), // Set height and width
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 30), // Horizontal padding
+                                  ),
+                                  child: Text("Inicia Sesión",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontFamily: 'San Francisco',
+                                          fontWeight: FontWeight.bold))),
+
+                              //Proveedor
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "¿No eres estudiante? Ingresa como",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontFamily: 'San Francisco',
+                                ),
+                              ),
+                              GestureDetector(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegisterProvVM())),
+                                  child: Text(
+                                    "PROVEEDOR",
+                                    style: TextStyle(
+                                      color: const Color(0xFF8CB1F1),
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'San Francisco',
+                                    ),
+                                  )),
+                              SizedBox(
+                                height: 20,
                               ),
                             ],
                           ),

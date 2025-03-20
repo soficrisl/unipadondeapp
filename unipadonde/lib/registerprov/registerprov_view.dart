@@ -166,7 +166,8 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: Validations.validatePassword,
+                                          validator:
+                                              Validations.validatePassword,
                                         ),
                                       ),
 
@@ -212,7 +213,8 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: Validations.validateLastName,
+                                          validator:
+                                              Validations.validateLastName,
                                         ),
                                       ),
 
@@ -308,6 +310,82 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                                     ],
                                   ),
                                 ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "-------------------------------------------------------------",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "¿Ya tienes una cuenta?",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontFamily: 'San Francisco',
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+
+                              // Boton Iniciar sesión
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                loginVmProv()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(
+                                        0xFFFAAF90), // Background color
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    minimumSize: Size(double.infinity,
+                                        50), // Set height and width
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 30), // Horizontal padding
+                                  ),
+                                  child: Text("Inicia Sesión",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontFamily: 'San Francisco',
+                                          fontWeight: FontWeight.bold))),
+
+                              //Proveedor
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "¿No eres proveedor? Ingresa como",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontFamily: 'San Francisco',
+                                ),
+                              ),
+                              GestureDetector(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegisterVM())),
+                                  child: Text(
+                                    "ESTUDIANTE",
+                                    style: TextStyle(
+                                      color: const Color(0xFF8CB1F1),
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'San Francisco',
+                                    ),
+                                  )),
+                              SizedBox(
+                                height: 20,
                               ),
                             ],
                           ),
