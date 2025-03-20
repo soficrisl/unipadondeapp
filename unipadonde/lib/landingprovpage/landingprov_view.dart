@@ -27,6 +27,9 @@ class _LandingProvState extends State<LandingProv> {
   final TextEditingController _tiktokController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
   final TextEditingController _rifController = TextEditingController();
+
+  List<DropdownMenuItem<String>> categoryItems = [];
+  String selectedCategory = 'Servicios';
   // Variables para las validaciones
   String? _nameError;
   String? _rifError;
@@ -40,6 +43,36 @@ class _LandingProvState extends State<LandingProv> {
   @override
   void initState() {
     super.initState();
+    selectedCategory = 'Servicios';
+    categoryItems = [
+      DropdownMenuItem(
+        value: 'Servicios',
+        child: Text('Servicios', style: TextStyle(fontFamily: 'San Francisco')),
+      ),
+      DropdownMenuItem(
+        value: 'Salud y Bienestar',
+        child: Text('Salud y Bienestar',
+            style: TextStyle(fontFamily: 'San Francisco')),
+      ),
+      DropdownMenuItem(
+        value: 'Comida',
+        child: Text('Comida', style: TextStyle(fontFamily: 'San Francisco')),
+      ),
+      DropdownMenuItem(
+        value: 'Entretenimiento',
+        child: Text('Entretenimiento',
+            style: TextStyle(fontFamily: 'San Francisco')),
+      ),
+      DropdownMenuItem(
+        value: 'Hotelería',
+        child: Text('Hotelería', style: TextStyle(fontFamily: 'San Francisco')),
+      ),
+      DropdownMenuItem(
+        value: 'Transporte',
+        child:
+            Text('Transporte', style: TextStyle(fontFamily: 'San Francisco')),
+      ),
+    ];
     _viewModel = LandingProvVM(idproveedor: widget.userId);
     fetchBusinesses();
     // Agregar listeners a los controladores para validar en tiempo real
@@ -90,6 +123,7 @@ class _LandingProvState extends State<LandingProv> {
       _nameError = Validations.validateNotEmpty(value, "Nombre del negocio");
     });
   }
+
   void _validateRIFNumber(String value) {
     setState(() {
       _rifError = Validations.validateRIFNumber(value);
@@ -343,37 +377,37 @@ class _LandingProvState extends State<LandingProv> {
                       ),
 
                       const SizedBox(height: 20),
-                    // Dropdown para riftype
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Color(0xFFFFA500),
-                          width: 1,
+                      // Dropdown para riftype
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Color(0xFFFFA500),
+                            width: 1,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: DropdownButton<String>(
+                            value: _riftype,
+                            onChanged: (String? newValue) {
+                              setStateDialog(() {
+                                _riftype = newValue!;
+                              });
+                            },
+                            items: <String>['J', 'G']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            isExpanded: true,
+                            underline: SizedBox(), // Elimina la línea inferior
+                            hint: Text('Seleccione el tipo de RIF'),
+                          ),
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: DropdownButton<String>(
-                          value: _riftype,
-                          onChanged: (String? newValue) {
-                            setStateDialog(() {
-                              _riftype = newValue!;
-                            });
-                          },
-                          items: <String>['J', 'G']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          isExpanded: true,
-                          underline: SizedBox(), // Elimina la línea inferior
-                          hint: Text('Seleccione el tipo de RIF'),
-                        ),
-                      ),
-                    ),
 
                       const SizedBox(height: 25),
                       _buildTextFieldContainer(
@@ -414,6 +448,17 @@ class _LandingProvState extends State<LandingProv> {
                         errorText: _websiteError,
                       ),
                       const SizedBox(height: 20),
+                      _buildDropdownContainer(
+                        labelText: 'Categoría',
+                        selectedItem: selectedCategory,
+                        items: categoryItems,
+                        onChanged: (newCategory) {
+                          setStateDialog(() {
+                            selectedCategory = newCategory!;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async {
                           // Validar los campos antes de proceder
@@ -436,7 +481,7 @@ class _LandingProvState extends State<LandingProv> {
 
                           // Si no hay errores, proceder con la inserción
                           if (_nameError == null &&
-                              _rifError ==null &&
+                              _rifError == null &&
                               _descriptionError == null &&
                               _instagramError == null &&
                               _emailError == null &&
@@ -585,6 +630,38 @@ class _LandingProvState extends State<LandingProv> {
           contentPadding: contentPadding,
           errorText: errorText,
         ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownContainer({
+    required String labelText,
+    required List<DropdownMenuItem<String>> items,
+    required String selectedItem,
+    required ValueChanged<String?> onChanged,
+    EdgeInsets contentPadding = const EdgeInsets.symmetric(horizontal: 10),
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonFormField<String>(
+        value: selectedItem,
+        decoration: InputDecoration(
+          labelText: labelText,
+          floatingLabelStyle: TextStyle(fontSize: 20, color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF8CB1F1), width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFFFA500), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: contentPadding,
+        ),
+        items: items,
+        onChanged: onChanged,
       ),
     );
   }
