@@ -564,19 +564,32 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        // Nombre del descuento
+                                        SizedBox(
+                                          height: discount.state == false
+                                              ? 50.0
+                                              : 0.0, // Adjust the height as needed
+                                          child: discount.state == false
+                                              ? Center(
+                                                  child: Text(
+                                                  "Inactivo",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          16), // Customize the style as needed
+                                                ))
+                                              : null,
+                                        ),
                                         Text(
                                           discount.name,
                                           style: TextStyle(
                                             fontSize:
                                                 25, // Tamaño de fuente grande
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.orange,
+                                            color: discount.state
+                                                ? Colors.orange
+                                                : Colors.grey,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
-                                        SizedBox(height: 8), // Espaciado
-                                        // Descripción del descuento
                                         Text(
                                           discount.description,
                                           style: TextStyle(

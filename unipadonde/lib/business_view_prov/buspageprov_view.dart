@@ -247,7 +247,6 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 90,
-        automaticallyImplyLeading: false,
         elevation: 0,
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(

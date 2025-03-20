@@ -6,11 +6,8 @@ import 'package:unipadonde/main.dart';
 class BusinessInfoRepo {
   Future<List<Discount>> fetchDiscounts(int id, Business business) async {
     try {
-      final descuentos = await supabase
-          .from('descuento')
-          .select('*')
-          .eq('id_negocio', id)
-          .eq('state', true);
+      final descuentos =
+          await supabase.from('descuento').select('*').eq('id_negocio', id);
 
       final pertenece = await supabase.from('pertenece').select();
       final perteneceMap = {
