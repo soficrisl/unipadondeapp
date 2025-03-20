@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:unipadonde/login/login_vm.dart';
 import 'package:unipadonde/register/register_vm.dart';
-
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:unipadonde/validations.dart'; // Importar validaciones
 
 final _formKey = GlobalKey<FormState>();
-final validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -20,7 +18,6 @@ class _RegisterViewState extends State<RegisterView> {
   final authService = AuthenticationService();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  //final _usernameController = TextEditingController();
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _ciController = TextEditingController();
@@ -34,10 +31,14 @@ class _RegisterViewState extends State<RegisterView> {
 
     final email = _emailController.text;
     final password = _passwordController.text;
-    //final username = _usernameController;
     final name = _nameController.text;
     final lastname = _lastnameController.text;
-    final ci = int.parse(_ciController.text);
+     if (_ciController.text.isEmpty || !RegExp(r'^[0-9]+$').hasMatch(_ciController.text)) {
+    // Nose
+    return; // Detener la ejecución si la cédula no es válida
+  }
+
+  final ci = int.parse(_ciController.text);
     String? sex;
     if (selectedValue == "Masculino") {
       sex = "M";
@@ -49,74 +50,20 @@ class _RegisterViewState extends State<RegisterView> {
       await authService.signUp(email, password);
       await createuser.createUser(
           email, password, ci, name, lastname, sex, usertype, universidad);
-      Navigator.pop(context);
-    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print("Error durante el registro: $e");
+      if (mounted) {
+        //nose
       }
     }
-  }
-
-  // ! VALIDACION EMAIL
-  String? validateEmail(String? email) {
-    RegExp emailRegex = RegExp(r'[\w-\.]+@(correo\.unimet\.edu\.ve)$');
-    final isEmailValid = emailRegex.hasMatch(email ?? '');
-    if (!isEmailValid) {
-      possible = false;
-      return 'Ingrese un correo correcto';
-    }
-    return null;
-  }
-
-  // ! VALIDACION USERNAME
-  String? validUsername(String? username) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z0-9]+$');
-    final isUserValid = userRegex.hasMatch(username ?? '');
-    if (!isUserValid) {
-      possible = false;
-      return 'Ingrese un usuario correcto';
-    }
-    return null;
-  }
-
-  // ! VALIDACION NOMBRE Y APELLIDO
-  String? validName(String? name) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z]+$');
-    final isNameValid = userRegex.hasMatch(name ?? '');
-    if (!isNameValid) {
-      possible = false;
-      return 'Ingreso inválido';
-    }
-    return null;
-  }
-
-  // ! VALIDACION CI
-  String? validCI(String? ci) {
-    RegExp userRegex = RegExp(r'^[0-9]+$');
-    final isCIValid = userRegex.hasMatch(ci ?? '');
-    if (!isCIValid) {
-      possible = false;
-      return 'Ingrese solo los números';
-    }
-    return null;
-  }
-
-  // ! VALIDACION CONTRASEÑA
-  String? validPassword(String? password) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
-    final isPasswordValid = userRegex.hasMatch(password ?? '');
-    if (!isPasswordValid) {
-      possible = false;
-      return 'Ingreso inválido';
-    }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //Background
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
@@ -169,7 +116,6 @@ class _RegisterViewState extends State<RegisterView> {
                           child: Column(
                             children: [
                               SizedBox(height: 60),
-                              // * CAJA FORM
                               Container(
                                 padding: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
@@ -207,7 +153,7 @@ class _RegisterViewState extends State<RegisterView> {
                                               border: InputBorder.none),
                                           keyboardType:
                                               TextInputType.emailAddress,
-                                          validator: validateEmail,
+                                          validator: Validations.validateEmail,
                                         ),
                                       ),
 
@@ -230,32 +176,10 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: validPassword,
+                                          validator: Validations.validatePassword,
                                         ),
                                       ),
 
-                                      // ! CONFIRMAR CONTRASEÑA
-                                      /*Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                            color: const Color.fromARGB(
-                                                200, 158, 158, 158),
-                                          )),
-                                        ),
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                              hintText: "Confirmar contraseña",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey,
-                                                fontFamily: 'San Francisco',
-                                              ),
-                                              border: InputBorder.none),
-                                          validator: validPassword,
-                                        ),
-                                      ),
-*/
                                       // ! NOMBRE
                                       Container(
                                         padding: EdgeInsets.all(10),
@@ -275,7 +199,7 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: validName,
+                                          validator: Validations.validateName,
                                         ),
                                       ),
 
@@ -298,45 +222,8 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: validName,
+                                          validator: Validations.validateLastName,
                                         ),
-                                      ),
-
-                                      // ! NOMBRE UNIVERSIDAD
-                                      SizedBox(height: 20),
-                                      // ! SEXO
-                                      Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                              width: 0.5,
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            ),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10))),
-                                        child: DropdownButton<String>(
-                                            value: universidad,
-                                            icon: const Icon(
-                                                Icons.arrow_drop_down),
-                                            style: const TextStyle(
-                                                color: Colors.grey),
-                                            underline: Container(
-                                              height: 1,
-                                            ),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                universidad = newValue!;
-                                              });
-                                            },
-                                            items: const [
-                                              DropdownMenuItem<String>(
-                                                  value:
-                                                      'Universidad Metropolitana',
-                                                  child: Text(
-                                                      "Universidad Metropolitana")),
-                                            ]),
                                       ),
 
                                       // ! CI
@@ -358,10 +245,10 @@ class _RegisterViewState extends State<RegisterView> {
                                                 fontFamily: 'San Francisco',
                                               ),
                                               border: InputBorder.none),
-                                          validator: validCI,
+                                          validator: Validations.validateCI,
                                         ),
                                       ),
-                                      SizedBox(height: 20),
+
                                       // ! SEXO
                                       Container(
                                         width: double.infinity,
@@ -431,83 +318,6 @@ class _RegisterViewState extends State<RegisterView> {
                                     ],
                                   ),
                                 ),
-                              ),
-
-                              // ! Iniciar sesion
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "-------------------------------------------------------------",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "¿Ya tienes  una cuenta?",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-
-                              // ! Boton Login
-                              ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => loginVm()));
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(
-                                        0xFFFAAF90), // Background color
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    minimumSize: Size(double.infinity,
-                                        50), // Set height and width
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 30), // Horizontal padding
-                                  ),
-                                  child: Text("Inicia Sesión",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontFamily: 'San Francisco',
-                                          fontWeight: FontWeight.bold))),
-
-                              //Proveedor
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Text(
-                                "¿No eres estudiante? Ingresa como",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontFamily: 'San Francisco',
-                                ),
-                              ),
-                              GestureDetector(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RegisterProvVM())),
-                                  child: Text(
-                                    "PROVEEDOR",
-                                    style: TextStyle(
-                                      color: const Color(0xFF8CB1F1),
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'San Francisco',
-                                    ),
-                                  )),
-                              SizedBox(
-                                height: 20,
                               ),
                             ],
                           ),

@@ -43,42 +43,76 @@ class _BuspageViewState extends State<BuspageView> {
   }
 
   Future<void> _submitComment() async {
-    if (_commentController.text.isEmpty || _viewModel.rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+  if (_commentController.text.isEmpty || _viewModel.rating == 0) {
+    // Mostrar un AlertDialog en lugar de un SnackBar
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
           content: Text(
               'Por favor, escribe un comentario y selecciona una calificación.'),
-          backgroundColor: Colors.red,
-        ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el diálogo
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  try {
+    await _viewModel.submitComment(_commentController.text, _viewModel.rating);
+    if (mounted) {
+      // Mostrar un AlertDialog en lugar de un SnackBar
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Éxito'),
+            content: Text('Comentario recibido.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el diálogo
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
       );
-      return;
     }
 
-    try {
-      await _viewModel.submitComment(
-          _commentController.text, _viewModel.rating);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Comentario recibido.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-
-      _commentController.clear();
-      _viewModel.rating = 0;
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+    _commentController.clear();
+    _viewModel.rating = 0;
+  } catch (e) {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
             content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el diálogo
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

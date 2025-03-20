@@ -65,10 +65,6 @@ class RegisterProvVM extends StatelessWidget {
                 return Landing(userId: userId);
               } else {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Error al obtener el ID del usuario.")),
-                  );
                 }
                 return const RegisterProvView();
               }

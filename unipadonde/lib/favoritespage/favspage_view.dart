@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/favoritespage/favspage_vm.dart';
 import 'package:unipadonde/modeldata/categoria_model.dart';
 import 'package:unipadonde/modeldata/discount_model.dart';
-import 'package:unipadonde/widgets/bottom_bar.dart'; // Importa BuspageView
+import 'package:unipadonde/widgets/bottom_bar.dart';
 
 class Favspage extends StatefulWidget {
   final int userId;
