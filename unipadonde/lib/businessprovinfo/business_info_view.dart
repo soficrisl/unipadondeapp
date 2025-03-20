@@ -94,12 +94,12 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
     List<DateTime>? dateTimeList = await showOmniDateTimeRangePicker(
       context: context,
       startInitialDate: DateTime.now(),
-      startFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      startFirstDate: DateTime.now(),
       startLastDate: DateTime.now().add(
         const Duration(days: 3652),
       ),
       endInitialDate: DateTime.now(),
-      endFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      endFirstDate: DateTime.now(),
       endLastDate: DateTime.now().add(
         const Duration(days: 3652),
       ),
