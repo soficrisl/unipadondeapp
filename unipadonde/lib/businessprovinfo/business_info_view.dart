@@ -6,6 +6,7 @@ import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
 import 'package:unipadonde/businessprovinfo/business_info_vm.dart';
 import 'package:unipadonde/validations.dart';
 import 'package:unipadonde/modeldata/business_model.dart';
+//import 'package:unipadonde/noti_service.dart';
 
 class BusinessInfoView extends StatefulWidget {
   final Business business;
@@ -94,12 +95,12 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
     List<DateTime>? dateTimeList = await showOmniDateTimeRangePicker(
       context: context,
       startInitialDate: DateTime.now(),
-      startFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      startFirstDate: DateTime.now(),
       startLastDate: DateTime.now().add(
         const Duration(days: 3652),
       ),
       endInitialDate: DateTime.now(),
-      endFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      endFirstDate: DateTime.now(),
       endLastDate: DateTime.now().add(
         const Duration(days: 3652),
       ),
@@ -146,10 +147,24 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         _showDeleteSuccessPopup();
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error al eliminar el descuento'),
-            backgroundColor: Colors.red,
-          ));
+          showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(
+              'Error al eliminar descuento.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el diálogo
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
         }
       }
     } catch (e) {
@@ -1168,6 +1183,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
+                    //! NOTIFICACIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOON ESTÁ FALLANDO ESTA VAINA AYUDA
+
+                    /*
+                      NotiService().showNotification(
+                      title: 'Titulo',
+                      body: 'Body',
+                    ); 
+                    */
+
                       setStateDialog(() {
                         _validateForm();
                       });
