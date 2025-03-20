@@ -6,6 +6,7 @@ import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
 import 'package:unipadonde/businessprovinfo/business_info_vm.dart';
 import 'package:unipadonde/validations.dart';
 import 'package:unipadonde/modeldata/business_model.dart';
+//import 'package:unipadonde/noti_service.dart';
 
 class BusinessInfoView extends StatefulWidget {
   final Business business;
@@ -146,10 +147,24 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         _showDeleteSuccessPopup();
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error al eliminar el descuento'),
-            backgroundColor: Colors.red,
-          ));
+          showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(
+              'Error al eliminar descuento.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el diálogo
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
         }
       }
     } catch (e) {
@@ -1155,6 +1170,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
+                    //! NOTIFICACIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOON ESTÁ FALLANDO ESTA VAINA AYUDA
+
+                    /*
+                      NotiService().showNotification(
+                      title: 'Titulo',
+                      body: 'Body',
+                    ); 
+                    */
+
                       setStateDialog(() {
                         _validateForm();
                       });

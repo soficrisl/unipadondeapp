@@ -8,7 +8,8 @@ class UserDataBase {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   Future<void> createUser(String email, String password, int ci, String name,
-      String lastname, String sex, String usertype, String universidad) async {
+    String lastname, String sex, String usertype, String universidad) async {
+  try {
     await _supabase.from('usuario').insert({
       'id': ci,
       'password': password,
@@ -16,14 +17,19 @@ class UserDataBase {
       'lastname': lastname,
       'mail': email,
       'sex': sex,
-      'usertype': usertype
+      'usertype': usertype,
     });
-    if (universidad != '') {
+
+    if (universidad.isNotEmpty) {
       await _supabase
           .from('estudiante')
           .update({'universidad': universidad}).eq('id', ci);
     }
+  } catch (e) {
+    print("Error al crear el usuario: $e");
+    rethrow; // Relanzar el error para manejarlo en el método `signUp`
   }
+}
 }
 
 class RegisterVM extends StatelessWidget {
@@ -87,10 +93,6 @@ class RegisterVM extends StatelessWidget {
                 return Landing(userId: userId);
               } else {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Error al obtener el ID del usuario.")),
-                  );
                 }
                 return const RegisterView();
               }

@@ -29,11 +29,13 @@ class _LandingProvState extends State<LandingProv> {
   final TextEditingController _rifController = TextEditingController();
   // Variables para las validaciones
   String? _nameError;
+  String? _rifError;
   String? _descriptionError;
   String? _instagramError;
   String? _emailError;
   String? _tiktokError;
   String? _websiteError;
+  String _riftype = 'J'; // Valor por defecto
 
   @override
   void initState() {
@@ -43,6 +45,9 @@ class _LandingProvState extends State<LandingProv> {
     // Agregar listeners a los controladores para validar en tiempo real
     _nameController.addListener(() {
       _validateName(_nameController.text);
+    });
+    _rifController.addListener(() {
+      _validateRIFNumber(_rifController.text);
     });
     _descriptionController.addListener(() {
       _validateDescription(_descriptionController.text);
@@ -70,6 +75,7 @@ class _LandingProvState extends State<LandingProv> {
   void dispose() {
     _viewModel.removeListener(_onViewModelChange);
     _nameController.dispose();
+    _rifController.dispose();
     _descriptionController.dispose();
     _instagramController.dispose();
     _emailController.dispose();
@@ -82,6 +88,11 @@ class _LandingProvState extends State<LandingProv> {
   void _validateName(String value) {
     setState(() {
       _nameError = Validations.validateNotEmpty(value, "Nombre del negocio");
+    });
+  }
+  void _validateRIFNumber(String value) {
+    setState(() {
+      _rifError = Validations.validateRIFNumber(value);
     });
   }
 
@@ -327,45 +338,79 @@ class _LandingProvState extends State<LandingProv> {
                       const SizedBox(height: 25),
                       _buildTextFieldContainer(
                         controller: _nameController,
-                        labelText: 'Nombre del negocio:',
+                        labelText: 'Nombre del negocio',
                         errorText: _nameError,
                       ),
+
+                      const SizedBox(height: 20),
+                    // Dropdown para riftype
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Color(0xFFFFA500),
+                          width: 1,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: DropdownButton<String>(
+                          value: _riftype,
+                          onChanged: (String? newValue) {
+                            setStateDialog(() {
+                              _riftype = newValue!;
+                            });
+                          },
+                          items: <String>['J', 'G']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          isExpanded: true,
+                          underline: SizedBox(), // Elimina la línea inferior
+                          hint: Text('Seleccione el tipo de RIF'),
+                        ),
+                      ),
+                    ),
+
                       const SizedBox(height: 25),
                       _buildTextFieldContainer(
                         controller: _rifController,
-                        labelText: 'rif:',
-                        errorText: _nameError,
+                        labelText: 'RIF',
+                        errorText: _rifError,
                       ),
                       const SizedBox(height: 20),
                       _buildTextFieldContainer(
                         controller: _descriptionController,
                         maxLines: 6,
-                        labelText: 'Descripción:',
+                        labelText: 'Descripción',
                         errorText: _descriptionError,
                         contentPadding: EdgeInsets.fromLTRB(10, 20, 10, 20),
                       ),
                       const SizedBox(height: 20),
                       _buildTextFieldContainer(
                         controller: _instagramController,
-                        labelText: 'Instagram:',
+                        labelText: 'Instagram',
                         errorText: _instagramError,
                       ),
                       const SizedBox(height: 20),
                       _buildTextFieldContainer(
                         controller: _emailController,
-                        labelText: 'Correo electrónico:',
+                        labelText: 'Correo electrónico',
                         errorText: _emailError,
                       ),
                       const SizedBox(height: 20),
                       _buildTextFieldContainer(
                         controller: _tiktokController,
-                        labelText: 'TikTok:',
+                        labelText: 'TikTok',
                         errorText: _tiktokError,
                       ),
                       const SizedBox(height: 20),
                       _buildTextFieldContainer(
                         controller: _websiteController,
-                        labelText: 'Página web:',
+                        labelText: 'Página web',
                         errorText: _websiteError,
                       ),
                       const SizedBox(height: 20),
@@ -375,6 +420,8 @@ class _LandingProvState extends State<LandingProv> {
                           setStateDialog(() {
                             _nameError = Validations.validateNotEmpty(
                                 _nameController.text, "Nombre del negocio");
+                            _rifError = Validations.validateRIFNumber(
+                                _rifController.text);
                             _descriptionError = Validations.validateNotEmpty(
                                 _descriptionController.text, "Descripción");
                             _instagramError = Validations.validateNotEmpty(
@@ -389,6 +436,7 @@ class _LandingProvState extends State<LandingProv> {
 
                           // Si no hay errores, proceder con la inserción
                           if (_nameError == null &&
+                              _rifError ==null &&
                               _descriptionError == null &&
                               _instagramError == null &&
                               _emailError == null &&
@@ -405,7 +453,7 @@ class _LandingProvState extends State<LandingProv> {
                                 'tiktok': _tiktokController.text,
                                 'webpage': _websiteController.text,
                                 'id_proveedor': widget.userId,
-                                'riftype': 'J',
+                                'riftype': _riftype,
                               };
 
                               if (mounted) {

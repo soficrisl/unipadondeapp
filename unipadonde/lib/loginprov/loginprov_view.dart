@@ -1,3 +1,4 @@
+import 'package:unipadonde/validations.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/landingprovpage/landingprov_view.dart';
@@ -22,90 +23,122 @@ class _LoginProvState extends State<LoginProvView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // ! POP UP
+  Future<void> _showPopup(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+          ),
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el popup
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   //Login function
   void login() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+  final email = _emailController.text;
+  final password = _passwordController.text;
 
-    // Validación: Asegúrate de que los campos no estén vacíos
-    if (email.isEmpty || password.isEmpty) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text("Por favor, ingresa tu correo y contraseña.")),
-          );
-        }
-      });
-      return;
-    }
-
-    // Attempt to login
-    try {
-      final session = await authService.signIn(email, password);
-      final authUserId = session.user?.id;
-
-      if (authUserId != null) {
-        final data = await _viewModel.fetchUserId(email);
-        final userId = data![0];
-        final type = data[1];
-        // view model
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            if (userId != null && type == 'S') {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => LandingProv(userId: userId)),
-              );
-            } else if (type != "B") {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Debe ingresar como estudiante.")),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Error al obtener el ID del usuario.")),
-              );
-            }
-          }
-        });
+  // Validación del correo electrónico
+  final emailValidation = Validations.validateEmail(email);
+  if (emailValidation != null) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showPopup(emailValidation);
       }
-    } on AuthException catch (error) {
+    });
+    return;
+  }
+
+  // Validación de la contraseña (no vacía)
+  final passwordValidation = Validations.validateNotEmpty(password, "Contraseña");
+  if (passwordValidation != null) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showPopup(passwordValidation);
+      }
+    });
+    return;
+  }
+
+  // Attempt to login
+  try {
+    final session = await authService.signIn(email, password);
+    final authUserId = session.user?.id;
+
+    if (authUserId != null) {
+      final data = await _viewModel.fetchUserId(email);
+      final userId = data![0];
+      final type = data[1];
+      // view model
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          if (error.code == "invalid_credentials") {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text(
-                      "Verifique que el correo y la contraseña sean correctos.")),
+          if (userId != null && type == 'B') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => LandingProv(userId: userId)),
             );
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error de autenticación: $error")));
+            _showPopup('Error al obtener el ID del usuario.');
           }
         }
       });
-    } on PostgrestException catch (error) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error de base de datos: ${error.message}")),
-          );
-        }
-      });
-    } catch (error) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text(
-                    "Verifique que el correo y la contraseña sean correctos.")),
-          );
-        }
-      });
     }
+  } on AuthException catch (error) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        if (error.code == "invalid_credentials") {
+          _showPopup('Verifique que el correo y la contraseña sean correctos.');
+        } else {
+          _showPopup('Error de autenticación.');
+        }
+      }
+    });
+  } on PostgrestException catch (error) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showPopup('Error de base de datos.');
+      }
+    });
+  } catch (error) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showPopup('Verifique que el correo y la contraseña sean correctos.');
+      }
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -351,5 +384,6 @@ class _LoginProvState extends State<LoginProvView> {
       ),
     );
   }
+
 }
 // FADEANIMATION¿?
