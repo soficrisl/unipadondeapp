@@ -28,11 +28,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    if (mounted) {
-      super.initState();
-      _viewModel = ProfileViewModel(userId: widget.userId);
-      _fetchUserData();
-    }
+    super.initState();
+    _viewModel = ProfileViewModel(userId: widget.userId);
+    _fetchUserData();
     _viewModel.addListener(_onViewModelChange);
   }
 
@@ -47,6 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _fetchUserData() async {
+    await _viewModel.getUserData(widget.userId);
     if (_viewModel.user != null) {
       setState(() {
         previousName = _viewModel.user!.name;
@@ -479,6 +478,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         toolbarHeight: 90,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [

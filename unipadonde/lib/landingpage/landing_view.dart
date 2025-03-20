@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/Businesspageclient/buspage_view.dart';
 import 'package:unipadonde/landingpage/landing_vm.dart';
 import 'package:unipadonde/searchbar/Search_view.dart';
+import 'package:unipadonde/validations.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
 
 import 'package:unipadonde/modeldata/discount_model.dart';
@@ -128,6 +129,7 @@ class _LandingState extends State<Landing> {
       appBar: AppBar(
         toolbarHeight: 90,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
@@ -407,12 +409,21 @@ class _LandingState extends State<Landing> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Text(
-                  "Duración: ARREGLAR",
+                  "Válido desde: ${Validations.formatDate(discount.startdate)}",
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    fontSize: 13,
+                    fontFamily: "San Francisco",
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  "hasta: ${Validations.formatDate(discount.enddate)} ",
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontFamily: "San Francisco",
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 30),

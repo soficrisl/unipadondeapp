@@ -666,6 +666,7 @@ class _BuspageViewState extends State<BuspageView> {
                         DateFormat('dd-MM-yyyy').format(fechaOriginal);
 
                     return Card(
+                      clipBehavior: Clip.hardEdge,
                       margin: EdgeInsets.symmetric(vertical: 5),
                       child: ListTile(
                         title: Text(nombreCompleto),

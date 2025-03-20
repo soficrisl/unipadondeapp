@@ -889,10 +889,8 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
   //Metodo para update el descuento en supabase con el ViewModel
   Future<void> _updateDiscountInDatabase(int discountId) async {
     try {
-      String startDate =
-          DateFormat('yyyy-MM-dd – kk:mm').format(_selectedStartDate!);
-      String endDate =
-          DateFormat('yyyy-MM-dd – kk:mm').format(_selectedEndDate!);
+      String startDate = _selectedStartDate!.toIso8601String();
+      String endDate = _selectedEndDate!.toIso8601String();
 
       Map<String, dynamic> discountMap = {
         "id": discountId,
@@ -902,7 +900,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         "startdate": startDate, // Make sure you assign a value to this.
         "enddate": endDate,
         "state": _selectedStartDate!.isBefore(DateTime.now()),
-        "id_negocio": _viewModel.business,
+        "id_negocio": _viewModel.business.id,
       };
       final response = await _viewModel.updateDiscount(discountId, discountMap);
       if (response) {
@@ -1240,10 +1238,9 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
 
   Future<void> _addDiscountToDatabase() async {
     try {
-      String startDate =
-          DateFormat('yyyy-MM-dd – kk:mm').format(_selectedStartDate!);
-      String endDate =
-          DateFormat('yyyy-MM-dd – kk:mm').format(_selectedEndDate!);
+      String startDate = _selectedStartDate!.toIso8601String();
+      ;
+      String endDate = _selectedEndDate!.toIso8601String();
 
       Map<String, dynamic> discountMap = {
         "name": _nameController.text,
@@ -1252,13 +1249,17 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         "startdate": startDate, // Make sure you assign a value to this.
         "enddate": endDate,
         "state": _selectedStartDate!.isBefore(DateTime.now()),
-        "id_negocio": _viewModel.business,
+        "id_negocio": _viewModel.business.id,
       };
 
+      _nameController.clear();
+      _descriptionController.clear();
+      _percentageController.clear();
       final response = await _viewModel.addDiscount(discountMap);
 
       if (response) {
         _showAddSuccessPopup();
+        _viewModel.fetchDiscounts();
       }
     } catch (e) {
       print('Error');

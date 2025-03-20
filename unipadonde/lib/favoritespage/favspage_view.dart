@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/favoritespage/favspage_vm.dart';
 import 'package:unipadonde/modeldata/categoria_model.dart';
 import 'package:unipadonde/modeldata/discount_model.dart';
-import 'package:unipadonde/widgets/bottom_bar.dart';
+import 'package:unipadonde/validations.dart';
+import 'package:unipadonde/widgets/bottom_bar.dart'; // Importa BuspageView
+import 'package:unipadonde/Businesspageclient/buspage_view.dart';
 
 class Favspage extends StatefulWidget {
   final int userId;
@@ -19,6 +21,7 @@ class _FavspageState extends State<Favspage> {
   List<int> selectedCategories = [];
   bool showUnsubscribeButton = false; // Nuevo estado para mostrar el botón
   int _selectedIndex = 1;
+  bool isLoading = false;
   final _viewmodel = FavspageViewModel();
 
   void getcat() async {
@@ -96,6 +99,7 @@ class _FavspageState extends State<Favspage> {
       appBar: AppBar(
         toolbarHeight: 90,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
@@ -378,26 +382,32 @@ class _FavspageState extends State<Favspage> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Duración: ARREGLAR",
+                  "Válido desde: ${Validations.formatDate(discount.startdate)}",
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    fontSize: 13,
+                    fontFamily: "San Francisco",
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  "hasta: ${Validations.formatDate(discount.enddate)} ",
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontFamily: "San Francisco",
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
-                    /*
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            BuspageViewWrapper(id: discount.idbusiness)
-                        // Pasar el idNegocio
-                        ,
+                        builder: (context) => BuspageView(
+                          idNegocio: discount.idnegocio,
+                          business: discount.business,
+                        ),
                       ),
                     );
-                  */
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA500),
