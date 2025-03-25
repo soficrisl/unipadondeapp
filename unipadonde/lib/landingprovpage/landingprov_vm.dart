@@ -26,9 +26,9 @@ class LandingProvVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> addBusiness(Map<String, dynamic> json) async {
+  Future<bool> addBusiness(Map<String, dynamic> json, String selected) async {
     _loading = true;
-    final response = await _repo.addBusiness(json);
+    final response = await _repo.addBusiness(json, selected);
     if (response != null) {
       businesses.add(response);
       _loading = false;

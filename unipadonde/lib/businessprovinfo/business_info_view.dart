@@ -148,23 +148,22 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
       } else {
         if (mounted) {
           showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(
-              'Error al eliminar descuento.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo
-              },
-              child: Text('Aceptar'),
-            ),
-          ],
-        );
-      },
-    );
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Error al eliminar descuento.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Cierra el diálogo
+                    },
+                    child: Text('Aceptar'),
+                  ),
+                ],
+              );
+            },
+          );
         }
       }
     } catch (e) {
@@ -275,24 +274,42 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 20),
-              _buildDetailContainer(
-                'Tiktok',
-                _viewModel.business.tiktok,
-                'assets/icons/tiktok.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Instagram',
-                _viewModel.business.instagram,
-                'assets/icons/instagram.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Página web',
-                _viewModel.business.webpage,
-                'assets/icons/sitio-web.png',
-              ),
+              widget.business.tiktok.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 20),
+                        _buildDetailContainer(
+                          'Tiktok',
+                          widget.business.tiktok,
+                          'assets/icons/tiktok.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.instagram.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Instagram',
+                          widget.business.instagram,
+                          'assets/icons/instagram.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.webpage.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Página web',
+                          widget.business.webpage,
+                          'assets/icons/sitio-web.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
               SizedBox(height: 10),
               if (address != null) ...[
                 _buildDetailContainer('Estado', address!['estado'], ''),
@@ -814,9 +831,14 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   errorText: _percentageError,
                   onChanged: (_) {
                     setStateDialog(() {
-                      _percentageError =
-                          int.tryParse(_percentageController.text) == null
-                              ? "Debe ser un número entero"
+                      _percentageError = int.tryParse(
+                                  _percentageController.text) ==
+                              null
+                          ? "Debe ser un número entero"
+                          : (int.tryParse(_percentageController.text)! <= 0 ||
+                                  int.tryParse(_percentageController.text)! >
+                                      100)
+                              ? "El número debe ser positivo y menor o igual a 100"
                               : null;
                     });
                   },
@@ -1133,9 +1155,14 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     errorText: _percentageError,
                     onChanged: (_) {
                       setStateDialog(() {
-                        _percentageError =
-                            int.tryParse(_percentageController.text) == null
-                                ? "Debe ser un número entero"
+                        _percentageError = int.tryParse(
+                                    _percentageController.text) ==
+                                null
+                            ? "Debe ser un número entero"
+                            : (int.tryParse(_percentageController.text)! <= 0 ||
+                                    int.tryParse(_percentageController.text)! >
+                                        100)
+                                ? "El número debe ser positivo y menor o igual a 100"
                                 : null;
                       });
                     },
@@ -1183,9 +1210,9 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
-                    //! NOTIFICACIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOON ESTÁ FALLANDO ESTA VAINA AYUDA
+                      //! NOTIFICACIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOON ESTÁ FALLANDO ESTA VAINA AYUDA
 
-                    /*
+                      /*
                       NotiService().showNotification(
                       title: 'Titulo',
                       body: 'Body',
@@ -1233,7 +1260,11 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         : null;
     _percentageError = int.tryParse(_percentageController.text) == null
         ? "Debe ser un número entero"
-        : null;
+        : (int.tryParse(_percentageController.text)! <= 0 ||
+                int.tryParse(_percentageController.text)! > 100)
+            ? "El número debe ser positivo y menor o igual a 100"
+            : null;
+
     _dateError = (_selectedStartDate == null || _selectedEndDate == null)
         ? "Debe seleccionar las fechas"
         : null;

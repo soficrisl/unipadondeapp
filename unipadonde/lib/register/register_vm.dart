@@ -4,32 +4,34 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/register/register_view.dart';
 
+import '../main.dart';
+
 class UserDataBase {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   Future<void> createUser(String email, String password, int ci, String name,
-    String lastname, String sex, String usertype, String universidad) async {
-  try {
-    await _supabase.from('usuario').insert({
-      'id': ci,
-      'password': password,
-      'name': name,
-      'lastname': lastname,
-      'mail': email,
-      'sex': sex,
-      'usertype': usertype,
-    });
+      String lastname, String sex, String usertype, String universidad) async {
+    try {
+      await _supabase.from('usuario').insert({
+        'id': ci,
+        'password': password,
+        'name': name,
+        'lastname': lastname,
+        'mail': email,
+        'sex': sex,
+        'usertype': usertype,
+      });
 
-    if (universidad.isNotEmpty) {
-      await _supabase
-          .from('estudiante')
-          .update({'universidad': universidad}).eq('id', ci);
+      if (universidad.isNotEmpty) {
+        await _supabase
+            .from('estudiante')
+            .update({'universidad': universidad}).eq('id', ci);
+      }
+    } catch (e) {
+      print("Error al crear el usuario: $e");
+      rethrow; // Relanzar el error para manejarlo en el método `signUp`
     }
-  } catch (e) {
-    print("Error al crear el usuario: $e");
-    rethrow; // Relanzar el error para manejarlo en el método `signUp`
   }
-}
 }
 
 class RegisterVM extends StatelessWidget {
@@ -92,8 +94,7 @@ class RegisterVM extends StatelessWidget {
               if (userId != null) {
                 return Landing(userId: userId);
               } else {
-                if (context.mounted) {
-                }
+                if (context.mounted) {}
                 return const RegisterView();
               }
             },

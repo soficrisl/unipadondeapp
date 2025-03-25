@@ -7,8 +7,8 @@ class FavsPageRepo {
   Future<List<Categoria>> fetchCategoriasSuscritas() async {
     final uid = supabase.auth.currentUser?.id ?? "";
     final response = await supabase.from('usuario').select('id').eq('uid', uid);
-    final userId = response[0]['id'];
     try {
+      final userId = response[0]['id'];
       final data = await supabase
           .from('subscribe')
           .select('id_categoria, categoria(id, name, description)')

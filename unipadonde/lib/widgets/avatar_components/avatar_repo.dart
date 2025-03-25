@@ -24,7 +24,7 @@ class AvatarRepo {
     await supabase.storage.from('business').updateBinary(imagePath, imageBytes,
         fileOptions:
             FileOptions(upsert: true, contentType: 'image/$imageExtension'));
-    String imageUrl = supabase.storage.from('profiles').getPublicUrl(imagePath);
+    String imageUrl = supabase.storage.from('business').getPublicUrl(imagePath);
     imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
       't': DateTime.now().millisecondsSinceEpoch.toString()
     }).toString();

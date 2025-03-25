@@ -47,15 +47,6 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
     descriptionController.addListener(() {
       _validateDescription(descriptionController.text);
     });
-    tiktokController.addListener(() {
-      _validateTikTok(tiktokController.text);
-    });
-    instagramController.addListener(() {
-      _validateInstagram(instagramController.text);
-    });
-    websiteController.addListener(() {
-      _validateWebsite(websiteController.text);
-    });
     _viewModel.addListener(_onViewModelChange);
   }
 
@@ -87,37 +78,12 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
     });
   }
 
-  void _validateTikTok(String value) {
-    setState(() {
-      _tiktokError = Validations.validateNotEmpty(value, "TikTok");
-    });
-  }
-
-  void _validateInstagram(String value) {
-    setState(() {
-      _instagramError = Validations.validateNotEmpty(value, "Instagram");
-    });
-  }
-
-  void _validateWebsite(String value) {
-    setState(() {
-      _websiteError = Validations.validateNotEmpty(value, "Página web");
-    });
-  }
-
   Future<void> _updateBusiness() async {
     _validateName(nameController.text);
     _validateDescription(descriptionController.text);
-    _validateTikTok(tiktokController.text);
-    _validateInstagram(instagramController.text);
-    _validateWebsite(websiteController.text);
 
     // Si no hay errores, proceder con la actualización
-    if (_nameError == null &&
-        _descriptionError == null &&
-        _tiktokError == null &&
-        _instagramError == null &&
-        _websiteError == null) {
+    if (_nameError == null && _descriptionError == null) {
       try {
         await _viewModel.updateBusiness(
             nameController.text,
@@ -295,7 +261,9 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
                           _imageUrl = imageUrl;
                         });
                       },
-                      type: 'b')
+                      type: 'b',
+                      IdNegocio: widget.business.id,
+                    )
                   : AvatarView(
                       imageUrl: _imageUrl,
                       onUpload: (imageUrl) async {
@@ -305,6 +273,7 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
                       },
                       type: 'b',
                       prepic: _viewModel.business.picture,
+                      IdNegocio: widget.business.id,
                     ),
               SizedBox(height: 24),
               _buildTextField(

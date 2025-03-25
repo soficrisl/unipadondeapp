@@ -91,6 +91,12 @@ class MyApp extends StatelessWidget {
                       userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
+          case '/mainstart':
+            return MaterialPageRoute(
+              builder: (context) =>
+                  loginVm(), // Usamos el operador ! para indicar que userId no es null
+            );
+
           case '/favorites':
             return MaterialPageRoute(
               builder: (context) => Favspage(

@@ -85,17 +85,8 @@ class _LandingProvState extends State<LandingProv> {
     _descriptionController.addListener(() {
       _validateDescription(_descriptionController.text);
     });
-    _instagramController.addListener(() {
-      _validateInstagram(_instagramController.text);
-    });
     _emailController.addListener(() {
       _validateEmail(_emailController.text);
-    });
-    _tiktokController.addListener(() {
-      _validateTikTok(_tiktokController.text);
-    });
-    _websiteController.addListener(() {
-      _validateWebsite(_websiteController.text);
     });
     _viewModel.addListener(_onViewModelChange);
   }
@@ -136,27 +127,9 @@ class _LandingProvState extends State<LandingProv> {
     });
   }
 
-  void _validateInstagram(String value) {
-    setState(() {
-      _instagramError = Validations.validateNotEmpty(value, "Instagram");
-    });
-  }
-
   void _validateEmail(String value) {
     setState(() {
       _emailError = Validations.validateEmail(value);
-    });
-  }
-
-  void _validateTikTok(String value) {
-    setState(() {
-      _tiktokError = Validations.validateNotEmpty(value, "TikTok");
-    });
-  }
-
-  void _validateWebsite(String value) {
-    setState(() {
-      _websiteError = Validations.validateNotEmpty(value, "Página web");
     });
   }
 
@@ -164,7 +137,7 @@ class _LandingProvState extends State<LandingProv> {
     AuthenticationService authService = AuthenticationService();
     await authService.singOut();
     if (mounted) {
-      Navigator.pushReplacementNamed(context, '/start');
+      Navigator.pushReplacementNamed(context, '/mainstart');
     }
   }
 
@@ -173,7 +146,7 @@ class _LandingProvState extends State<LandingProv> {
   }
 
   Future<bool> addBusiness(Map<String, dynamic> json) async {
-    return await _viewModel.addBusiness(json);
+    return await _viewModel.addBusiness(json, selectedCategory);
   }
 
   int _selectedIndex = 0;
@@ -469,14 +442,9 @@ class _LandingProvState extends State<LandingProv> {
                                 _rifController.text);
                             _descriptionError = Validations.validateNotEmpty(
                                 _descriptionController.text, "Descripción");
-                            _instagramError = Validations.validateNotEmpty(
-                                _instagramController.text, "Instagram");
+
                             _emailError = Validations.validateEmail(
                                 _emailController.text);
-                            _tiktokError = Validations.validateNotEmpty(
-                                _tiktokController.text, "TikTok");
-                            _websiteError = Validations.validateNotEmpty(
-                                _websiteController.text, "Página web");
                           });
 
                           // Si no hay errores, proceder con la inserción

@@ -26,9 +26,11 @@ class _FavspageState extends State<Favspage> {
 
   void getcat() async {
     await _viewmodel.fetchCategoriasSuscritas();
-    setState(() {
-      categories = _viewmodel.getCategoriasSuscritas();
-    });
+    if (mounted) {
+      setState(() {
+        categories = _viewmodel.getCategoriasSuscritas();
+      });
+    }
     getdis();
   }
 
@@ -45,6 +47,7 @@ class _FavspageState extends State<Favspage> {
   void initState() {
     super.initState();
     getcat();
+    getdis();
   }
 
   void logout() async {
@@ -142,129 +145,146 @@ class _FavspageState extends State<Favspage> {
           Positioned.fill(
             top: 0,
             bottom: 60,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                    height: 60,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: FilterChip(
-                            selected: selectedCategories.contains(category.id),
-                            label: Text(
-                              category.name,
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'San Francisco',
-                                color: selectedCategories.contains(category.id)
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                if (selected) {
-                                  selectedCategories.add(category.id);
-                                  showUnsubscribeButton =
-                                      true; // Mostrar el botón
-                                } else {
-                                  selectedCategories.remove(category.id);
-                                  showUnsubscribeButton = selectedCategories
-                                      .isNotEmpty; // Ocultar si no hay selecciones
-                                }
-                              });
-                            },
-                            backgroundColor:
-                                selectedCategories.contains(category.id)
-                                    ? Color(0xFFFFA500)
-                                    : Color(0xFFFFFFFF),
-                            selectedColor: Color(0xFFFFA500),
-                            checkmarkColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            side: BorderSide(
-                              color: selectedCategories.contains(category.id)
-                                  ? Color(0xFFFFA500)
-                                  : Color(0xFFFFA500),
-                              width: 2.0,
-                            ),
-                            elevation: 5.0,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
-                          ),
-                        );
-                      },
+            child: (categories.isEmpty)
+                ? Center(
+                    child: Text(
+                      'Subscribete\n a una\n categoria',
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'San Francisco',
+                          color: Colors.white70),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: filterDiscount.length,
-                    itemBuilder: (context, index) {
-                      final discount = filterDiscount[index];
-                      return Card(
-                        elevation: 4.0,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 8),
+                          height: 60,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final category = categories[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: FilterChip(
+                                  selected:
+                                      selectedCategories.contains(category.id),
+                                  label: Text(
+                                    category.name,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'San Francisco',
+                                      color: selectedCategories
+                                              .contains(category.id)
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  onSelected: (selected) {
+                                    setState(() {
+                                      if (selected) {
+                                        selectedCategories.add(category.id);
+                                        showUnsubscribeButton =
+                                            true; // Mostrar el botón
+                                      } else {
+                                        selectedCategories.remove(category.id);
+                                        showUnsubscribeButton = selectedCategories
+                                            .isNotEmpty; // Ocultar si no hay selecciones
+                                      }
+                                    });
+                                  },
+                                  backgroundColor:
+                                      selectedCategories.contains(category.id)
+                                          ? Color(0xFFFFA500)
+                                          : Color(0xFFFFFFFF),
+                                  selectedColor: Color(0xFFFFA500),
+                                  checkmarkColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  side: BorderSide(
+                                    color:
+                                        selectedCategories.contains(category.id)
+                                            ? Color(0xFFFFA500)
+                                            : Color(0xFFFFA500),
+                                    width: 2.0,
+                                  ),
+                                  elevation: 5.0,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15.0)),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            leading: Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                image: DecorationImage(
-                                  image: discount.business.imageurl.isNotEmpty
-                                      ? NetworkImage(discount.business
-                                          .imageurl) // Network image if URL is available
-                                      : AssetImage(discount.business.picture)
-                                          as ImageProvider, // Local asset as fallback,
-                                  fit: BoxFit.contain,
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: filterDiscount.length,
+                          itemBuilder: (context, index) {
+                            final discount = filterDiscount[index];
+                            return Card(
+                              elevation: 4.0,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15.0)),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  leading: Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      image: DecorationImage(
+                                        image: discount
+                                                .business.imageurl.isNotEmpty
+                                            ? NetworkImage(discount.business
+                                                .imageurl) // Network image if URL is available
+                                            : AssetImage(
+                                                    discount.business.picture)
+                                                as ImageProvider, // Local asset as fallback,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(
+                                    discount.name,
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'San Francisco'),
+                                  ),
+                                  subtitle: Text(
+                                    discount.description,
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontStyle: FontStyle.italic,
+                                        fontFamily: 'San Francisco'),
+                                  ),
+                                  onTap: () {
+                                    openDialog(discount);
+                                  },
                                 ),
                               ),
-                            ),
-                            title: Text(
-                              discount.name,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'San Francisco'),
-                            ),
-                            subtitle: Text(
-                              discount.description,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontStyle: FontStyle.italic,
-                                  fontFamily: 'San Francisco'),
-                            ),
-                            onTap: () {
-                              openDialog(discount);
-                            },
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
           ),
           Positioned(
             bottom: 0,

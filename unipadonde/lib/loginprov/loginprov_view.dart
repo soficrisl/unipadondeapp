@@ -32,8 +32,7 @@ class _LoginProvState extends State<LoginProvView> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Center(
-          ),
+          title: Center(),
           content: Text(
             message,
             textAlign: TextAlign.center,
@@ -66,79 +65,81 @@ class _LoginProvState extends State<LoginProvView> {
 
   //Login function
   void login() async {
-  final email = _emailController.text;
-  final password = _passwordController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-  // Validación del correo electrónico
-  final emailValidation = Validations.validateEmail(email);
-  if (emailValidation != null) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _showPopup(emailValidation);
-      }
-    });
-    return;
-  }
-
-  // Validación de la contraseña (no vacía)
-  final passwordValidation = Validations.validateNotEmpty(password, "Contraseña");
-  if (passwordValidation != null) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _showPopup(passwordValidation);
-      }
-    });
-    return;
-  }
-
-  // Attempt to login
-  try {
-    final session = await authService.signIn(email, password);
-    final authUserId = session.user?.id;
-
-    if (authUserId != null) {
-      final data = await _viewModel.fetchUserId(email);
-      final userId = data![0];
-      final type = data[1];
-      // view model
+    // Validación del correo electrónico
+    final emailValidation = Validations.validateEmail(email);
+    if (emailValidation != null) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          if (userId != null && type == 'B') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => LandingProv(userId: userId)),
-            );
+          _showPopup(emailValidation);
+        }
+      });
+      return;
+    }
+
+    // Validación de la contraseña (no vacía)
+    final passwordValidation =
+        Validations.validateNotEmpty(password, "Contraseña");
+    if (passwordValidation != null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup(passwordValidation);
+        }
+      });
+      return;
+    }
+
+    // Attempt to login
+    try {
+      final session = await authService.signIn(email, password);
+      final authUserId = session.user?.id;
+
+      if (authUserId != null) {
+        final data = await _viewModel.fetchUserId(email);
+        final userId = data![0];
+        final type = data[1];
+        // view model
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (userId != null && type == 'B') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => LandingProv(userId: userId)),
+              );
+            } else {
+              _showPopup('Error al obtener el ID del usuario.');
+            }
+          }
+        });
+      }
+    } on AuthException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          if (error.code == "invalid_credentials") {
+            _showPopup(
+                'Verifique que el correo y la contraseña sean correctos.');
           } else {
-            _showPopup('Error al obtener el ID del usuario.');
+            _showPopup('Error de autenticación.');
           }
         }
       });
-    }
-  } on AuthException catch (error) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        if (error.code == "invalid_credentials") {
-          _showPopup('Verifique que el correo y la contraseña sean correctos.');
-        } else {
-          _showPopup('Error de autenticación.');
+    } on PostgrestException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup('Error de base de datos.');
         }
-      }
-    });
-  } on PostgrestException catch (error) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _showPopup('Error de base de datos.');
-      }
-    });
-  } catch (error) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _showPopup('Verifique que el correo y la contraseña sean correctos.');
-      }
-    });
+      });
+    } catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup('Verifique que el correo y la contraseña sean correctos.');
+        }
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +152,7 @@ class _LoginProvState extends State<LoginProvView> {
           width: double.infinity,
           decoration: BoxDecoration(
               gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-            const Color(0xFFB4CBF7),
+            const Color(0xFFFFA500),
             Colors.white,
           ])),
           child: Column(
@@ -259,6 +260,7 @@ class _LoginProvState extends State<LoginProvView> {
                       SizedBox(
                         height: 30,
                       ),
+                      /*
                       Text(
                         "Olvidaste tu contraseña?",
                         style: TextStyle(
@@ -277,7 +279,7 @@ class _LoginProvState extends State<LoginProvView> {
                       SizedBox(
                         height: 15,
                       ),
-
+*/
                       //boton Login
                       ElevatedButton(
                           onPressed: login,
@@ -384,6 +386,5 @@ class _LoginProvState extends State<LoginProvView> {
       ),
     );
   }
-
 }
 // FADEANIMATION¿?

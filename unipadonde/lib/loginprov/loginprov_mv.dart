@@ -10,10 +10,6 @@ class loginVmProv extends StatelessWidget {
   //obtener id del usuario como una consulta a la base de datos
   Future<List<dynamic>?> fetchUserId(String mail) async {
     final supabase = Supabase.instance.client;
-
-  
-
-
     try {
       final response = await supabase
           .from('usuario')
@@ -32,50 +28,45 @@ class loginVmProv extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    
     // ! POP UP
-  Future<void> _showPopup(String message) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Center(
- 
-          ),
-          content: Text(
-            message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'San Francisco',
-              fontSize: 16,
+    Future<void> _showPopup(String message) async {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el popup
-              },
-              child: Text(
-                'OK',
-                style: TextStyle(
-                  fontFamily: 'San Francisco',
-                  color: Color(0xFF8CB1F1),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+            title: Center(),
+            content: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'San Francisco',
+                fontSize: 16,
               ),
             ),
-          ],
-        );
-      },
-    );
-  }
-
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el popup
+                },
+                child: Text(
+                  'OK',
+                  style: TextStyle(
+                    fontFamily: 'San Francisco',
+                    color: Color(0xFF8CB1F1),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return StreamBuilder(
         stream: Supabase.instance.client.auth.onAuthStateChange,
@@ -111,15 +102,14 @@ class loginVmProv extends StatelessWidget {
               }
 
               final data = userIdSnapshot.data;
-              final userId = data![0];
-              final type = data[1];
+              final userId = data == null ? null : data[0];
+              final type = data == null ? null : data[1];
 
               if (userId != null && type == 'B') {
                 return LandingProv(userId: userId);
               } else if (type != 'B') {
                 SchedulerBinding.instance.addPostFrameCallback((_) {
-                  if (context.mounted) {
-                  }
+                  if (context.mounted) {}
                 });
                 return const LoginProvView();
               } else {

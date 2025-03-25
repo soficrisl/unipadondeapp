@@ -43,39 +43,15 @@ class _BuspageViewState extends State<BuspageView> {
   }
 
   Future<void> _submitComment() async {
-  if (_commentController.text.isEmpty || _viewModel.rating == 0) {
-    // Mostrar un AlertDialog en lugar de un SnackBar
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(
-              'Por favor, escribe un comentario y selecciona una calificación.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo
-              },
-              child: Text('Aceptar'),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  try {
-    await _viewModel.submitComment(_commentController.text, _viewModel.rating);
-    if (mounted) {
+    if (_commentController.text.isEmpty || _viewModel.rating == 0) {
       // Mostrar un AlertDialog en lugar de un SnackBar
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Éxito'),
-            content: Text('Comentario recibido.'),
+            title: Text('Error'),
+            content: Text(
+                'Por favor, escribe un comentario y selecciona una calificación.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -87,32 +63,57 @@ class _BuspageViewState extends State<BuspageView> {
           );
         },
       );
+      return;
     }
 
-    _commentController.clear();
-    _viewModel.rating = 0;
-  } catch (e) {
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Error: $e'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Cierra el diálogo
-                },
-                child: Text('Aceptar'),
-              ),
-            ],
-          );
-        },
-      );
+    try {
+      await _viewModel.submitComment(
+          _commentController.text, _viewModel.rating);
+      if (mounted) {
+        // Mostrar un AlertDialog en lugar de un SnackBar
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Éxito'),
+              content: Text('Comentario recibido.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                  },
+                  child: Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+
+      _commentController.clear();
+      _viewModel.rating = 0;
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Error: $e'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                  },
+                  child: Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -218,24 +219,42 @@ class _BuspageViewState extends State<BuspageView> {
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 20),
-              _buildDetailContainer(
-                'Tiktok',
-                widget.business.tiktok,
-                'assets/icons/tiktok.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Instagram',
-                widget.business.instagram,
-                'assets/icons/instagram.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Página web',
-                widget.business.webpage,
-                'assets/icons/sitio-web.png',
-              ),
+              widget.business.tiktok.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 20),
+                        _buildDetailContainer(
+                          'Tiktok',
+                          widget.business.tiktok,
+                          'assets/icons/tiktok.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.instagram.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Instagram',
+                          widget.business.instagram,
+                          'assets/icons/instagram.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.webpage.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Página web',
+                          widget.business.webpage,
+                          'assets/icons/sitio-web.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
               SizedBox(
                 height: 10,
               ),
