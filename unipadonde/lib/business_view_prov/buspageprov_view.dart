@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/business_view_prov/buspageprov_model.dart';
-import 'package:unipadonde/validations.dart'; // Importa el archivo de validaciones
+import 'package:unipadonde/business_view_prov/buspageprov_vm.dart';
+import 'package:unipadonde/validations.dart';
+import 'package:unipadonde/modeldata/business_model.dart';
+import 'package:unipadonde/widgets/avatar_components/avatar_view.dart';
 
 class BusinessPageProv extends StatefulWidget {
   final Business business;
 
-  const BusinessPageProv({required this.business});
+  const BusinessPageProv({super.key, required this.business});
 
   @override
-  _BusinessPageProvState createState() => _BusinessPageProvState();
+  State<BusinessPageProv> createState() => _BusinessPageProvState();
 }
 
 class _BusinessPageProvState extends State<BusinessPageProv> {
+  late BuspageProvViewModel _viewModel;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController tiktokController = TextEditingController();
   final TextEditingController instagramController = TextEditingController();
   final TextEditingController websiteController = TextEditingController();
-  File? _image;
 
   // Variables para manejar los errores de validación
   String? _nameError;
@@ -28,15 +27,18 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
   String? _tiktokError;
   String? _instagramError;
   String? _websiteError;
+  String _imageUrl = "";
 
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.business.name;
-    descriptionController.text = widget.business.description;
-    tiktokController.text = widget.business.tiktok;
-    instagramController.text = widget.business.instagram;
-    websiteController.text = widget.business.webpage;
+    _viewModel = BuspageProvViewModel(business: widget.business);
+    nameController.text = _viewModel.business.name;
+    descriptionController.text = _viewModel.business.description;
+    tiktokController.text = _viewModel.business.tiktok;
+    instagramController.text = _viewModel.business.instagram;
+    websiteController.text = _viewModel.business.webpage;
+    _imageUrl = _viewModel.business.imageurl;
 
     // Agregar listeners para validar en tiempo real
     nameController.addListener(() {
@@ -45,19 +47,16 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
     descriptionController.addListener(() {
       _validateDescription(descriptionController.text);
     });
-    tiktokController.addListener(() {
-      _validateTikTok(tiktokController.text);
-    });
-    instagramController.addListener(() {
-      _validateInstagram(instagramController.text);
-    });
-    websiteController.addListener(() {
-      _validateWebsite(websiteController.text);
-    });
+    _viewModel.addListener(_onViewModelChange);
+  }
+
+  void _onViewModelChange() {
+    setState(() {});
   }
 
   @override
   void dispose() {
+    _viewModel.removeListener(_onViewModelChange);
     nameController.dispose();
     descriptionController.dispose();
     tiktokController.dispose();
@@ -79,122 +78,135 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
     });
   }
 
-  void _validateTikTok(String value) {
-    setState(() {
-      _tiktokError = Validations.validateNotEmpty(value, "TikTok");
-    });
-  }
-
-  void _validateInstagram(String value) {
-    setState(() {
-      _instagramError = Validations.validateNotEmpty(value, "Instagram");
-    });
-  }
-
-  void _validateWebsite(String value) {
-    setState(() {
-      _websiteError = Validations.validateNotEmpty(value, "Página web");
-    });
-  }
-
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
   Future<void> _updateBusiness() async {
-  // Validar todos los campos antes de proceder
-  _validateName(nameController.text);
-  _validateDescription(descriptionController.text);
-  _validateTikTok(tiktokController.text);
-  _validateInstagram(instagramController.text);
-  _validateWebsite(websiteController.text);
+    _validateName(nameController.text);
+    _validateDescription(descriptionController.text);
 
-  // Si no hay errores, proceder con la actualización
-  if (_nameError == null &&
-      _descriptionError == null &&
-      _tiktokError == null &&
-      _instagramError == null &&
-      _websiteError == null) {
-    try {
-      final client = Supabase.instance.client;
-      print("Actualizando negocio en Supabase...");
-      await client.from('negocio').update({
-        'name': nameController.text,
-        'description': descriptionController.text,
-        'tiktok': tiktokController.text,
-        'instagram': instagramController.text,
-        'webpage': websiteController.text,
-      }).eq('id', widget.business.id);
+    // Si no hay errores, proceder con la actualización
+    if (_nameError == null && _descriptionError == null) {
+      try {
+        await _viewModel.updateBusiness(
+            nameController.text,
+            descriptionController.text,
+            tiktokController.text,
+            instagramController.text,
+            websiteController.text,
+            widget.business.id);
 
-      print("Negocio actualizado correctamente");
+        if (_viewModel.getUpdated()) {
+          await _showUpdateSuccessPopup();
+        } else {
+          await _showUpdateUnsuccessfulPopup();
+        }
 
-      // Mostrar el popup de éxito y esperar a que el usuario lo cierre
-      await _showUpdateSuccessPopup();
-
-      // Regresar a la vista anterior después de que el usuario cierre el popup
-      Navigator.of(context).pop(true); // Envía "true" como resultado
-
-    } catch (e) {
-      print("Error al actualizar el negocio: $e");
+        if (mounted) {
+          Navigator.of(context).pop(true);
+        }
+        // Envía "true" como resultado
+      } catch (e) {
+        throw Exception("Error al actualizar el negocio: $e");
+      }
     }
   }
-}
 
   // Método para mostrar el popup de éxito
   Future<void> _showUpdateSuccessPopup() async {
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Center(
-          child: Text(
-            "¡Éxito!",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'San Francisco',
-              fontSize: 25,
-              color: Color(0xFF8CB1F1),
-            ),
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ),
-        content: Text(
-          "La información del negocio se ha actualizado correctamente.",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'San Francisco',
-            fontSize: 16,
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Cierra el popup
-            },
+          title: Center(
             child: Text(
-              'OK',
+              "¡Éxito!",
               style: TextStyle(
-                fontFamily: 'San Francisco',
-                color: Color(0xFF8CB1F1),
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
               ),
             ),
-          )
-        ],
-      );
-    },
-  );
-}
+          ),
+          content: Text(
+            "La información del negocio se ha actualizado correctamente.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el popup
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
 
+  Future<void> _showUpdateUnsuccessfulPopup() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text(
+              "¡Lo sentimos!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
+              ),
+            ),
+          ),
+          content: Text(
+            "La información del negocio no se ha actualizado correctamente. \n Vuelve a intentar",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el popup
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,30 +252,29 @@ class _BusinessPageProvState extends State<BusinessPageProv> {
           padding: const EdgeInsets.all(16.0),
           child: ListView(
             children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: Center(
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                          color: const Color(0xFFFFA500), width: 4.0),
+              SizedBox(height: 24),
+              _imageUrl.isNotEmpty
+                  ? AvatarView(
+                      imageUrl: _imageUrl,
+                      onUpload: (imageUrl) async {
+                        setState(() {
+                          _imageUrl = imageUrl;
+                        });
+                      },
+                      type: 'b',
+                      IdNegocio: widget.business.id,
+                    )
+                  : AvatarView(
+                      imageUrl: _imageUrl,
+                      onUpload: (imageUrl) async {
+                        setState(() {
+                          _imageUrl = imageUrl;
+                        });
+                      },
+                      type: 'b',
+                      prepic: _viewModel.business.picture,
+                      IdNegocio: widget.business.id,
                     ),
-                    child: _image == null
-                        ? Icon(Icons.add_a_photo,
-                            size: 50, color: Colors.grey[600])
-                        : ClipOval(
-                            child: Image.file(
-                              _image!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                  ),
-                ),
-              ),
               SizedBox(height: 24),
               _buildTextField(
                 controller: nameController,

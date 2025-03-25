@@ -1,5 +1,9 @@
+import 'package:unipadonde/validations.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/landingprovpage/landingprov_view.dart';
 import 'package:unipadonde/login/login_view.dart';
+import 'package:unipadonde/loginprov/loginprov_mv.dart';
 import 'package:unipadonde/registerprov/registerprov_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
 import 'package:flutter/scheduler.dart';
@@ -14,41 +18,128 @@ class LoginProvView extends StatefulWidget {
 class _LoginProvState extends State<LoginProvView> {
   //Servicio de autentificacion
   final authService = AuthenticationService();
-
+  final loginVmProv _viewModel = loginVmProv();
   //Text Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // ! POP UP
+  Future<void> _showPopup(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(),
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el popup
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   //Login function
   void login() async {
-  final email = _emailController.text;
-  final password = _passwordController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-  // Validación: Asegúrate de que los campos no estén vacíos
-  if (email.isEmpty || password.isEmpty) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Por favor, ingresa tu correo y contraseña.")),
-        );
-      }
-    });
-    return;
-  }
+    // Validación del correo electrónico
+    final emailValidation = Validations.validateEmail(email);
+    if (emailValidation != null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup(emailValidation);
+        }
+      });
+      return;
+    }
 
-  // Attempt to login
-  try {
-    await authService.signIn(email, password);
-  } catch (e) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+    // Validación de la contraseña (no vacía)
+    final passwordValidation =
+        Validations.validateNotEmpty(password, "Contraseña");
+    if (passwordValidation != null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup(passwordValidation);
+        }
+      });
+      return;
+    }
+
+    // Attempt to login
+    try {
+      final session = await authService.signIn(email, password);
+      final authUserId = session.user?.id;
+
+      if (authUserId != null) {
+        final data = await _viewModel.fetchUserId(email);
+        final userId = data![0];
+        final type = data[1];
+        // view model
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (userId != null && type == 'B') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => LandingProv(userId: userId)),
+              );
+            } else {
+              _showPopup('Error al obtener el ID del usuario.');
+            }
+          }
+        });
       }
-    });
+    } on AuthException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          if (error.code == "invalid_credentials") {
+            _showPopup(
+                'Verifique que el correo y la contraseña sean correctos.');
+          } else {
+            _showPopup('Error de autenticación.');
+          }
+        }
+      });
+    } on PostgrestException catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup('Error de base de datos.');
+        }
+      });
+    } catch (error) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showPopup('Verifique que el correo y la contraseña sean correctos.');
+        }
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +152,7 @@ class _LoginProvState extends State<LoginProvView> {
           width: double.infinity,
           decoration: BoxDecoration(
               gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-            const Color(0xFFB4CBF7),
+            const Color(0xFFFFA500),
             Colors.white,
           ])),
           child: Column(
@@ -169,6 +260,7 @@ class _LoginProvState extends State<LoginProvView> {
                       SizedBox(
                         height: 30,
                       ),
+                      /*
                       Text(
                         "Olvidaste tu contraseña?",
                         style: TextStyle(
@@ -187,7 +279,7 @@ class _LoginProvState extends State<LoginProvView> {
                       SizedBox(
                         height: 15,
                       ),
-
+*/
                       //boton Login
                       ElevatedButton(
                           onPressed: login,

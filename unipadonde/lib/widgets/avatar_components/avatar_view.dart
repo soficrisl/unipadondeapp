@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/main.dart';
+import 'package:unipadonde/widgets/avatar_components/avatar_repo.dart';
 
-class Avatar extends StatelessWidget {
-  const Avatar({super.key, required this.imageUrl, required this.onUpload});
-
+class AvatarView extends StatelessWidget {
   final String? imageUrl;
+  final String type;
+  final int? IdNegocio;
+  final String? prepic;
+
+  const AvatarView(
+      {super.key,
+      required this.imageUrl,
+      required this.onUpload,
+      required this.type,
+      this.IdNegocio,
+      this.prepic});
+
   final void Function(String imageUrl) onUpload;
 
   @override
@@ -22,10 +31,17 @@ class Avatar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: Image.network(
-                    imageUrl!,
-                    fit: BoxFit.cover,
-                  ),
+                  child: (prepic == null)
+                      ? Image.network(
+                          imageUrl!,
+                          fit: BoxFit.cover,
+                        )
+                      : ClipOval(
+                          child: Image.asset(
+                            prepic!,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                 ),
               )
             : CircleAvatar(
@@ -41,6 +57,7 @@ class Avatar extends StatelessWidget {
       const SizedBox(height: 12),
       ElevatedButton(
         onPressed: () async {
+          final AvatarRepo repo = AvatarRepo();
           final ImagePicker picker = ImagePicker();
           final XFile? image =
               await picker.pickImage(source: ImageSource.gallery);
@@ -49,17 +66,13 @@ class Avatar extends StatelessWidget {
           }
           final imageExtension = image.path.split('.').last.toLowerCase();
           final imageBytes = await image.readAsBytes();
-          final userId = supabase.auth.currentUser!.id;
-          final imagePath = '/$userId/profile';
-          await supabase.storage.from('profiles').updateBinary(
-              imagePath, imageBytes,
-              fileOptions: FileOptions(
-                  upsert: true, contentType: 'image/$imageExtension'));
-          String imageUrl =
-              supabase.storage.from('profiles').getPublicUrl(imagePath);
-          imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
-            't': DateTime.now().millisecondsSinceEpoch.toString()
-          }).toString();
+          String imageUrl = '';
+          if (type == 'u') {
+            imageUrl = await repo.imageUrlUser(imageBytes, imageExtension);
+          } else {
+            imageUrl = await repo.imageUrlBusiness(
+                imageBytes, imageExtension, IdNegocio!);
+          }
           onUpload(imageUrl);
         },
         style: ElevatedButton.styleFrom(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unipadonde/loginprov/loginprov_mv.dart';
 import 'package:unipadonde/register/register_vm.dart';
 import 'package:unipadonde/repository/supabase.dart';
+import 'package:unipadonde/validations.dart'; // Importar validaciones
 
 final _formKey = GlobalKey<FormState>();
 
@@ -16,11 +17,9 @@ class _RegisterProvViewState extends State<RegisterProvView> {
   final authService = AuthenticationService();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  //final _usernameController = TextEditingController();
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _ciController = TextEditingController();
-
   String? selectedValue = "Femenino";
   bool possible = true;
 
@@ -29,7 +28,6 @@ class _RegisterProvViewState extends State<RegisterProvView> {
     final createuser = UserDataBase();
     final email = _emailController.text;
     final password = _passwordController.text;
-    //final username = _usernameController;
     final name = _nameController.text;
     final lastname = _lastnameController.text;
     final ci = int.parse(_ciController.text);
@@ -42,89 +40,70 @@ class _RegisterProvViewState extends State<RegisterProvView> {
     }
     final usertype = "B";
     try {
-      await authService.signUp(email, password);
       await createuser.createUser(
           email, password, ci, name, lastname, sex, usertype, '');
-      Navigator.pop(context);
+      try {
+        await authService.signUp(email, password, ci);
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        print("Error durante el registro: $e");
+      }
     } catch (e) {
+      print("Error durante el registro: $e");
+      if (e.toString().contains('23505')) {
+        _showPopup(
+            "Su cedula ya se encuentra registrada. Por favor ingrese otra.");
+      }
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Error: $e")));
+        //nose
       }
     }
   }
 
-  // ! VALIDACION EMAIL
-  String? validEmail(String? email) {
-    RegExp emailRegex = RegExp(
-        r'[\w-\.]+@(correo\.unimet\.edu\.ve)$'); //Esto hay que arreglarlo
-    final isEmailValid = emailRegex.hasMatch(email ?? '');
-    if (!isEmailValid) {
-      possible = false;
-      return 'Ingrese un correo correcto';
-    }
-    return null;
-  }
-
-  // ! VALIDACION USERNAME
-  String? validUsername(String? username) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z0-9]+$');
-    final isUserValid = userRegex.hasMatch(username ?? '');
-    if (!isUserValid) {
-      possible = false;
-      return 'Ingrese un usuario correcto';
-    }
-    return null;
-  }
-
-  // ! VALIDACION NOMBRE Y APELLIDO
-  String? validName(String? name) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z]+$');
-    final isNameValid = userRegex.hasMatch(name ?? '');
-    if (!isNameValid) {
-      possible = false;
-      return 'Ingreso inválido';
-    }
-    return null;
-  }
-
-  // ! VALIDACION RIF
-  String? validRIF(String? rif) {
-    RegExp userRegex = RegExp(r'^[0-9]+$'); // Esto hay que arreglarlo
-    final isRIFValid = userRegex.hasMatch(rif ?? '');
-    if (!isRIFValid) {
-      possible = false;
-      return 'Ingrese solo los números';
-    }
-    return null;
-  }
-
-  // ! VALIDACION NEGOCIO
-  String? validBusiness(String? business) {
-    RegExp userRegex = RegExp(r'^[0-9]+$');
-    final isUniValid = userRegex.hasMatch(business ?? '');
-    if (!isUniValid) {
-      possible = false;
-      return 'Ingreso inválido';
-    }
-    return null;
-  }
-
-  // ! VALIDACION CONTRASEÑA
-  String? validPassword(String? password) {
-    RegExp userRegex = RegExp(r'^[a-zA-Z0-9&%_\-=@,\.;\*\+\$\\]+$');
-    final isPasswordValid = userRegex.hasMatch(password ?? '');
-    if (!isPasswordValid) {
-      possible = false;
-      return 'Ingreso inválido';
-    }
-    return null;
+  Future<void> _showPopup(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(),
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el popup
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //Background
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
@@ -132,7 +111,7 @@ class _RegisterProvViewState extends State<RegisterProvView> {
           width: double.infinity,
           decoration: BoxDecoration(
               gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-            const Color(0xFF8CB1F1),
+            const Color(0xFFFFA500),
             Colors.white,
           ])),
           child: Column(
@@ -177,258 +156,211 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                           child: Column(
                             children: [
                               SizedBox(height: 60),
-
-                              // * CAJA FORM
                               Container(
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Color.fromARGB(
-                                                58, 118, 110, 106),
-                                            blurRadius: 20,
-                                            offset: Offset(0, 10))
-                                      ]),
-                                  child: Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      children: [
-                                        // !EMAIL
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _emailController,
-                                            decoration: InputDecoration(
-                                                hintText: "Email",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            keyboardType:
-                                                TextInputType.emailAddress,
-                                            validator: validEmail,
-                                          ),
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color:
+                                              Color.fromARGB(58, 118, 110, 106),
+                                          blurRadius: 20,
+                                          offset: Offset(0, 10))
+                                    ]),
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    children: [
+                                      // !EMAIL
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
                                         ),
-
-                                        // ! CONTRASEÑA
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _passwordController,
-                                            decoration: InputDecoration(
-                                                hintText: "Contraseña",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validPassword,
-                                          ),
-                                        ),
-
-                                        /*// ! CONFIRMAR CONTRASEÑA
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText:
-                                                    "Confirmar contraseña",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validPassword,
-                                          ),
-                                        ), */
-                                        /*
-                                        // ! NOMBRE NEG /OCIO
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre del negocio",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validBusiness,
-                                          ),
-                                        ),
-                                          */
-                                        // ! NOMBRE
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _nameController,
-                                            decoration: InputDecoration(
-                                                hintText: "Nombre",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validName,
-                                          ),
-                                        ),
-
-                                        // ! APELLIDO
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _lastnameController,
-                                            decoration: InputDecoration(
-                                                hintText: "Apellido",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validName,
-                                          ),
-                                        ),
-
-                                        // ! CI
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                              color: const Color.fromARGB(
-                                                  200, 158, 158, 158),
-                                            )),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _ciController,
-                                            decoration: InputDecoration(
-                                                hintText: "Cédula",
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontFamily: 'San Francisco',
-                                                ),
-                                                border: InputBorder.none),
-                                            validator: validRIF,
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-                                        // ! SEXO
-                                        Container(
-                                          width: double.infinity,
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                width: 0.5,
-                                                color: const Color.fromARGB(
-                                                    200, 158, 158, 158),
+                                        child: TextFormField(
+                                          controller: _emailController,
+                                          decoration: InputDecoration(
+                                              hintText: "Email",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
                                               ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10))),
-                                          child: DropdownButton<String>(
-                                              value: selectedValue,
-                                              icon: const Icon(
-                                                  Icons.arrow_drop_down),
-                                              style: const TextStyle(
-                                                  color: Colors.grey),
-                                              underline: Container(
-                                                height: 1,
-                                              ),
-                                              onChanged: (String? newValue) {
-                                                setState(() {
-                                                  selectedValue = newValue!;
-                                                });
-                                              },
-                                              items: const [
-                                                DropdownMenuItem<String>(
-                                                    value: 'Femenino',
-                                                    child: Text("Femenino")),
-                                                DropdownMenuItem<String>(
-                                                    value: 'Masculino',
-                                                    child: Text("Masculino"))
-                                              ]),
+                                              border: InputBorder.none),
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          validator: Validations.validateEmail,
                                         ),
+                                      ),
 
-                                        // ! BOTON REGISTRAR
-                                        const SizedBox(height: 30),
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              possible = true;
-                                              _formKey.currentState!.validate();
-                                              if (possible) {
-                                                signUp();
-                                              }
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(
-                                                  0xFF8CB1F1), // Background color
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
+                                      // ! CONTRASEÑA
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _passwordController,
+                                          decoration: InputDecoration(
+                                              hintText: "Contraseña",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
                                               ),
-                                              minimumSize: Size(double.infinity,
-                                                  50), // Set height and width
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      30), // Horizontal padding
+                                              border: InputBorder.none),
+                                          validator:
+                                              Validations.validatePassword,
+                                        ),
+                                      ),
+
+                                      // ! NOMBRE
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _nameController,
+                                          decoration: InputDecoration(
+                                              hintText: "Nombre",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: Validations.validateName,
+                                        ),
+                                      ),
+
+                                      // ! APELLIDO
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _lastnameController,
+                                          decoration: InputDecoration(
+                                              hintText: "Apellido",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator:
+                                              Validations.validateLastName,
+                                        ),
+                                      ),
+
+                                      // ! CI
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                200, 158, 158, 158),
+                                          )),
+                                        ),
+                                        child: TextFormField(
+                                          controller: _ciController,
+                                          decoration: InputDecoration(
+                                              hintText: "Cédula",
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey,
+                                                fontFamily: 'San Francisco',
+                                              ),
+                                              border: InputBorder.none),
+                                          validator: Validations.validateCI,
+                                        ),
+                                      ),
+
+                                      // ! SEXO
+                                      Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 0.5,
+                                              color: const Color.fromARGB(
+                                                  200, 158, 158, 158),
                                             ),
-                                            child: Text("REGISTRARSE",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontFamily: 'San Francisco',
-                                                    fontWeight:
-                                                        FontWeight.bold)))
-                                      ],
-                                    ),
-                                  )),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                        child: DropdownButton<String>(
+                                            value: selectedValue,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                            underline: Container(
+                                              height: 1,
+                                            ),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedValue = newValue!;
+                                              });
+                                            },
+                                            items: const [
+                                              DropdownMenuItem<String>(
+                                                  value: 'Femenino',
+                                                  child: Text("Femenino")),
+                                              DropdownMenuItem<String>(
+                                                  value: 'Masculino',
+                                                  child: Text("Masculino"))
+                                            ]),
+                                      ),
 
-                              //boton Registrate
-
+                                      // ! BOTON REGISTRAR
+                                      const SizedBox(height: 30),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            possible = true;
+                                            _formKey.currentState!.validate();
+                                            if (possible) {
+                                              signUp();
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                                0xFF8CB1F1), // Background color
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            minimumSize: Size(double.infinity,
+                                                50), // Set height and width
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    30), // Horizontal padding
+                                          ),
+                                          child: Text("REGISTRARSE",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontFamily: 'San Francisco',
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               //Registrar
                               SizedBox(
                                 height: 5,
@@ -462,7 +394,7 @@ class _RegisterProvViewState extends State<RegisterProvView> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(
-                                        0xFFFAAF90), // Background color
+                                        0xFFFFA500), // Background color
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50),
                                     ),

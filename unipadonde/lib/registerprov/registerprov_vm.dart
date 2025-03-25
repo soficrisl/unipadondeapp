@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
+import 'package:unipadonde/landingprovpage/landingprov_view.dart';
 import 'package:unipadonde/registerprov/registerprov_view.dart';
 
 class RegisterProvVM extends StatelessWidget {
@@ -62,14 +63,9 @@ class RegisterProvVM extends StatelessWidget {
               final userId = userIdSnapshot.data;
 
               if (userId != null) {
-                return Landing(userId: userId);
+                return LandingProv(userId: userId);
               } else {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Error al obtener el ID del usuario.")),
-                  );
-                }
+                if (context.mounted) {}
                 return const RegisterProvView();
               }
             },

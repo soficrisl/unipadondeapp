@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
-import 'package:unipadonde/business_view_prov/buspageprov_model.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
-import 'package:unipadonde/creatediscountpage/cdiscount_model.dart';
-import 'package:unipadonde/creatediscountpage/cdiscount_vm.dart';
 import 'package:intl/intl.dart';
+import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
+import 'package:unipadonde/businessprovinfo/business_info_vm.dart';
+import 'package:unipadonde/validations.dart';
+import 'package:unipadonde/modeldata/business_model.dart';
+//import 'package:unipadonde/noti_service.dart';
 
 class BusinessInfoView extends StatefulWidget {
   final Business business;
-  final VoidCallback onBusinessDeleted; // Función de actualización
+  final VoidCallback onBusinessDeleted; // Función de actualización  REVISAR
 
   const BusinessInfoView({
+    super.key,
     required this.business,
     required this.onBusinessDeleted, // Acepta la función de actualización
   });
 
   @override
-  _BusinessInfoViewState createState() => _BusinessInfoViewState();
+  State<BusinessInfoView> createState() => _BusinessInfoViewState();
 }
 
 class _BusinessInfoViewState extends State<BusinessInfoView> {
-  List<Map<String, dynamic>> discounts = [];
   Map<String, dynamic>? address;
-  bool isLoading = true;
-  Business currentBusiness; // Mantén una copia local del negocio
-  final DiscountViewModel discountViewModel = DiscountViewModel();
+
+  //late  DiscountViewModel discountViewModel;
+  late BusinessInfoViewModel _viewModel;
 
   // probando cambios
   final TextEditingController _nameController = TextEditingController();
@@ -44,114 +44,63 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
   String? _percentageError;
   String? _dateError;
 
-  _BusinessInfoViewState()
-      : currentBusiness = Business(
-          id: 0,
-          name: '',
-          description: '',
-          picture: '',
-          tiktok: '',
-          instagram: '',
-          webpage: '',
-        );
-
   @override
   void initState() {
     super.initState();
-    currentBusiness = widget.business; // Inicializa con el negocio recibido
-    fetchDiscounts(); // Llama a fetchDiscounts al iniciar
-    fetchAddress(); // Llama a fetchAddress al iniciar
+    _viewModel = BusinessInfoViewModel(
+        idNegocio: widget.business.id, business: widget.business);
+    _viewModel.fetchDiscounts();
+    _viewModel.fetchAddress();
+    _viewModel.addListener(_onViewModelChange);
+    _viewModel.setLoading(false);
   }
 
-  // Método para obtener los descuentos del negocio
-  Future<void> fetchDiscounts() async {
-    try {
-      final client = Supabase.instance.client;
-      final response = await client
-          .from('descuento')
-          .select('*')
-          .eq('id_negocio', currentBusiness.id)
-          .eq('state', true);
-
-      setState(() {
-        discounts = List<Map<String, dynamic>>.from(response);
-      });
-    } catch (e) {
-      print('Error fetching discounts: $e');
-    }
+  void _onViewModelChange() {
+    setState(() {});
   }
 
-  // Método para obtener la dirección del negocio
-  Future<void> fetchAddress() async {
-    try {
-      final client = Supabase.instance.client;
-      final response = await client
-          .from('direccion')
-          .select('*')
-          .eq('id_negocio', currentBusiness.id)
-          .single();
-
-      setState(() {
-        address = response;
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching address: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelChange);
+    super.dispose();
   }
 
   // Método para actualizar los datos del negocio
   Future<void> _refreshBusinessData() async {
     try {
-      final client = Supabase.instance.client;
-      final response = await client
-          .from('negocio')
-          .select('*')
-          .eq('id', currentBusiness.id)
-          .single();
-
-      setState(() {
-        currentBusiness = Business.fromJson(response);
-      });
+      await _viewModel.getUpdatedBusiness();
     } catch (e) {
-      print('Error refreshing business data: $e');
+      throw Exception('Error setting new state with business data: $e');
     }
   }
 
   // Método para eliminar el negocio
   Future<void> _deleteBusiness() async {
-  try {
-    final client = Supabase.instance.client;
-
-    // Elimina el negocio de la base de datos
-    await client.from('negocio').delete().eq('id', currentBusiness.id);
-
-    // Muestra el popup de éxito y espera a que el usuario lo cierre
-    await _showSuccessPopup('Negocio eliminado correctamente.');
-
-    // Llama a la función de actualización
-    widget.onBusinessDeleted();
-
-    // Navega de regreso a la pantalla anterior (Favsbusinesspage)
-    Navigator.of(context).pop(); // Vuelve a la vista anterior
-  } catch (e) {
-    print('Negocio no eliminado');
+    try {
+      await _viewModel.deleteBusiness();
+      await _showSuccessPopup('Negocio eliminado correctamente.');
+      // Llama a la función de actualización
+      widget.onBusinessDeleted();
+      // Navega de regreso a la pantalla anterior (Favsbusinesspage)
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+      // Vuelve a la vista anterior
+    } catch (e) {
+      print('Negocio no eliminado');
+    }
   }
-}
 
   Future<void> showDateTimeRangePicker() async {
     List<DateTime>? dateTimeList = await showOmniDateTimeRangePicker(
       context: context,
       startInitialDate: DateTime.now(),
-      startFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      startFirstDate: DateTime.now(),
       startLastDate: DateTime.now().add(
         const Duration(days: 3652),
       ),
       endInitialDate: DateTime.now(),
-      endFirstDate: DateTime(1600).subtract(const Duration(days: 3652)),
+      endFirstDate: DateTime.now(),
       endLastDate: DateTime.now().add(
         const Duration(days: 3652),
       ),
@@ -191,15 +140,36 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
     }
   }
 
-  String formatDate(String timestamp) {
-  // Convierte el timestamp en un objeto DateTime
-  DateTime dateTime = DateTime.parse(timestamp);
-  // Define el formato que deseas
-  DateFormat dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-  // Devuelve la fecha formateada
-  return dateFormat.format(dateTime);
-}
-
+  Future<void> _deleteDiscountFromDatabase(int discountId) async {
+    try {
+      bool success = await _viewModel.deleteDiscount(discountId);
+      if (success) {
+        _showDeleteSuccessPopup();
+      } else {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Error al eliminar descuento.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Cierra el diálogo
+                    },
+                    child: Text('Aceptar'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    } catch (e) {
+      print('Error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -256,17 +226,25 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                       border: Border.all(
                           color: const Color(0xFFFFA500), width: 4.0),
                     ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        currentBusiness.picture,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                    child: _viewModel.business.imageurl.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              _viewModel.business.imageurl,
+                              fit: BoxFit
+                                  .contain, // Matches the behavior of Image.asset
+                            ),
+                          )
+                        : ClipOval(
+                            child: Image.asset(
+                              widget.business.picture,
+                              fit: BoxFit.contain, // Keeps the style consistent
+                            ),
+                          ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      currentBusiness.name,
+                      _viewModel.business.name,
                       style: TextStyle(
                         fontSize: 27,
                         fontWeight: FontWeight.w800,
@@ -287,7 +265,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
               ),
               SizedBox(height: 20),
               Text(
-                currentBusiness.description,
+                _viewModel.business.description,
                 style: TextStyle(
                   fontSize: 17,
                   fontFamily: 'San Francisco',
@@ -296,24 +274,42 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 20),
-              _buildDetailContainer(
-                'Tiktok',
-                currentBusiness.tiktok,
-                'assets/icons/tiktok.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Instagram',
-                currentBusiness.instagram,
-                'assets/icons/instagram.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Página web',
-                currentBusiness.webpage,
-                'assets/icons/sitio-web.png',
-              ),
+              widget.business.tiktok.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 20),
+                        _buildDetailContainer(
+                          'Tiktok',
+                          widget.business.tiktok,
+                          'assets/icons/tiktok.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.instagram.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Instagram',
+                          widget.business.instagram,
+                          'assets/icons/instagram.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.webpage.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Página web',
+                          widget.business.webpage,
+                          'assets/icons/sitio-web.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
               SizedBox(height: 10),
               if (address != null) ...[
                 _buildDetailContainer('Estado', address!['estado'], ''),
@@ -331,137 +327,150 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     '',
                   ),
                 ],
-              ] else if (isLoading)
+              ] else if (_viewModel.isLoading())
                 Center(child: CircularProgressIndicator())
               else
                 _buildDetailContainer(
                     'Dirección', 'No se encontró la dirección', ''),
               SizedBox(height: 20),
-              if (isLoading)
+              if (_viewModel.isLoading())
                 Center(child: CircularProgressIndicator())
-              else if (discounts.isEmpty)
+              else if (_viewModel.discounts.isEmpty)
                 Center(child: Text('No hay descuentos disponibles'))
               else
                 CarouselSlider(
                   options: CarouselOptions(
                     height:
                         250, // Altura reducida para mostrar solo nombre, descripción y botones
-                    autoPlay: discounts.length > 1,
+                    autoPlay: _viewModel.discounts.length > 1,
                     enlargeCenterPage: true,
                     aspectRatio: 16 / 9,
                     autoPlayCurve: Curves.fastOutSlowIn,
-                    enableInfiniteScroll: discounts.length > 1,
+                    enableInfiniteScroll: _viewModel.discounts.length > 1,
                     autoPlayAnimationDuration: Duration(milliseconds: 800),
-                    viewportFraction: discounts.length > 1 ? 0.9 : 1.0,
+                    viewportFraction:
+                        _viewModel.discounts.length > 1 ? 0.9 : 1.0,
                   ),
-                  items: discounts.map((discount) {
+                  items: _viewModel.discounts.map((discount) {
                     return Builder(
                       builder: (BuildContext context) {
                         return GestureDetector(
                           onTap: () {
                             // Mostrar diálogo con la información completa del descuento
                             showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text(
-                                  discount['name'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontFamily: "San Francisco",
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 27,
-                                  ),
-                                ),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        discount['description'],
-                                        textAlign: TextAlign.justify,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text(
+                                        discount.name,
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Colors.black,
+                                          color: Colors.orange,
                                           fontFamily: "San Francisco",
-                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 27,
                                         ),
                                       ),
-                                      SizedBox(height: 10),
-                                      Center(
+                                      content: SingleChildScrollView(
                                         child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "${discount['porcentaje']}%",
+                                              discount.description,
+                                              textAlign: TextAlign.justify,
                                               style: TextStyle(
-                                                color: Colors.orange,
+                                                color: Colors.black,
                                                 fontFamily: "San Francisco",
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 64,
+                                                fontSize: 16,
                                               ),
                                             ),
                                             SizedBox(height: 10),
-                                            Text(
-                                              "Válido desde: ",
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontFamily: "San Francisco",
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Text(
-                                              " ${formatDate(discount['startdate'])}",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "San Francisco",
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(255, 97, 97, 97),
-                                              ),
-                                            ),
-                                            Text(
-                                              "hasta: ",
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontFamily: "San Francisco",
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Text(
-                                              " ${formatDate(discount['enddate'])}",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "San Francisco",
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(255, 95, 95, 95),
+                                            Center(
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "${discount.porcentaje}%",
+                                                    style: TextStyle(
+                                                      color: Colors.orange,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 64,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  Text(
+                                                    "Válido desde: ",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    " ${Validations.formatDate(discount.startdate)}",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 97, 97, 97),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "hasta: ",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    " ${Validations.formatDate(discount.enddate)}",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 95, 95, 95),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                actions: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 1), // Reduces the top padding
-                                    child: TextButton(
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      child: Text(
-                                        'Cerrar',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontFamily: "San Francisco",
-                                          color: Color.fromARGB(255, 102, 150, 232),
+                                      actions: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top:
+                                                  1), // Reduces the top padding
+                                          child: TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: Text(
+                                              'Cerrar',
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                fontFamily: "San Francisco",
+                                                color: Color.fromARGB(
+                                                    255, 102, 150, 232),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-
-
-
-
-                            );
+                                      ],
+                                    ));
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
@@ -494,7 +503,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                                   0xFF8CB1F1)), // Icono azul
                                           onPressed: () async {
                                             await showEditDiscountDialog(
-                                                discount);
+                                                discount.toJson());
                                           },
                                         ),
                                         IconButton(
@@ -523,7 +532,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                                   ),
                                                 ),
                                                 content: Text(
-                                                  '¿Estás seguro de que deseas eliminar el descuento "${discount['name']}"?',
+                                                  '¿Estás seguro de que deseas eliminar el descuento "${discount.name}"?',
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                     fontFamily: 'San Francisco',
@@ -570,7 +579,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
 
                                             if (confirm == true) {
                                               await _deleteDiscountFromDatabase(
-                                                  discount['id']);
+                                                  discount.id);
                                             }
                                           },
                                         ),
@@ -587,21 +596,34 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        // Nombre del descuento
+                                        SizedBox(
+                                          height: discount.state == false
+                                              ? 50.0
+                                              : 0.0, // Adjust the height as needed
+                                          child: discount.state == false
+                                              ? Center(
+                                                  child: Text(
+                                                  "Inactivo",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          16), // Customize the style as needed
+                                                ))
+                                              : null,
+                                        ),
                                         Text(
-                                          discount['name'],
+                                          discount.name,
                                           style: TextStyle(
                                             fontSize:
                                                 25, // Tamaño de fuente grande
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.orange,
+                                            color: discount.state
+                                                ? Colors.orange
+                                                : Colors.grey,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
-                                        SizedBox(height: 8), // Espaciado
-                                        // Descripción del descuento
                                         Text(
-                                          discount['description'],
+                                          discount.description,
                                           style: TextStyle(
                                             fontSize:
                                                 16, // Tamaño de fuente mediano
@@ -639,15 +661,13 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => BusinessPageProv(business: currentBusiness),
+                        builder: (context) =>
+                            BusinessPageProv(business: _viewModel.business),
                       ),
                     );
-
                     // Si el resultado es true, actualiza los datos del negocio
                     if (result == true) {
                       await _refreshBusinessData(); // Actualiza los datos del negocio
-                      await fetchDiscounts(); // Actualiza los descuentos
-                      await fetchAddress(); // Actualiza la dirección
                     }
                   },
                   backgroundColor: Colors.white,
@@ -680,7 +700,7 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                           ),
                         ),
                         content: Text(
-                          '¿Estás seguro de que deseas eliminar el negocio: "${currentBusiness.name}"?',
+                          '¿Estás seguro de que deseas eliminar el negocio: "${_viewModel.business.name}"?',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'San Francisco',
@@ -733,41 +753,6 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value, String iconPath) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (iconPath.isNotEmpty)
-              Image.asset(
-                iconPath,
-                width: 24,
-                height: 24,
-              ),
-            if (iconPath.isNotEmpty) SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 19,
-            fontFamily: 'San Francisco',
-          ),
-        ),
-        SizedBox(height: 16),
-      ],
     );
   }
 
@@ -846,9 +831,14 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   errorText: _percentageError,
                   onChanged: (_) {
                     setStateDialog(() {
-                      _percentageError =
-                          int.tryParse(_percentageController.text) == null
-                              ? "Debe ser un número entero"
+                      _percentageError = int.tryParse(
+                                  _percentageController.text) ==
+                              null
+                          ? "Debe ser un número entero"
+                          : (int.tryParse(_percentageController.text)! <= 0 ||
+                                  int.tryParse(_percentageController.text)! >
+                                      100)
+                              ? "El número debe ser positivo y menor o igual a 100"
                               : null;
                     });
                   },
@@ -934,39 +924,22 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
   //Metodo para update el descuento en supabase con el ViewModel
   Future<void> _updateDiscountInDatabase(int discountId) async {
     try {
-      Discount updatedDiscount = Discount(
-        id: discountId,
-        name: _nameController.text,
-        description: _descriptionController.text,
-        porcentaje: int.parse(_percentageController.text),
-        startdate: _selectedStartDate!,
-        enddate: _selectedEndDate!,
-        state: _selectedStartDate!.isBefore(DateTime.now()),
-        id_negocio: currentBusiness.id,
-      );
+      String startDate = _selectedStartDate!.toIso8601String();
+      String endDate = _selectedEndDate!.toIso8601String();
 
-      int? idBDD =
-          await discountViewModel.updateDiscount(discountId, updatedDiscount);
-
-      if (idBDD != null && idBDD != 0) {
-        setState(() {
-          int index = discounts.indexWhere((d) => d['id'] == discountId);
-          if (index != -1) {
-            discounts[index] = {
-              'id': idBDD,
-              'name': _nameController.text,
-              'description': _descriptionController.text,
-              'porcentaje': int.parse(_percentageController.text),
-              'startdate': _selectedStartDate!.toIso8601String(),
-              'enddate': _selectedEndDate!.toIso8601String(),
-              'state': _selectedStartDate!.isBefore(DateTime.now()),
-              'id_negocio': currentBusiness.id,
-            };
-          }
-        });
+      Map<String, dynamic> discountMap = {
+        "id": discountId,
+        "name": _nameController.text,
+        "description": _descriptionController.text,
+        "porcentaje": int.parse(_percentageController.text),
+        "startdate": startDate, // Make sure you assign a value to this.
+        "enddate": endDate,
+        "state": _selectedStartDate!.isBefore(DateTime.now()),
+        "id_negocio": _viewModel.business.id,
+      };
+      final response = await _viewModel.updateDiscount(discountId, discountMap);
+      if (response) {
         _showEditSuccessPopup();
-      } else {
-        throw Exception('Error al actualizar el descuento');
       }
     } catch (e) {
       print('Error');
@@ -1021,25 +994,6 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         );
       },
     );
-  }
-
-  Future<void> _deleteDiscountFromDatabase(int discountId) async {
-    try {
-      bool success = await discountViewModel.deleteDiscount(discountId);
-
-      if (success) {
-        setState(() {
-          // Elimina el descuento de la lista local
-          discounts.removeWhere((d) => d['id'] == discountId);
-          print("Descuento eliminado localmente: $discountId");
-        });
-        _showDeleteSuccessPopup();
-      } else {
-        throw Exception('Error al eliminar el descuento');
-      }
-    } catch (e) {
-      print('Error');
-    }
   }
 
   void _showDeleteSuccessPopup() {
@@ -1201,9 +1155,14 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                     errorText: _percentageError,
                     onChanged: (_) {
                       setStateDialog(() {
-                        _percentageError =
-                            int.tryParse(_percentageController.text) == null
-                                ? "Debe ser un número entero"
+                        _percentageError = int.tryParse(
+                                    _percentageController.text) ==
+                                null
+                            ? "Debe ser un número entero"
+                            : (int.tryParse(_percentageController.text)! <= 0 ||
+                                    int.tryParse(_percentageController.text)! >
+                                        100)
+                                ? "El número debe ser positivo y menor o igual a 100"
                                 : null;
                       });
                     },
@@ -1251,6 +1210,15 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
+                      //! NOTIFICACIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOON ESTÁ FALLANDO ESTA VAINA AYUDA
+
+                      /*
+                      NotiService().showNotification(
+                      title: 'Titulo',
+                      body: 'Body',
+                    ); 
+                    */
+
                       setStateDialog(() {
                         _validateForm();
                       });
@@ -1292,7 +1260,11 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
         : null;
     _percentageError = int.tryParse(_percentageController.text) == null
         ? "Debe ser un número entero"
-        : null;
+        : (int.tryParse(_percentageController.text)! <= 0 ||
+                int.tryParse(_percentageController.text)! > 100)
+            ? "El número debe ser positivo y menor o igual a 100"
+            : null;
+
     _dateError = (_selectedStartDate == null || _selectedEndDate == null)
         ? "Debe seleccionar las fechas"
         : null;
@@ -1310,35 +1282,28 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
 
   Future<void> _addDiscountToDatabase() async {
     try {
-      Discount discount = Discount(
-        name: _nameController.text,
-        description: _descriptionController.text,
-        porcentaje: int.parse(_percentageController.text),
-        startdate: _selectedStartDate!,
-        enddate: _selectedEndDate!,
-        state: _selectedStartDate!.isBefore(DateTime.now()),
-        id_negocio: currentBusiness.id,
-      );
+      String startDate = _selectedStartDate!.toIso8601String();
+      ;
+      String endDate = _selectedEndDate!.toIso8601String();
 
-      int? idBDD = await discountViewModel.addDiscount(discount);
+      Map<String, dynamic> discountMap = {
+        "name": _nameController.text,
+        "description": _descriptionController.text,
+        "porcentaje": int.parse(_percentageController.text),
+        "startdate": startDate, // Make sure you assign a value to this.
+        "enddate": endDate,
+        "state": _selectedStartDate!.isBefore(DateTime.now()),
+        "id_negocio": _viewModel.business.id,
+      };
 
-      if (idBDD != null && idBDD != 0) {
-        setState(() {
-          // Agrega el nuevo descuento a la lista local
-          discounts.add({
-            'id': idBDD,
-            'name': discount.name,
-            'description': discount.description,
-            'porcentaje': discount.porcentaje,
-            'startdate': discount.startdate.toIso8601String(),
-            'enddate': discount.enddate.toIso8601String(),
-            'state': discount.state,
-            'id_negocio': discount.id_negocio,
-          });
-        });
+      _nameController.clear();
+      _descriptionController.clear();
+      _percentageController.clear();
+      final response = await _viewModel.addDiscount(discountMap);
+
+      if (response) {
         _showAddSuccessPopup();
-      } else {
-        throw Exception('Error al añadir el descuento');
+        _viewModel.fetchDiscounts();
       }
     } catch (e) {
       print('Error');
@@ -1407,54 +1372,55 @@ class _BusinessInfoViewState extends State<BusinessInfoView> {
   }
 
   // ! POP UP DE ÉXITO
-Future<void> _showSuccessPopup(String message) async {
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Center(
-          child: Text(
-            "¡Éxito!",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'San Francisco',
-              fontSize: 25,
-              color: Color(0xFF8CB1F1),
-            ),
+  Future<void> _showSuccessPopup(String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ),
-        content: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'San Francisco',
-            fontSize: 16,
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Cierra el popup
-            },
+          title: Center(
             child: Text(
-              'OK',
+              "¡Éxito!",
               style: TextStyle(
-                fontFamily: 'San Francisco',
-                color: Color(0xFF8CB1F1),
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontFamily: 'San Francisco',
+                fontSize: 25,
+                color: Color(0xFF8CB1F1),
               ),
             ),
           ),
-        ],
-      );
-    },
-  );
-}
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'San Francisco',
+              fontSize: 16,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el popup
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: 'San Francisco',
+                  color: Color(0xFF8CB1F1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Widget para la estetica de los textfields
   Widget _buildTextFieldContainer({
     required TextEditingController controller,

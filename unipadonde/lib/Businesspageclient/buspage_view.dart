@@ -1,42 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
-import 'buspage_vm.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // Importar Supabase
+import 'package:unipadonde/Businesspageclient/buspage_viewmodel.dart';
+
+import 'package:unipadonde/modeldata/business_model.dart';
+import 'package:unipadonde/validations.dart'; // Importar Supabase
 
 class BuspageView extends StatefulWidget {
-  final String businessName;
-  final String businessDescription;
-  final String businessTiktok;
-  final String businessInstagram;
-  final String businessWebsite;
-  final String businessLogo;
   final int idNegocio;
+  final Business business;
 
-  BuspageView({
-    required this.businessName,
-    required this.businessDescription,
-    required this.businessTiktok,
-    required this.businessInstagram,
-    required this.businessWebsite,
-    required this.businessLogo,
-    required this.idNegocio,
-  });
+  const BuspageView(
+      {super.key, required this.idNegocio, required this.business});
 
   @override
-  _BuspageViewState createState() => _BuspageViewState();
+  State<BuspageView> createState() => _BuspageViewState();
 }
 
 class _BuspageViewState extends State<BuspageView> {
-  final BuspageViewModel _viewModel = BuspageViewModel();
+  late BuspageViewModel _viewModel;
   final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _viewModel.fetchDiscounts(widget.idNegocio);
-    _viewModel.fetchAddress(widget.idNegocio);
-    _viewModel.fetchComments(widget.idNegocio);
+    _viewModel = BuspageViewModel(
+        idNegocio: widget.idNegocio, business: widget.business);
+    _viewModel.fetchDiscounts();
+    _viewModel.fetchAddress();
+    _viewModel.fetchComments();
     _viewModel.addListener(_onViewModelChange);
   }
 
@@ -51,73 +43,78 @@ class _BuspageViewState extends State<BuspageView> {
   }
 
   Future<void> _submitComment() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Debes iniciar sesión para enviar un comentario.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     if (_commentController.text.isEmpty || _viewModel.rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Por favor, escribe un comentario y selecciona una calificación.'),
-          backgroundColor: Colors.red,
-        ),
+      // Mostrar un AlertDialog en lugar de un SnackBar
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(
+                'Por favor, escribe un comentario y selecciona una calificación.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el diálogo
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
       );
       return;
     }
 
     try {
-      final usuarioResponse = await Supabase.instance.client
-          .from('usuario')
-          .select('id')
-          .eq('uid', user.id)
-          .single();
-
-      final int usuarioId = usuarioResponse['id'];
-
-      final estudianteResponse = await Supabase.instance.client
-          .from('estudiante')
-          .select('id')
-          .eq('id', usuarioId)
-          .single();
-
-      final int estudianteId = estudianteResponse['id'];
-
-      await _viewModel.submitComment(widget.idNegocio, estudianteId, _commentController.text, _viewModel.rating);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Comentario recibido.'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      await _viewModel.submitComment(
+          _commentController.text, _viewModel.rating);
+      if (mounted) {
+        // Mostrar un AlertDialog en lugar de un SnackBar
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Éxito'),
+              content: Text('Comentario recibido.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                  },
+                  child: Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
+      }
 
       _commentController.clear();
       _viewModel.rating = 0;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Error: $e'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                  },
+                  child: Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 
-  String formatDate(String timestamp) {
-  // Convierte el timestamp en un objeto DateTime
-  DateTime dateTime = DateTime.parse(timestamp);
-  // Define el formato que deseas
-  DateFormat dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-  // Devuelve la fecha formateada
-  return dateFormat.format(dateTime);
-}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,19 +167,28 @@ class _BuspageViewState extends State<BuspageView> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: const Color.fromARGB(255, 226, 226, 226),
-                      border: Border.all(color: const Color(0xFFFFA500), width: 4.0),
+                      border: Border.all(
+                          color: const Color(0xFFFFA500), width: 4.0),
                     ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        widget.businessLogo,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                    child: _viewModel.business.imageurl.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              _viewModel.business.imageurl,
+                              fit: BoxFit
+                                  .contain, // Matches the behavior of Image.asset
+                            ),
+                          )
+                        : ClipOval(
+                            child: Image.asset(
+                              _viewModel.business.picture,
+                              fit: BoxFit.contain, // Keeps the style consistent
+                            ),
+                          ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      widget.businessName,
+                      widget.business.name,
                       style: TextStyle(
                         fontSize: 27,
                         fontWeight: FontWeight.bold,
@@ -191,11 +197,12 @@ class _BuspageViewState extends State<BuspageView> {
                         shadows: [
                           Shadow(
                             color:
+                                // ignore: deprecated_member_use
                                 Colors.black.withOpacity(0.1), // Sombra sutil
                             offset: Offset(1, 1),
                             blurRadius: 2,
                           ),
-                          ],
+                        ],
                       ),
                     ),
                   ),
@@ -203,7 +210,7 @@ class _BuspageViewState extends State<BuspageView> {
               ),
               SizedBox(height: 20),
               Text(
-                widget.businessDescription,
+                widget.business.name,
                 style: TextStyle(
                   fontSize: 17,
                   fontFamily: 'San Francisco',
@@ -212,25 +219,45 @@ class _BuspageViewState extends State<BuspageView> {
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 20),
-              _buildDetailContainer(
-                'Tiktok',
-                widget.businessTiktok,
-                'assets/icons/tiktok.png',
+              widget.business.tiktok.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 20),
+                        _buildDetailContainer(
+                          'Tiktok',
+                          widget.business.tiktok,
+                          'assets/icons/tiktok.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.instagram.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Instagram',
+                          widget.business.instagram,
+                          'assets/icons/instagram.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              widget.business.webpage.isNotEmpty
+                  ? Column(
+                      children: [
+                        SizedBox(height: 10),
+                        _buildDetailContainer(
+                          'Página web',
+                          widget.business.webpage,
+                          'assets/icons/sitio-web.png',
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              SizedBox(
+                height: 10,
               ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Instagram',
-                widget.businessInstagram,
-                'assets/icons/instagram.png',
-              ),
-              SizedBox(height: 10),
-              _buildDetailContainer(
-                'Página web',
-                widget.businessWebsite,
-                'assets/icons/sitio-web.png',
-              ),
-              SizedBox(height: 10,),
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -253,7 +280,7 @@ class _BuspageViewState extends State<BuspageView> {
                             ),
                           ),
                           SizedBox(height: 5),
-                          if (_viewModel.address != null) ...[
+                          if (_viewModel.address.id != 0) ...[
                             Row(
                               children: [
                                 Text(
@@ -267,7 +294,9 @@ class _BuspageViewState extends State<BuspageView> {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    _viewModel.address!['estado'] ?? 'No disponible',
+                                    (_viewModel.address.estado.isNotEmpty)
+                                        ? _viewModel.address.estado
+                                        : 'No disponible',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal,
@@ -290,7 +319,9 @@ class _BuspageViewState extends State<BuspageView> {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    _viewModel.address!['ciudad'] ?? 'No disponible',
+                                    (_viewModel.address.ciudad.isNotEmpty)
+                                        ? _viewModel.address.ciudad
+                                        : 'No disponible',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal,
@@ -313,7 +344,9 @@ class _BuspageViewState extends State<BuspageView> {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    _viewModel.address!['municipio'] ?? 'No disponible',
+                                    (_viewModel.address.municipio.isNotEmpty)
+                                        ? _viewModel.address.municipio
+                                        : 'No disponible',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal,
@@ -336,7 +369,9 @@ class _BuspageViewState extends State<BuspageView> {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    _viewModel.address!['calle'] ?? 'No disponible',
+                                    (_viewModel.address.calle.isNotEmpty)
+                                        ? _viewModel.address.calle
+                                        : 'No disponible',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal,
@@ -346,8 +381,7 @@ class _BuspageViewState extends State<BuspageView> {
                                 ),
                               ],
                             ),
-                            if (_viewModel.address!['additional_info'] != null) 
-                              Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -360,7 +394,10 @@ class _BuspageViewState extends State<BuspageView> {
                                 ),
                                 SizedBox(height: 2),
                                 Text(
-                                  _viewModel.address!['additional_info'] ?? 'No disponible',
+                                  (_viewModel
+                                          .address.additional_info.isNotEmpty)
+                                      ? _viewModel.address.additional_info
+                                      : 'No disponible',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.normal,
@@ -369,9 +406,7 @@ class _BuspageViewState extends State<BuspageView> {
                                 ),
                               ],
                             )
-                          ] else if (_viewModel.isLoading)
-                            Center(child: CircularProgressIndicator())
-                          else
+                          ] else
                             Text(
                               'No se encontró la dirección',
                               style: TextStyle(
@@ -392,11 +427,8 @@ class _BuspageViewState extends State<BuspageView> {
                   ],
                 ),
               ),
-              
               SizedBox(height: 20),
-              if (_viewModel.isLoading)
-                Center(child: CircularProgressIndicator())
-              else if (_viewModel.discounts.isEmpty)
+              if (_viewModel.discounts.isEmpty)
                 Center(child: Text('No hay descuentos disponibles'))
               else
                 CarouselSlider(
@@ -408,7 +440,8 @@ class _BuspageViewState extends State<BuspageView> {
                     autoPlayCurve: Curves.fastOutSlowIn,
                     enableInfiniteScroll: _viewModel.discounts.length > 1,
                     autoPlayAnimationDuration: Duration(milliseconds: 800),
-                    viewportFraction: _viewModel.discounts.length > 1 ? 0.9 : 1.0,
+                    viewportFraction:
+                        _viewModel.discounts.length > 1 ? 0.9 : 1.0,
                   ),
                   items: _viewModel.discounts.map((discount) {
                     return Builder(
@@ -417,107 +450,119 @@ class _BuspageViewState extends State<BuspageView> {
                           onTap: () {
                             // Mostrar diálogo con la información completa del descuento
                             showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text(
-                                  discount['name'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontFamily: "San Francisco",
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 27,
-                                  ),
-                                ),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        discount['description'],
-                                        textAlign: TextAlign.justify,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text(
+                                        discount.name,
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Colors.black,
+                                          color: Colors.orange,
                                           fontFamily: "San Francisco",
-                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 27,
                                         ),
                                       ),
-                                      SizedBox(height: 10),
-                                      Center(
+                                      content: SingleChildScrollView(
                                         child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "${discount['porcentaje']}%",
+                                              discount.description,
+                                              textAlign: TextAlign.justify,
                                               style: TextStyle(
-                                                color: Colors.orange,
+                                                color: Colors.black,
                                                 fontFamily: "San Francisco",
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 64,
+                                                fontSize: 16,
                                               ),
                                             ),
                                             SizedBox(height: 10),
-                                            Text(
-                                              "Válido desde: ",
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontFamily: "San Francisco",
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Text(
-                                              " ${formatDate(discount['startdate'])}",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "San Francisco",
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(255, 97, 97, 97),
-                                              ),
-                                            ),
-                                            Text(
-                                              "hasta: ",
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontFamily: "San Francisco",
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Text(
-                                              " ${formatDate(discount['enddate'])}",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "San Francisco",
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(255, 95, 95, 95),
+                                            Center(
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "${discount.porcentaje}%",
+                                                    style: TextStyle(
+                                                      color: Colors.orange,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 64,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  Text(
+                                                    "Válido desde: ",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    " ${Validations.formatDate(discount.startdate)}",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 97, 97, 97),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "hasta: ",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    " ${Validations.formatDate(discount.enddate)}",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontFamily:
+                                                          "San Francisco",
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 95, 95, 95),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                actions: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 1), // Reduces the top padding
-                                    child: TextButton(
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      child: Text(
-                                        'Cerrar',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontFamily: "San Francisco",
-                                          color: Color.fromARGB(255, 102, 150, 232),
+                                      actions: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top:
+                                                  1), // Reduces the top padding
+                                          child: TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                            child: Text(
+                                              'Cerrar',
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                fontFamily: "San Francisco",
+                                                color: Color.fromARGB(
+                                                    255, 102, 150, 232),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-
-
-
-
-                            );
+                                      ],
+                                    ));
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
@@ -550,7 +595,7 @@ class _BuspageViewState extends State<BuspageView> {
                                       children: [
                                         // Nombre del descuento
                                         Text(
-                                          discount['name'],
+                                          discount.name,
                                           style: TextStyle(
                                             fontSize:
                                                 25, // Tamaño de fuente grande
@@ -562,7 +607,7 @@ class _BuspageViewState extends State<BuspageView> {
                                         SizedBox(height: 8), // Espaciado
                                         // Descripción del descuento
                                         Text(
-                                          discount['description'],
+                                          discount.description,
                                           style: TextStyle(
                                             fontSize:
                                                 16, // Tamaño de fuente mediano
@@ -609,7 +654,9 @@ class _BuspageViewState extends State<BuspageView> {
                     children: List.generate(5, (index) {
                       return IconButton(
                         icon: Icon(
-                          index < _viewModel.rating ? Icons.star : Icons.star_border,
+                          index < _viewModel.rating
+                              ? Icons.star
+                              : Icons.star_border,
                           color: Colors.orange,
                         ),
                         onPressed: () {
@@ -631,25 +678,28 @@ class _BuspageViewState extends State<BuspageView> {
               else
                 Column(
                   children: _viewModel.comments.map((comment) {
-                    final usuario = comment['estudiante']['usuario'];
-                    final nombreCompleto = '${usuario['name']} ${usuario['lastname']}';
-                    final calificacion = comment['calificacion'];
-                    final fechaOriginal = DateTime.parse(comment['date']);
-                    final fechaFormateada = DateFormat('dd-MM-yyyy').format(fechaOriginal);
+                    final nombreCompleto = '${comment.name} ${comment.name}';
+                    final calificacion = comment.rating;
+                    final fechaOriginal = DateTime.parse(comment.date);
+                    final fechaFormateada =
+                        DateFormat('dd-MM-yyyy').format(fechaOriginal);
 
                     return Card(
+                      clipBehavior: Clip.hardEdge,
                       margin: EdgeInsets.symmetric(vertical: 5),
                       child: ListTile(
                         title: Text(nombreCompleto),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(comment['content']),
+                            Text(comment.content),
                             SizedBox(height: 5),
                             Row(
                               children: List.generate(5, (index) {
                                 return Icon(
-                                  index < calificacion ? Icons.star : Icons.star_border,
+                                  index < calificacion
+                                      ? Icons.star
+                                      : Icons.star_border,
                                   color: Colors.orange,
                                   size: 20,
                                 );
@@ -712,42 +762,6 @@ class _BuspageViewState extends State<BuspageView> {
           ),
         ],
       ),
-    );
-  }
-  
-
-  Widget _buildInfoRow(String label, String value, String iconPath) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (iconPath.isNotEmpty)
-              Image.asset(
-                iconPath,
-                width: 24,
-                height: 24,
-              ),
-            if (iconPath.isNotEmpty) SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 19,
-            fontFamily: 'San Francisco',
-          ),
-        ),
-        SizedBox(height: 16),
-      ],
     );
   }
 }

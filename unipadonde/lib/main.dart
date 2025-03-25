@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-//import 'package:unipadonde/creatediscountpage/cdiscount_view.dart';
-import 'package:unipadonde/favoritesbusinesspage/favsbusiness_view.dart';
+import 'package:unipadonde/landingprovpage/landingprov_view.dart';
 import 'package:unipadonde/favoritespage/favspage_view.dart';
 import 'package:unipadonde/landingpage/landing_view.dart';
 import 'package:unipadonde/login/login_vm.dart';
+//!import 'package:unipadonde/noti_service.dart';
 import 'package:unipadonde/profilepage/profile_view.dart';
 import 'package:unipadonde/profileprovpage/profileprov_view.dart';
-//import 'package:unipadonde/business_view_prov/buspageprov_view.dart';
-
 import 'package:unipadonde/startpage/start_view.dart';
 
 const supabaseUrl = 'https://atswkwzuztfzaerlpcpc.supabase.co';
@@ -20,6 +18,7 @@ void main() async {
       url: 'https://atswkwzuztfzaerlpcpc.supabase.co',
       anonKey:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c3drd3p1enRmemFlcmxwY3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5MjczNTcsImV4cCI6MjA1MzUwMzM1N30.FzMP9I3qs9aVol2njwWYjFPKJAgtBE-RkcQ-UrinA2A');
+  //!NotiService().initNotification();
   runApp(const MyApp());
 }
 
@@ -92,6 +91,12 @@ class MyApp extends StatelessWidget {
                       userId!), // Usamos el operador ! para indicar que userId no es null
             );
 
+          case '/mainstart':
+            return MaterialPageRoute(
+              builder: (context) =>
+                  loginVm(), // Usamos el operador ! para indicar que userId no es null
+            );
+
           case '/favorites':
             return MaterialPageRoute(
               builder: (context) => Favspage(
@@ -115,7 +120,7 @@ class MyApp extends StatelessWidget {
 
           case '/favsbusiness':
             return MaterialPageRoute(
-              builder: (context) => Favsbusinesspage(
+              builder: (context) => LandingProv(
                   userId:
                       userId!), // Usamos el operador ! para indicar que userId no es null
             );

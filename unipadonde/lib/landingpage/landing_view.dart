@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:unipadonde/landingpage/landin_model.dart'; // Importar el archivo correcto
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:unipadonde/Businesspageclient/buspage_view.dart';
+import 'package:unipadonde/landingpage/landing_vm.dart';
 import 'package:unipadonde/searchbar/Search_view.dart';
+import 'package:unipadonde/validations.dart';
 import 'package:unipadonde/widgets/bottom_bar.dart';
-import 'package:unipadonde/business page/buspage_view.dart';
+
+import 'package:unipadonde/modeldata/discount_model.dart';
 
 class Landing extends StatefulWidget {
   final int userId;
@@ -17,24 +20,23 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  List<List<dynamic>> categories = [];
-  List<Discount> listofdiscounts = []; // Usar la clase Discount
+  final LandingViewModel _viewModel = LandingViewModel();
   bool showSubscribeButton = false;
+  List<List<dynamic>> categories = [];
+  List<Discount> listofdiscounts = [];
 
   void getcat() async {
-    final dataService = DataService(Supabase.instance.client);
-    await dataService.fetchCategorias();
+    await _viewModel.fetchCategorias();
     setState(() {
-      categories = dataService.getCategorias() ?? [];
+      categories = _viewModel.getCategorias() ?? [];
     });
   }
 
   void getdis() async {
-    final dataService = DataService(Supabase.instance.client);
-    await dataService.fetchDiscounts();
+    await _viewModel.fetchDiscounts();
     if (mounted) {
       setState(() {
-        listofdiscounts = dataService.getDescuentos() ?? [];
+        listofdiscounts = _viewModel.getDescuentos() ?? [];
       });
     }
   }
@@ -82,15 +84,14 @@ class _LandingState extends State<Landing> {
   }
 
   void subscribeToCategories() async {
-    final dataService = DataService(Supabase.instance.client);
     // Crear una copia de la lista para evitar la modificación concurrente
     final List<int> categoriesToSubscribe = List.from(selectedCategories);
     for (int categoryId in categoriesToSubscribe) {
       // Iterar sobre la copia
       bool isAlreadySubscribed =
-          await dataService.isSubscribed(widget.userId, categoryId);
+          await _viewModel.isSubscribed(widget.userId, categoryId);
       if (!isAlreadySubscribed) {
-        await dataService.addSubscription(widget.userId, categoryId.toString());
+        await _viewModel.addSubscription(widget.userId, categoryId.toString());
       }
     }
     setState(() {
@@ -98,17 +99,14 @@ class _LandingState extends State<Landing> {
       selectedCategories
           .clear(); // Limpiar la lista original después de la iteración
     });
-    Navigator.pushReplacementNamed(context, '/favorites',
-        arguments: widget.userId);
   }
 
   void updateSubscribeButtonVisibility() async {
-    final dataService = DataService(Supabase.instance.client);
     bool hasNewCategories = false;
 
     for (int categoryId in selectedCategories) {
       bool isAlreadySubscribed =
-          await dataService.isSubscribed(widget.userId, categoryId);
+          await _viewModel.isSubscribed(widget.userId, categoryId);
       if (!isAlreadySubscribed) {
         hasNewCategories = true;
         break;
@@ -131,6 +129,7 @@ class _LandingState extends State<Landing> {
       appBar: AppBar(
         toolbarHeight: 90,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
@@ -264,7 +263,11 @@ class _LandingState extends State<Landing> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(45),
                                 image: DecorationImage(
-                                  image: AssetImage(discount.businessLogo),
+                                  image: discount.business.imageurl.isNotEmpty
+                                      ? NetworkImage(discount.business
+                                          .imageurl) // Network image if URL is available
+                                      : AssetImage(discount.business.picture)
+                                          as ImageProvider,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -361,16 +364,24 @@ class _LandingState extends State<Landing> {
                     shape: BoxShape.circle,
                     color: Colors.white,
                   ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      discount.businessLogo,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                  child: discount.business.imageurl.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(
+                            discount.business.imageurl,
+                            fit: BoxFit
+                                .contain, // Matches the behavior of Image.asset
+                          ),
+                        )
+                      : ClipOval(
+                          child: Image.asset(
+                            discount.business.picture,
+                            fit: BoxFit.contain, // Keeps the style consistent
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  discount.businessName,
+                  discount.business.name,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -398,12 +409,21 @@ class _LandingState extends State<Landing> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Text(
-                  "Duración: ${discount.duration}",
+                  "Válido desde: ${Validations.formatDate(discount.startdate)}",
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    fontSize: 13,
+                    fontFamily: "San Francisco",
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  "hasta: ${Validations.formatDate(discount.enddate)} ",
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontFamily: "San Francisco",
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -412,14 +432,8 @@ class _LandingState extends State<Landing> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => BuspageView(
-                          businessName: discount.businessName,
-                          businessDescription: discount.businessDescription,
-                          businessTiktok: discount.tiktok ?? 'No disponible',
-                          businessInstagram:
-                              discount.instagram ?? 'No disponible',
-                          businessWebsite: discount.webpage ?? 'No disponible',
-                          businessLogo: discount.businessLogo,
-                          idNegocio: discount.idbusiness,
+                          idNegocio: discount.idnegocio,
+                          business: discount.business,
                         ),
                       ),
                     );
